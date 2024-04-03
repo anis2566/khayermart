@@ -39,3 +39,22 @@ export const DASHBOARD_SIDEBAR = [
     icon: LineChart,
   },
 ] as const;
+
+export const SIZES = [
+  {
+    label: "S",
+    value: "s",
+  },
+  {
+    label: "M",
+    value: "m",
+  },
+  {
+    label: "L",
+    value: "l",
+  },
+  {
+    label: "XL",
+    value: "xl",
+  },
+];

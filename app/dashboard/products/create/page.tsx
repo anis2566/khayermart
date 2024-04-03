@@ -1,8 +1,13 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Undo2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+import { CreateNonVariantProduct } from "@/components/dashboard/product/create-product"
+import "react-quill/dist/quill.snow.css";
 
 const CreateProduct = () => {
     const router = useRouter()
@@ -15,6 +20,16 @@ const CreateProduct = () => {
                     Back
                 </Button>
             </div>
+            <Tabs defaultValue="non-variant" className="w-full">
+                <TabsList>
+                    <TabsTrigger value="non-variant">Non Variant</TabsTrigger>
+                    <TabsTrigger value="variant">Variant</TabsTrigger>
+                </TabsList>
+                <TabsContent value="non-variant">
+                    <CreateNonVariantProduct />
+                </TabsContent>
+                <TabsContent value="variant">Change your password here.</TabsContent>
+            </Tabs>
         </div>
     )
 }
