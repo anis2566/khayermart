@@ -62,7 +62,7 @@ export async function POST(req: Request) {
       data: {
         email: evt.data.email_addresses[0].email_address,
         name: `${evt.data.first_name} ${evt.data.last_name}`,
-        externalId: evt.data.id,
+        clerkId: evt.data.id,
         imageUrl: evt.data.image_url,
       },
     });
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
   if (eventType === "user.updated") {
     await db.user.update({
       where: {
-        email: evt.data.email_addresses[0].email_address,
+        clerkId: evt.data.id,
       },
       data: {
         id: evt.data.id,
@@ -89,7 +89,14 @@ export async function POST(req: Request) {
     });
   }
 
- 
+  if (eventType === "user.deleted") {
+    await db.user.delete({
+      where: {
+        clerkId: evt.data.id,
+      },
+    });
+  }
+
   return new Response('', { status: 200 })
 }
  
