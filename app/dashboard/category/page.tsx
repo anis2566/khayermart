@@ -11,8 +11,7 @@ import {
 } from "@/components/ui/breadcrumb"
 
 import { db } from "@/lib/db"
-import { DataTable } from "@/components/dashboard/category/data-table"
-import { columns } from "@/components/dashboard/category/columns"
+import { CategoryList } from "@/components/dashboard/category/category-list"
 
 const Category = async () => {
     const categories = await db.category.findMany({
@@ -39,7 +38,7 @@ const Category = async () => {
                     <Button size="sm">Create</Button>
                 </Link>
             </div>
-            <DataTable columns={columns} data={categories} />
+            <CategoryList categories={categories} />
         </div>
     )
 }

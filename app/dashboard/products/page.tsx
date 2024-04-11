@@ -12,9 +12,17 @@ import {
 } from "@/components/ui/breadcrumb"
 
 import { ProductList } from "@/components/dashboard/product/product-list"
+import { db } from "@/lib/db"
 
-const Products = () => {
-    
+
+const Products = async () => {
+    const products = await db.product.findMany({
+        include: {
+            stocks: true
+        }
+    })
+
+
     return (
         <div className="w-full space-y-4">
             <div className="flex items-center gap-4">
@@ -36,7 +44,7 @@ const Products = () => {
                     </Button>
                 </Link>
             </div>
-            <ProductList />
+            <ProductList products={products} />
         </div>
     )
 }
