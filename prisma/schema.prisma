@@ -22,22 +22,16 @@ model Todo {
   updatedAt DateTime @updatedAt
 }
 
-enum PRODUCT_STATUS {
-  DRAFT
-  ACTIVE
-  DEACTIVE
-}
-
 model Product {
   id String @id @default(uuid())
   name  String
-  description String?
-  featureImageUrl String?
+  description String
+  featureImageUrl String
   images  String[] @default([])
   totalStock  Int?
-  price Int?
+  price Int
   discountPrice Int?
-  status  PRODUCT_STATUS @default(DRAFT)
+  status  String @default("DRAFT")
 
   stocks  Stock[]
   colors String[] @default([])
@@ -70,6 +64,20 @@ model Stock {
 
   productId String?
   product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Coupon {
+  id String @id @default(uuid())
+  name String
+  code String
+  imageUrl String
+  value Int
+  startDate DateTime
+  expiryDate DateTime
+  status String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

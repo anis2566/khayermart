@@ -55,11 +55,7 @@ export const ProductStock = () => {
     console.log(stockVariants)
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Stock</CardTitle>
-                <CardDescription>Provide stock variants</CardDescription>
-            </CardHeader>
+        <Card className="border-none">
             <CardContent>
                 <Table>
                     <TableHeader>

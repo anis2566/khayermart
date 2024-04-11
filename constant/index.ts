@@ -1,7 +1,7 @@
 import {
   Layers3,
   LayoutDashboard,
-  LineChart,
+  CirclePercent,
   Package,
   ShoppingCart,
   Users,
@@ -34,9 +34,9 @@ export const DASHBOARD_SIDEBAR = [
     icon: Users,
   },
   {
-    label: "Analytics",
-    href: "/dashboard/analytics",
-    icon: LineChart,
+    label: "Coupon",
+    href: "/dashboard/coupon",
+    icon: CirclePercent,
   },
 ] as const;
 

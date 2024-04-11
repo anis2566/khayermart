@@ -6,23 +6,40 @@ import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { Category } from "@prisma/client"
+import { Category,Product, Stock } from "@prisma/client"
 import Image from "next/image"
-import toast from "react-hot-toast"
-import { Trash,RotateCw } from "lucide-react"
-import "react-quill/dist/quill.snow.css";
 import { UploadDropzone } from "@/lib/uploadthing"
+import toast from "react-hot-toast"
+import { Trash,PlusCircle,RotateCw } from "lucide-react"
 import { useTransition } from "react"
 
+import "react-quill/dist/quill.snow.css";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle,CardFooter } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger,SelectValue } from "@/components/ui/select"
+import {
+    Drawer,
+    DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger,SelectValue } from "@/components/ui/select"
 
 import { getCategories } from "@/actions/category.action"
-import { createProduct } from "@/actions/product.action"
+import { updateProduct } from "@/actions/product.action"
+import { SIZES } from '@/constant';
+import { updateStock } from "@/actions/stock.action"
+
+
 
 const formSchema = z.object({ 
   name: z.string().min(1, {
@@ -38,37 +55,106 @@ const formSchema = z.object({
         message: "required"
     }),
     discountPrice: z.string().optional(),
-    totalStock: z.string().min(1, {
-        message: "required"
-    }),
+    totalStock: z.string().optional(),
     featureImageUrl: z.string().min(1, {
       message: "required"
   }),
     images: z.array(z.string()).optional(),
     colors: z.array(z.string()).optional(),
-    status: z.string().optional()
+    status: z.string().min(1, {
+        message: "required"
+    })
 })
 
-export const CreateNonVariantProduct = () => {
-    const [categories, setCategories] = useState<Category[]>([])
-    const [pending, startTransition] = useTransition()
+interface EditProductProps {
+    product: Product & {
+        stocks: Stock[]
+    }
+}
 
+export const EditProduct = ({product}:EditProductProps) => {
+    const [categories, setCategories] = useState<Category[]>([])
     const router = useRouter()
     const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
+    const [stockVariants, setStockVariants] = useState([{ id: 1, size: 's', stock: '', custom: false }]);
+    const [open, setOpen] = useState<boolean>(false)
+    const [pending, startTransition] = useTransition()
 
+
+    useEffect(() => {
+        if (product?.stocks) {
+        setStockVariants(product.stocks.map((stock, index) => ({
+            id: index + 1,
+            size: stock.size || "",
+            stock: stock?.total?.toString() || "",
+            custom: false
+        })))
+        }
+    }, [product?.stocks])
+    
+    // Function to add a new stock variant
+    const addStockVariant = () => {
+        const allPreviousKeysNotEmpty = stockVariants.every(variant => variant.size !== '' && variant.stock !== '');
+        
+        if (allPreviousKeysNotEmpty) {
+            const newVariant = { id: stockVariants.length + 1, size: 's', stock: '', custom: false };
+            setStockVariants([...stockVariants, newVariant]);
+        } else {
+            toast.error("Please complete variant details")
+        }
+    };
+
+    // Function to update the stock value of a variant
+    const updateStockValue = (id:number, value:string) => {
+        const updatedVariants = stockVariants.map(variant => {
+            if (variant.id === id) {
+                return { ...variant, stock: value };
+            }
+            return variant;
+        });
+        setStockVariants(updatedVariants);
+    };
+
+        const updateSizeValue = (id:number, size:string) => {
+        const updatedVariants = stockVariants.map(variant => {
+            if (variant.id === id) {
+                return { ...variant, size: size };
+            }
+            return variant;
+        });
+        setStockVariants(updatedVariants);
+    };
+
+    const handleCustomChange = (id: number, checked: boolean) => {
+        const updatedVariants = stockVariants.map(variant => {
+            if (variant.id === id) {
+                return { ...variant, custom: checked };
+            }
+            return variant;
+        });
+        setStockVariants(updatedVariants);
+    };
+
+    const handleDeleteVariant = (id:number) => {
+        setStockVariants(
+            stockVariants.filter(variant => variant.id !== id)
+        )
+    }
+
+    
     const form = useForm<z.infer<typeof formSchema>>({
             resolver: zodResolver(formSchema),
             defaultValues: {
-            name: "",
-            description: "",
-            categoryId: "",
-            price: undefined,
-            discountPrice: undefined,
-            totalStock: "",
-            featureImageUrl: "",
-            images: [],
-            colors: [],
-            status: "DRAFT"
+            name: product.name || "",
+            description: product.description || "",
+            categoryId: product.categoryId || "",
+            price: product.price.toString() || undefined,
+            discountPrice: product.discountPrice?.toString() || undefined,
+            totalStock: product.totalStock?.toString() || "",
+            featureImageUrl: product.featureImageUrl || "",
+            images: product.images || [],
+            colors: product.colors || [],
+            status: product.status || "DRAFT"
         },
     })
 
@@ -86,25 +172,27 @@ export const CreateNonVariantProduct = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         startTransition(() => {
-            createProduct({
-                name: values.name,
-                description: values.description,
-                featureImageUrl: values.featureImageUrl,
-                images: values.images,
-                price: values.price,
-                discountPrice: values.discountPrice,
-                totalStock: values.totalStock,
-                status: values.status || "",
-                categoryId: values.categoryId,
-                colors: values.colors,
-            })
-            .then(data=> {
+            updateProduct({product:values, id:product.id})
+            .then(data => {
                 if(data?.success) {
                     toast.success(data?.success)
-                    router.push("/dashboard/products")
                 }
             })
         })
+    }
+
+    const handleUpdateVariant = async () => {
+        const updatedVariants = stockVariants.filter(variant => variant.size !== '' && variant.stock !== "");
+        updateStock({values: updatedVariants, productId:product.id})
+            .then(data => {
+                if(data?.error) {
+                    toast.error(data?.error)
+                }
+                if(data?.success) {
+                    toast.success(data?.success)
+                    setOpen(false)
+                }
+            })
     }
 
     return (
@@ -144,6 +232,7 @@ export const CreateNonVariantProduct = () => {
                                                 <ReactQuill
                                                     theme="snow"
                                                     onChange={field.onChange}
+                                                    value={form.getValues("description")}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -393,7 +482,7 @@ export const CreateNonVariantProduct = () => {
                                         name="status"
                                         render={({ field }) => (
                                             <FormItem>
-                                            <FormLabel>Status</FormLabel>
+                                            <FormLabel>Category</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                 <SelectTrigger>
@@ -416,6 +505,79 @@ export const CreateNonVariantProduct = () => {
                                 </CardContent>
                             </CardHeader>
                         </Card>
+                        {product?.stocks?.length > 0 && (
+                            <Button className="w-full bg-sky-500 hover:bg-sky-600 text-primary" onClick={() =>setOpen(true)}>Edit variants</Button>
+                        )}
+                        <Drawer open={open}>
+                            <DrawerContent>
+                                <DrawerHeader>
+                                <DrawerTitle>Stock Variants</DrawerTitle>
+                                <DrawerDescription>Provide stock variants</DrawerDescription>
+                                </DrawerHeader>
+                                <Card className="border-none">
+                                    <CardContent>
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead className='text-center'>Size</TableHead>
+                                                    <TableHead className='text-center'>Custom</TableHead>
+                                                    <TableHead>Stock</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {stockVariants.map((variant) => (
+                                                    <TableRow key={variant.id} className='p-0'>
+                                                            <TableCell>
+                                                            {variant.custom ? (
+                                                                <Input
+                                                                    type="text"
+                                                                    onChange={(e) => updateSizeValue(variant.id, e.target.value)}
+                                                                />
+                                                            ) : (
+                                                                <ToggleGroup
+                                                                    type="single"
+                                                                    defaultValue={variant.size}
+                                                                    variant="outline"
+                                                                    
+                                                                >
+                                                                    {SIZES.map(size => (
+                                                                        <ToggleGroupItem value={size.value} key={size.value} onClick={() => updateSizeValue(variant.id, size.value)}>{size.label}</ToggleGroupItem>
+                                                                    )) }
+                                                                </ToggleGroup>
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell className='text-center'>
+                                                                <Checkbox onCheckedChange={(checked) => handleCustomChange(variant.id, checked === true)} checked={variant.custom} />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Input
+                                                                    type="number"
+                                                                    value={variant.stock}
+                                                                    onChange={(e) => updateStockValue(variant.id, e.target.value)}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Button size="icon" variant="ghost" onClick={() => handleDeleteVariant(variant.id)}>
+                                                                    <Trash className="text-rose-500" />
+                                                                </Button>
+                                                            </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </CardContent>
+                                    <CardFooter className="justify-center border-t p-4">
+                                        <Button onClick={addStockVariant} size="sm" variant="ghost" className="gap-1">
+                                            <PlusCircle className="h-3.5 w-3.5" />
+                                            Add Variant
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
+                                <DrawerFooter>
+                                <Button className="w-[250px] mx-auto bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary" onClick={handleUpdateVariant}>Submit</Button>
+                                </DrawerFooter>
+                            </DrawerContent>
+                        </Drawer>
                         <Button type="submit" className="w-full bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary" disabled={pending}>
                             {pending && (
                               <RotateCw className="mr-2 h-4 w-4 animate-spin" />  

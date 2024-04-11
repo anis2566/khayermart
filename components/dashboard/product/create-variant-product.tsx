@@ -3,26 +3,44 @@
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
+import { useTransition } from "react"
+import { PlusCircle } from 'lucide-react';
+import "react-quill/dist/quill.snow.css";
 import { Category } from "@prisma/client"
 import Image from "next/image"
+import { UploadDropzone } from "@/lib/uploadthing"
 import toast from "react-hot-toast"
 import { Trash,RotateCw } from "lucide-react"
-import "react-quill/dist/quill.snow.css";
-import { UploadDropzone } from "@/lib/uploadthing"
-import { useTransition } from "react"
 
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger,SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import {
+    Drawer,
+    DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Checkbox } from '@/components/ui/checkbox';
 
-import { getCategories } from "@/actions/category.action"
 import { createProduct } from "@/actions/product.action"
+import { ProductStock } from "./product-stock"
+import { getCategories } from "@/actions/category.action"
+import { SIZES } from '@/constant';
+import { createStock } from "@/actions/stock.action"
+
+
 
 const formSchema = z.object({ 
   name: z.string().min(1, {
@@ -38,20 +56,22 @@ const formSchema = z.object({
         message: "required"
     }),
     discountPrice: z.string().optional(),
-    totalStock: z.string().min(1, {
-        message: "required"
-    }),
     featureImageUrl: z.string().min(1, {
       message: "required"
   }),
     images: z.array(z.string()).optional(),
     colors: z.array(z.string()).optional(),
-    status: z.string().optional()
+    status: z.string()
 })
 
-export const CreateNonVariantProduct = () => {
+export const CreateVariantProduct = () => {
     const [categories, setCategories] = useState<Category[]>([])
+    const [productId, setProductId] = useState<string>("")
+    const [open, setOpen] = useState<boolean>(false)
+    const [stockVariants, setStockVariants] = useState([{ id: 1, size: 's', stock: '', custom: false }]);
+    const [custom, setCustom] = useState<Boolean>(false)
     const [pending, startTransition] = useTransition()
+
 
     const router = useRouter()
     const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
@@ -64,7 +84,6 @@ export const CreateNonVariantProduct = () => {
             categoryId: "",
             price: undefined,
             discountPrice: undefined,
-            totalStock: "",
             featureImageUrl: "",
             images: [],
             colors: [],
@@ -84,6 +103,49 @@ export const CreateNonVariantProduct = () => {
         fetchCategory()
     }, []);
 
+        // Function to add a new stock variant
+    const addStockVariant = () => {
+        const allPreviousKeysNotEmpty = stockVariants.every(variant => variant.size !== '' && variant.stock !== '');
+        
+        if (allPreviousKeysNotEmpty) {
+            const newVariant = { id: stockVariants.length + 1, size: 's', stock: '', custom: false };
+            setStockVariants([...stockVariants, newVariant]);
+        } else {
+            toast.error("Please complete variant details")
+        }
+    };
+
+    // Function to update the stock value of a variant
+    const updateStockValue = (id:number, value:string) => {
+        const updatedVariants = stockVariants.map(variant => {
+            if (variant.id === id) {
+                return { ...variant, stock: value };
+            }
+            return variant;
+        });
+        setStockVariants(updatedVariants);
+    };
+
+        const updateSizeValue = (id:number, size:string) => {
+        const updatedVariants = stockVariants.map(variant => {
+            if (variant.id === id) {
+                return { ...variant, size: size };
+            }
+            return variant;
+        });
+        setStockVariants(updatedVariants);
+    };
+
+    const handleCustomChange = (id: number, checked: boolean) => {
+        const updatedVariants = stockVariants.map(variant => {
+            if (variant.id === id) {
+                return { ...variant, custom: checked };
+            }
+            return variant;
+        });
+        setStockVariants(updatedVariants);
+    };
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         startTransition(() => {
             createProduct({
@@ -93,18 +155,34 @@ export const CreateNonVariantProduct = () => {
                 images: values.images,
                 price: values.price,
                 discountPrice: values.discountPrice,
-                totalStock: values.totalStock,
-                status: values.status || "",
+                status: values.status,
                 categoryId: values.categoryId,
                 colors: values.colors,
             })
             .then(data=> {
-                if(data?.success) {
+                if(data?.success && data?.product) {
                     toast.success(data?.success)
-                    router.push("/dashboard/products")
+                    setProductId(data?.product?.id)
+                    setOpen(true)
                 }
             })
         })
+    }
+
+    const handleAddVariant = async () => {
+        if(!productId){
+            toast.error("Something went wrong")
+        } else {
+            const updatedVariants = stockVariants.filter(variant => variant.size !== '' && variant.stock !== "");
+            createStock({values: updatedVariants, productId})
+                .then(data => {
+                    if (data?.success) {
+                        toast.success(data?.success)
+                        setOpen(false)
+                        router.push("/dashboard/products")
+                }
+            })
+        }
     }
 
     return (
@@ -298,7 +376,6 @@ export const CreateNonVariantProduct = () => {
                         </Card>
                     </div>
                     <div className="space-y-6">
-
                         <Card>
                             <CardHeader>
                                 <CardTitle>Pricing</CardTitle>
@@ -325,27 +402,6 @@ export const CreateNonVariantProduct = () => {
                                             <FormLabel>Discount price</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Enter product discount price..." {...field} type="number" />
-                                            </FormControl>
-                                            <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </CardContent>
-                            </CardHeader>
-                        </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Stock</CardTitle>
-                                <CardDescription>Provide product stock</CardDescription>
-                                <CardContent className="p-0 space-y-4">
-                                    <FormField
-                                        control={form.control}
-                                        name="totalStock"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                            <FormLabel>Stock</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter product stock..." {...field} type="number" />
                                             </FormControl>
                                             <FormMessage />
                                             </FormItem>
@@ -393,7 +449,7 @@ export const CreateNonVariantProduct = () => {
                                         name="status"
                                         render={({ field }) => (
                                             <FormItem>
-                                            <FormLabel>Status</FormLabel>
+                                            <FormLabel>Category</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                 <SelectTrigger>
@@ -425,6 +481,71 @@ export const CreateNonVariantProduct = () => {
                     </div>
                 </form>
             </Form>
+            <Drawer open={open}>
+                <DrawerContent>
+                    <DrawerHeader>
+                    <DrawerTitle>Stock Variants</DrawerTitle>
+                    <DrawerDescription>Provide stock variants</DrawerDescription>
+                    </DrawerHeader>
+                    <Card className="border-none">
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className='text-center'>Size</TableHead>
+                                        <TableHead className='text-center'>Custom</TableHead>
+                                        <TableHead>Stock</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {stockVariants.map((variant) => (
+                                        <TableRow key={variant.id} className='p-0'>
+                                                <TableCell>
+                                                {variant.custom ? (
+                                                    <Input
+                                                        type="text"
+                                                        onChange={(e) => updateSizeValue(variant.id, e.target.value)}
+                                                    />
+                                                ) : (
+                                                    <ToggleGroup
+                                                        type="single"
+                                                        defaultValue={variant.size}
+                                                        variant="outline"
+                                                        
+                                                    >
+                                                        {SIZES.map(size => (
+                                                            <ToggleGroupItem value={size.value} key={size.value} onClick={() => updateSizeValue(variant.id, size.value)}>{size.label}</ToggleGroupItem>
+                                                        )) }
+                                                    </ToggleGroup>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className='text-center'>
+                                                    <Checkbox onCheckedChange={(checked) => handleCustomChange(variant.id, checked === true)} checked={variant.custom} />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input
+                                                        type="number"
+                                                        value={variant.stock}
+                                                        onChange={(e) => updateStockValue(variant.id, e.target.value)}
+                                                    />
+                                                </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                        <CardFooter className="justify-center border-t p-4">
+                            <Button onClick={addStockVariant} size="sm" variant="ghost" className="gap-1">
+                                <PlusCircle className="h-3.5 w-3.5" />
+                                Add Variant
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                    <DrawerFooter>
+                    <Button className="w-[250px] mx-auto bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary" onClick={handleAddVariant}>Submit</Button>
+                    </DrawerFooter>
+                </DrawerContent>
+            </Drawer>
         </div>
     )
 }

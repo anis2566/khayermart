@@ -1,7 +1,6 @@
 import { Pen } from "lucide-react"
 import Link from "next/link"
 
-import { Button } from "@/components/ui/button"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,11 +9,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { Button } from "@/components/ui/button"
 
-import { ProductList } from "@/components/dashboard/product/product-list"
+import {db} from "@/lib/db"
+import {CouponList} from "@/components/dashboard/coupon/coupon-list"
 
-const Products = () => {
-    
+
+const Coupon = async () => {
+
+    const coupons = await db.coupon.findMany()
+
     return (
         <div className="w-full space-y-4">
             <div className="flex items-center gap-4">
@@ -25,20 +29,22 @@ const Products = () => {
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                        <BreadcrumbPage>Products</BreadcrumbPage>
+                        <BreadcrumbPage>Coupon</BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
-                <Link href="/dashboard/products/create">
+                <Link href="/dashboard/coupon/create">
                     <Button size="sm" className="flex items-center gap-x-2">
                         <Pen className="w-5 h-5" />
                         Create
                     </Button>
                 </Link>
             </div>
-            <ProductList />
+            <div>
+                <CouponList coupons={coupons} />
+            </div>
         </div>
     )
 }
 
-export default Products
+export default Coupon

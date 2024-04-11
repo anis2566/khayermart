@@ -1,17 +1,25 @@
+"use client"
+
 import Link from "next/link"
 import { Home, LineChart, Menu, Package, Package2, Search, ShoppingCart, Users } from "lucide-react"
+import {usePathname} from "next/navigation"
 
 import { Button } from "../ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "../ui/sheet"
 import { Badge } from "../ui/badge"
 import { Input } from "../ui/input"
 import { ModeToggle } from "../mode-toggle"
 
 import { Logo } from "../logo"
+import {Notifications} from "@/components/dashboard/notifications"
+import { DASHBOARD_SIDEBAR } from "@/constant"
+import {cn} from "@/lib/utils"
+
 
 export const Navbar = () => {
+  const pathname = usePathname()
     return (
-        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0 left-0 z-10">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -26,44 +34,22 @@ export const Navbar = () => {
             <SheetContent side="left" className="flex flex-col">
               <nav className="grid gap-2 text-lg font-medium">
                 <Logo callbackUrl="/dashboard" />
-                <Link
-                  href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Home className="h-5 w-5" />
-                  Dashboard
-                </Link>
-                <Link
-                  href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  Orders
-                  <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                    6
-                  </Badge>
-                </Link>
-                <Link
-                  href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Package className="h-5 w-5" />
-                  Products
-                </Link>
-                <Link
-                  href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Users className="h-5 w-5" />
-                  Customers
-                </Link>
-                <Link
-                  href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <LineChart className="h-5 w-5" />
-                  Analytics
-                </Link>
+                {
+                  DASHBOARD_SIDEBAR.map(({label, icon:Icon, href}, i) => {
+                    const active = pathname === href;
+                    return (
+                      <SheetClose asChild key={i}>
+                        <Link
+                          href={href}
+                          className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", active && "bg-muted")}
+                        >
+                          <Icon className="h-5 w-5" />
+                          {label}
+                        </Link>
+                      </SheetClose>
+                    )
+                  })
+                }
               </nav>
             </SheetContent>
           </Sheet>
@@ -79,7 +65,10 @@ export const Navbar = () => {
               </div>
             </form>
             </div>
-            <ModeToggle />
+            <div className="flex items-center gap-x-2">
+              <ModeToggle />
+              <Notifications />
+            </div>
         </header>
     )
 }

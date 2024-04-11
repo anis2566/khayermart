@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { PRODUCT_STATUS, Product } from "@prisma/client";
+import { Product } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 type CreateProduct = {
@@ -14,7 +14,7 @@ type CreateProduct = {
   featureImageUrl: string;
   images?: string[];
   colors?: string[];
-  // status?: PRODUCT_STATUS;
+  status: string;
 };
 
 export const createProduct = async (values: CreateProduct) => {
@@ -27,13 +27,13 @@ export const createProduct = async (values: CreateProduct) => {
       totalStock: parseInt(values.totalStock || "0", 10),
       price: parseInt(values.price),
       discountPrice: parseInt(values.discountPrice || "0", 10),
-      // status: values.status,
+      status: values.status,
       categoryId: values.categoryId,
       colors: values.colors,
     },
   });
 
-  console.log(product);
+  console.log(values);
 
   return {
     success: "Product created",
@@ -43,7 +43,7 @@ export const createProduct = async (values: CreateProduct) => {
 
 type UpdateProduct = {
   id: string;
-  product: Product;
+  product: CreateProduct;
 };
 
 export const updateProduct = async ({ id, product }: UpdateProduct) => {
@@ -64,7 +64,16 @@ export const updateProduct = async ({ id, product }: UpdateProduct) => {
       id,
     },
     data: {
-      ...product,
+      name: product.name,
+      description: product.description,
+      featureImageUrl: product.featureImageUrl,
+      images: product.images,
+      totalStock: parseInt(product.totalStock || "0", 10),
+      price: parseInt(product.price),
+      discountPrice: parseInt(product.discountPrice || "0", 10),
+      status: product.status,
+      categoryId: product.categoryId,
+      colors: product.colors,
     },
   });
 
@@ -74,3 +83,30 @@ export const updateProduct = async ({ id, product }: UpdateProduct) => {
     success: "Product updated",
   };
 };
+
+
+export const deleteProduct = async (id: string) => {
+  const existProduct = await db.product.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!existProduct) {
+    return {
+      error: "Product not found",
+    };
+  }
+
+  await db.product.delete({
+    where: {
+      id
+    }
+  })
+
+  revalidatePath(`/dashboard/products`);
+
+  return {
+    success: "Product deleted"
+  }
+}
