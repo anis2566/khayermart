@@ -73,6 +73,22 @@ export async function POST(req: Request) {
       },
     });
   }
+
+  if (eventType === "user.updated") {
+    await db.user.update({
+      where: {
+        email: evt.data.email_addresses[0].email_address,
+      },
+      data: {
+        id: evt.data.id,
+        email: evt.data.email_addresses[0].email_address,
+        name: `${evt.data.first_name} ${evt.data.last_name}`,
+        imageUrl: evt.data.image_url,
+        role: evt.data.public_metadata.role || "user",
+      },
+    });
+  }
+
  
   return new Response('', { status: 200 })
 }
