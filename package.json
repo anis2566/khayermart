@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.29.12",
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "^5.11.0",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -44,6 +45,7 @@
     "react-hot-toast": "^2.4.1",
     "react-quill": "^2.0.0",
     "recharts": "^2.12.4",
+    "svix": "^1.21.0",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "uploadthing": "^6.7.0",

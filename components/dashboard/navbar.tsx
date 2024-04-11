@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Home, LineChart, Menu, Package, Package2, Search, ShoppingCart, Users } from "lucide-react"
+import { Home, LineChart, Loader, Menu, Package, Package2, Search, ShoppingCart, Users } from "lucide-react"
 import {usePathname} from "next/navigation"
 
 import { Button } from "../ui/button"
@@ -14,6 +14,7 @@ import { Logo } from "../logo"
 import {Notifications} from "@/components/dashboard/notifications"
 import { DASHBOARD_SIDEBAR } from "@/constant"
 import {cn} from "@/lib/utils"
+import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs"
 
 
 export const Navbar = () => {
@@ -68,6 +69,12 @@ export const Navbar = () => {
             <div className="flex items-center gap-x-2">
               <ModeToggle />
               <Notifications />
+              <ClerkLoading>
+                <Loader className="w-5 h-5 animate-spin" />
+              </ClerkLoading>
+              <ClerkLoaded>
+                <UserButton />
+              </ClerkLoaded>
             </div>
         </header>
     )
