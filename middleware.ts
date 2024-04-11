@@ -1,8 +1,12 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 export default authMiddleware({
   afterAuth: async (auth, req, evt) => {
+    if (!auth.userId && !auth.isPublicRoute) {
+      return redirectToSignIn({ returnBackUrl: req.url });
+    }
+    
     const role = auth.sessionClaims?.role;
     const isAdminRoute = req.nextUrl.pathname.startsWith("/dashboard");
     if (role !== "admin" && isAdminRoute) {
