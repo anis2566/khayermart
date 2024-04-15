@@ -4,6 +4,10 @@ import {
   CirclePercent,
   Package,
   ShoppingCart,
+  ShoppingBasket,
+  MapPinned,
+  MapPin,
+  UserCog,
   Users,
 } from "lucide-react";
 
@@ -58,3 +62,55 @@ export const SIZES = [
     value: "xl",
   },
 ];
+
+
+export const CUSTOMER_SIDEBAR = [
+  {
+    label: "Dashboard",
+    href: "/account",
+    icon: LayoutDashboard,
+  },
+  {
+    label: "Orders",
+    href: "/account/orders",
+    icon: ShoppingBasket,
+  },
+  {
+    label: "Track Order",
+    href: "/account/order-tracking",
+    icon: MapPinned,
+  },
+  {
+    label: "My Address",
+    href: "/account/address",
+    icon: MapPin,
+  },
+  {
+    label: "Setting",
+    href: "/account/setting",
+    icon: UserCog,
+  },
+] as const;
+
+export const ORDER_STATUS = [
+  {
+    label: "Pending",
+    value: "pending"
+  },
+  {
+    label: "Processing",
+    value: "processing"
+  },
+  {
+    label: "Shipping",
+    value: "shipping"
+  },
+  {
+    label: "Delivered",
+    value: "delivered"
+  },
+  {
+    label: "Returned",
+    value: "returned"
+  },
+] as const;

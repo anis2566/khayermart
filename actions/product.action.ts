@@ -33,7 +33,7 @@ export const createProduct = async (values: CreateProduct) => {
     },
   });
 
-  console.log(values);
+  revalidatePath(`/dashboard/products`);
 
   return {
     success: "Product created",
@@ -63,6 +63,7 @@ export const updateProduct = async ({ id, product }: UpdateProduct) => {
     where: {
       id,
     },
+
     data: {
       name: product.name,
       description: product.description,

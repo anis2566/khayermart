@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Home, LineChart, Loader, Menu, Package, Package2, Search, ShoppingCart, Users } from "lucide-react"
 import {usePathname} from "next/navigation"
+import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs"
 
 import { Button } from "../ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "../ui/sheet"
@@ -14,7 +15,6 @@ import { Logo } from "../logo"
 import {Notifications} from "@/components/dashboard/notifications"
 import { DASHBOARD_SIDEBAR } from "@/constant"
 import {cn} from "@/lib/utils"
-import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs"
 
 
 export const Navbar = () => {
@@ -73,7 +73,7 @@ export const Navbar = () => {
                 <Loader className="w-5 h-5 animate-spin" />
               </ClerkLoading>
               <ClerkLoaded>
-                <UserButton />
+                <UserButton afterSignOutUrl="/" />
               </ClerkLoaded>
             </div>
         </header>

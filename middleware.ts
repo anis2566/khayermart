@@ -19,7 +19,8 @@ export default authMiddleware({
     "sign-up",
     "/favicon.ico",
     "/api/uploadthing",
-    "/api/webhooks(.*)"
+    "/api/webhooks(.*)",
+    "/cart"
   ],
   ignoredRoutes: ["/((?!api|trpc))(_next.*|.+.[w]+$)", "/api/uploadthing"],
 });
