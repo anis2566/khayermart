@@ -127,8 +127,8 @@ const About = () => {
           <div className="grid gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3 lg:gap-16 xl:gap-24">
             <div className="flex flex-col gap-2">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                "The products are amazing, and the customer service is outstanding. I will definitely be shopping here
-                again!"
+                The products are amazing, and the customer service is outstanding. I will definitely be shopping here
+                again!
               </p>
               <div className="flex items-center gap-2">
                 <img
@@ -150,8 +150,8 @@ const About = () => {
             </div>
             <div className="flex flex-col gap-2">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                "The products are amazing, and the customer service is outstanding. I will definitely be shopping here
-                again!"
+                The products are amazing, and the customer service is outstanding. I will definitely be shopping here
+                again!
               </p>
               <div className="flex items-center gap-2">
                 <img
@@ -173,8 +173,8 @@ const About = () => {
             </div>
             <div className="flex flex-col gap-2">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                "The products are amazing, and the customer service is outstanding. I will definitely be shopping here
-                again!"
+                The products are amazing, and the customer service is outstanding. I will definitely be shopping here
+                again!
               </p>
               <div className="flex items-center gap-2">
                 <img

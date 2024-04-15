@@ -31,8 +31,8 @@ export const Reviews = () => {
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 <p>
-                  I've been experimenting with my LuminaCook Multi-Function Air Fryer for a few weeks now, and it's been
-                  a versatile addition to my kitchen. It's great for making crispy fries, chicken wings, and even some
+                  I have been experimenting with my LuminaCook Multi-Function Air Fryer for a few weeks now, and it is been
+                  a versatile addition to my kitchen. It is great for making crispy fries, chicken wings, and even some
                   healthier options.
                 </p>
               </div>
@@ -60,8 +60,8 @@ export const Reviews = () => {
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 <p>
-                  I've been experimenting with my LuminaCook Multi-Function Air Fryer for a few weeks now, and it's been
-                  a versatile addition to my kitchen. It's great for making crispy fries, chicken wings, and even some
+                  I have been experimenting with my LuminaCook Multi-Function Air Fryer for a few weeks now, and it is been
+                  a versatile addition to my kitchen. It is great for making crispy fries, chicken wings, and even some
                   healthier options.
                 </p>
               </div>
