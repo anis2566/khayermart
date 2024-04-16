@@ -1,5 +1,11 @@
+"use client"
+
 import { ShoppingBasket, Trash2 } from "lucide-react"
 import Link from "next/link"
+import toast from "react-hot-toast"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import { Product } from "@prisma/client"
 
 import {
   HoverCard,
@@ -8,13 +14,23 @@ import {
 } from "@/components/ui/hover-card"
 import { Button } from "../ui/button"
 import { Separator } from "@/components/ui/separator"
-
-import {db} from "@/lib/db"
-import Image from "next/image"
+import { useCart } from "@/store/user-cart"
 
 
-export const Cart = async () => {
-    const products = await db.product.findMany()
+
+
+export const Cart = () => {
+    const { cart, addToCart, removeFromCart } = useCart();
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    if (!isClient) {
+        return null;
+    }
+
 
     return (
        <HoverCard>
@@ -27,14 +43,14 @@ export const Cart = async () => {
                         </Button>
                     </Link>
                     <div className="flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white">
-                        5
+                        {cart.length}
                     </div>
                 </div>
             </HoverCardTrigger>
-            <HoverCardContent align="end" className="p-2 w-[270px] space-y-4">
+            <HoverCardContent align="end" className="p-2 w-[270px] space-y-4 z-50">
                 <div className="space-y-2 w-full">
                     {
-                        products.map((product, index) => (
+                        cart.map((product, index) => (
                             <div className="flex items-center justify-between hover:bg-muted/60" key={index}>
                                 <Image
                                     src={product.featureImageUrl}
@@ -45,33 +61,25 @@ export const Cart = async () => {
                                 />
                                 <div className="">
                                     <p className="truncate text-sm text-slate-800">{product.name.slice(0,20)}...</p>
-                                    <p className="text-sm text-muted-foreground">1 x &#2547;{product.discountPrice}</p>
+                                    <p className="text-sm text-muted-foreground">{product.quantity} x &#2547;{product.price}</p>
                                 </div>
-                                <Button size="icon" variant="ghost">
+                                <Button size="icon" variant="ghost" onClick={() => removeFromCart(product.id)}>
                                     <Trash2 className="w-5 h-5 text-rose-500" />
                                 </Button>
                             </div>
                         ))
                     }
                     {
-                        products.map((product, index) => (
-                            <div className="flex items-center justify-between hover:bg-muted/60" key={index}>
-                                <Image
-                                    src={product.featureImageUrl}
-                                    alt={product.name}
-                                    className="aspect-object object-cover rounded-lg"
-                                    height="50"
-                                    width="50"
-                                />
-                                <div className="">
-                                    <p className="truncate text-sm text-slate-800">{product.name.slice(0,20)}...</p>
-                                    <p className="text-sm text-muted-foreground">1 x &#2547;{product.discountPrice}</p>
-                                </div>
-                                <Button size="icon" variant="ghost">
-                                    <Trash2 className="w-5 h-5 text-rose-500" />
-                                </Button>
+                        cart.length === 0 && (
+                            <div className="space-y-3 mt-3">
+                                <p className="text-center text-muted-foreground">Your cart is empty</p>
+                                <Link href="/" className="flex justify-center">
+                                    <Button size="sm" variant="outline">
+                                        Continue shopping
+                                    </Button>
+                                </Link>
                             </div>
-                        ))
+                        )
                     }
                 </div>
 

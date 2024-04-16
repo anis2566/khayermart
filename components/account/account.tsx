@@ -44,10 +44,7 @@ export const Account = async () => {
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem>
                                 <Link 
-                                    href={{
-                                    pathname: '/account',
-                                    query: { active: 'dashboard' },
-                                    }}
+                                    href="/account"
                                     className="flex items-center gap-x-2"
                                 >
                                     <UserCog className="w-5 h-5" /> My Account

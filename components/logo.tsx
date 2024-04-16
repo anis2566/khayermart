@@ -9,7 +9,7 @@ export const Logo = ({callbackUrl}:LogoProps) => {
     return (
         <Link href={callbackUrl || "/"} className="flex items-center gap-2">
             <Image src="/logo.svg" alt="Logo" width={27} height={27} />
-            <span className="text-lg font-semibold">Khayer Mart</span>
+            <span className="text-lg font-semibold hidden sm:flex">Khayer Mart</span>
         </Link>
     )
 }
