@@ -3,7 +3,7 @@
 import Link from "next/link"
 import {TrashIcon, StarIcon } from "lucide-react"
 import Image from "next/image"
-import { Product } from "@prisma/client"
+import { Product, Stock } from "@prisma/client"
 import toast from "react-hot-toast"
 
 import { Button } from "@/components/ui/button"
@@ -22,8 +22,12 @@ const Wishlist = () => {
         toast.success("Removed from wishlist")
     } 
 
-    const handleAddToCart = (product:Product) => {
-        addToCart(product, 1)
+    const handleAddToCart = (product: Product & { stocks?: Stock[] }) => {
+        const productWithStocks = {
+            ...product,
+            stocks: product.stocks || [] 
+        };
+        addToCart(productWithStocks, 1) 
         toast.success("Added to cart")
         handleRemoveFromWishlist(product.id)
     }

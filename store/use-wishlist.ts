@@ -1,10 +1,10 @@
-import { Product } from "@prisma/client";
+import { Product, Stock } from "@prisma/client";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 interface WishlistState {
   wishlist: Product[];
-  addToWishlist: (product: Product) => void;
+  addToWishlist: (product: Product & {stocks?: Stock[]}) => void;
   removeFromWishlist: (productId: string) => void;
 }
 
@@ -12,7 +12,7 @@ export const useWishlist = create<WishlistState>()(
   persist(
     (set, get) => ({
       wishlist: [],
-      addToWishlist: (product: Product) => {
+      addToWishlist: (product) => {
         set((state) => {
           const cartIndex = state.wishlist.findIndex(
             (item) => item.id === product.id
@@ -27,6 +27,7 @@ export const useWishlist = create<WishlistState>()(
                 ...state.wishlist,
                 {
                   ...product,
+                  stocks: product.stocks
                 },
               ],
             };

@@ -34,12 +34,10 @@ export const useCart = create<CartState>()(
     (set, get) => ({
       cart: [],
       addToCart: (
-        product: Product & {
-          stocks: Stock[]
-        },
+        product,
         quantity: number = 1,
-        size?: string,
-        color?: string,
+        size,
+        color,
       ) => {
         set((state) => {
           const cartIndex = state.cart.findIndex(
