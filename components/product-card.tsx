@@ -4,6 +4,8 @@ import { Product } from "@prisma/client"
 import Image from "next/image"
 import { useState } from "react" 
 import {Eye, Heart, ShoppingCart, StarIcon} from "lucide-react"
+import Link from "next/link"
+import toast from "react-hot-toast"
 
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
@@ -16,10 +18,8 @@ import {
 
 import { useProduct } from "@/store/use-product"
 import { calculateDiscountPercentage } from "@/lib/utils"
-import toast from "react-hot-toast"
-import { useRouter } from "next/navigation"
 import { useCart } from "@/store/user-cart"
-
+import { useWishlist } from "@/store/use-wishlist"
 
 
 interface ProductCardProps {
@@ -35,10 +35,17 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
     const { onOpen, setProduct } = useProduct()
     const {addToCart, cart} = useCart()
+    const {addToWishlist} = useWishlist()
+
 
     const handleAddToCart = () => {
         addToCart(product, 1);
         toast.success(`Added to cart!`);
+    }
+
+    const handleAddToWishlist = () => {
+        addToWishlist(product)
+        toast.success("Added to wishlist")
     }
 
     return (
@@ -46,41 +53,42 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             {product.discountPrice && (
                 <Badge className="absolute -left-2 top-4 bg-amber-500 -rotate-45">{calculateDiscountPercentage(product.price, product.discountPrice)}% off</Badge>
             )}
-            <div className="aspect-square w-full max-w-[100px] mx-auto">
-                <Image
-                    alt="Thumbnail"
-                    className="object-cover rounded-lg group-hover:scale-110 transition-all duration-300 ease-in-out"
-                    height="100"
-                    src={isHovered ? product.images[0] ? product.images[0] : product.featureImageUrl : product.featureImageUrl}
-                    width="100"
-                />
-            </div>
 
-            <Badge className="text-muted-foreground" variant="outline">{product.category.name}</Badge>
-
-            <p className="font-semibold">{product.name.length > 50 ? `${product.name.slice(0, 50)}...` : product.name}</p>
-            
-            <div className="flex items-center gap-x-4">
-                <div className="flex items-center gap-0.5">
-                <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
+            <Link href={`/shop/${product.id}`}>
+                <div className="aspect-square w-full max-w-[100px] mx-auto">
+                    <Image
+                        alt="Thumbnail"
+                        className="object-cover rounded-lg group-hover:scale-110 transition-all duration-300 ease-in-out"
+                        height="100"
+                        src={isHovered ? product.images[0] ? product.images[0] : product.featureImageUrl : product.featureImageUrl}
+                        width="100"
+                    />
                 </div>
-                <p className="text-sm text-muted-foreground">(4.0)</p>
-            </div>
 
+                <Badge className="text-muted-foreground" variant="outline">{product.category.name}</Badge>
 
-
-            {product.discountPrice ? (
-                <div className="flex items-center gap-x-2">
-                    <p className="text-slate-700 text-md font-semibold">&#2547;{product.discountPrice}</p>
-                    <p className="text-slate-700 line-through text-sm">&#2547;{product.price}</p>
+                <p className="font-semibold">{product.name.length > 50 ? `${product.name.slice(0, 50)}...` : product.name}</p>
+                
+                <div className="flex items-center gap-x-4">
+                    <div className="flex items-center gap-0.5">
+                    <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">(4.0)</p>
                 </div>
-            ): (
-                <p className="text-slate-700 line-through text-md">&#2547;{product.price}</p>
-            )}
+
+                {product.discountPrice ? (
+                    <div className="flex items-center gap-x-2">
+                        <p className="text-slate-700 text-md font-semibold">&#2547;{product.discountPrice}</p>
+                        <p className="text-slate-700 line-through text-sm">&#2547;{product.price}</p>
+                    </div>
+                ): (
+                    <p className="text-slate-700 line-through text-md">&#2547;{product.price}</p>
+                )}
+            </Link>
 
             <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">{product.totalStock} (stock)</p>
@@ -110,7 +118,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost">
+                            <Button size="icon" variant="ghost" onClick={handleAddToWishlist}>
                                 <Heart className="w-5 h-5" />
                             </Button>
                         </TooltipTrigger>

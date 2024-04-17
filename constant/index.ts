@@ -9,6 +9,7 @@ import {
   MapPin,
   UserCog,
   Users,
+  Ribbon,
 } from "lucide-react";
 
 export const DASHBOARD_SIDEBAR = [
@@ -16,6 +17,11 @@ export const DASHBOARD_SIDEBAR = [
     label: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    label: "Brand",
+    href: "/dashboard/brand",
+    icon: Ribbon,
   },
   {
     label: "Category",

@@ -43,7 +43,7 @@ interface CouponListProps {
 
 export const CouponList = ({ coupons }: CouponListProps) => {
   const [id, setId] = useState<string>("")
-    const [pending, startTransition] = useTransition()
+  const [pending, startTransition] = useTransition()
 
     const handleDelete = () => {
         if(!id) {

@@ -39,9 +39,7 @@ export const useCart = create<CartState>()(
         set((state) => {
           const cartIndex = state.cart.findIndex(
             (item) =>
-              item.id === product.id &&
-              item.size === size &&
-              item.color === color
+              item.id === product.id
           );
 
           if (cartIndex > -1) {

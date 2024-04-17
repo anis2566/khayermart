@@ -4,20 +4,29 @@ import {useState} from "react"
 import {Product} from "@prisma/client"
 import {StarIcon} from "lucide-react"
 import { MinusIcon, PlusIcon, HeartIcon } from "lucide-react"
+import toast from "react-hot-toast"
 
 import { Label } from "@/components/ui/label"
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
-import {calculateDiscountPercentage} from "@/lib/utils"
+import { calculateDiscountPercentage } from "@/lib/utils"
+import {useCart} from "@/store/user-cart"
+import { useProduct } from "@/store/use-product"
+import { useWishlist } from "@/store/use-wishlist"
 
 interface ProductInfoProps {
     product: Product
 }
 
 export const ProductInfo = ({product}:ProductInfoProps) => {
-    const [quantity, setQuantity] = useState(1)
+    const [quantity, setQuantity] = useState<number>(1)
+    const [color, setColor] = useState<string>("")
+
+    const {addToCart} = useCart()
+    const { onClose } = useProduct()
+    const {addToWishlist} = useWishlist()
 
     const increamentQuantity = () => {
         if(product.totalStock && quantity < product.totalStock) {
@@ -29,6 +38,17 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
         if(quantity > 1) {
             setQuantity(prev => prev - 1)
         }
+    }
+
+    const handleAddToCart = () => {
+        addToCart(product, quantity, "", color || product.colors[0])
+        onClose()
+        toast.success("Added to cart")
+    }
+
+    const handleAddToWishlist = () => {
+        addToWishlist(product)
+        toast.success("Added to wishlist")
     }
 
     return (
@@ -63,7 +83,7 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
                 <div className="grid gap-2">
                     <Label className="text-lg font-medium">Color</Label>
                     <div className="flex items-center gap-2">
-                        <RadioGroup className="flex items-center gap-2" defaultValue={product.colors[0] || ""} id="size">
+                        <RadioGroup className="flex items-center gap-2" onValueChange={(color) => setColor(color)} defaultValue={color || product.colors[0] || ""} id="size">
                             {product.colors.map((color, i) => (
                                 <Label
                                 className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-gray-100 dark:[&:has(:checked)]:bg-gray-800"
@@ -95,8 +115,8 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
             </div>
 
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button size="lg">Add to cart</Button>
-                <Button size="lg" variant="outline">
+                <Button size="lg" onClick={handleAddToCart}>Add to cart</Button>
+                <Button size="lg" variant="outline" onClick={handleAddToWishlist}>
                     <HeartIcon className="w-4 h-4 mr-2" />
                     Add to wishlist
                 </Button>
