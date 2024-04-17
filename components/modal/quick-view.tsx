@@ -79,7 +79,13 @@ export const QuickViewModal = () => {
                             </Carousel>
                         </div>
                     </div>
-                    <ProductInfo product={product} />
+                    <ProductInfo 
+                        product={{
+                            ...product,
+                            stocks: product.stocks || [],
+                            category: product.category || { name: "Default Category" },
+                        }}
+                    />
                 </div>
             </div>
             )}

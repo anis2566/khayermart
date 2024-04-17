@@ -124,7 +124,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button size="icon" variant="ghost" onClick={() => {
-                                setProduct(product)
+                                setProduct({...product, stocks: product.stocks})
                                 onOpen()
                             }}>
                                 <Eye className="w-5 h-5" />
