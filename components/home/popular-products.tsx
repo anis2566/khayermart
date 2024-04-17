@@ -11,11 +11,13 @@ export async function PopularProducts() {
         select: {
           name: true
         }
-      }
+      },
+      stocks: true,
+      brand: true,
     }
   })
 
-  if(products.length < 1) return
+  if (products.length < 1) return null
 
   return (
       <div className="w-full px-4 space-y-5 pb-7">
@@ -23,7 +25,13 @@ export async function PopularProducts() {
       <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-x-3">
         {
           products.map(product => (
-            <ProductCard key={product.id} product={{ ...product, category: product.category || { name: 'Uncategorized' } }} />
+            <ProductCard key={product.id} product={{ 
+                ...product, 
+                category: product.category || { name: 'Uncategorized' },
+                brand: product.brand ?? undefined,
+                stocks: product.stocks ?? undefined,
+              }}
+            />
           ))
         }
       </div>

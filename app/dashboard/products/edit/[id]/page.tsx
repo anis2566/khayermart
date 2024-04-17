@@ -17,11 +17,10 @@ const EditProdut = async ({params}:{params:{id:string}}) => {
             id:params.id
         },
         include: {
-            stocks: true
+            stocks: true,
         }
     })
 
-    console.log(product)
     if(!product) return
     return (
         <div className="w-full space-y-8">

@@ -1,4 +1,4 @@
-import { Product } from "@prisma/client";
+import { Product, Stock } from "@prisma/client";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware"; 
 
@@ -9,21 +9,24 @@ interface CartState {
     featureImageUrl: string;
     price: number;
     colors?: string[];
-    sizes?: string[];
+    sizes?: Stock[];
     size?: string;
     color?: string;
     quantity: number;
   }[];
   addToCart: (
-    product: Product,
+    product: Product & {
+      stocks: Stock[]
+    },
     quantity?: number,
     size?: string,
-    color?: string
+    color?: string,
   ) => void;
   removeFromCart: (productId: string) => void;
   incrementQuantity: (productId: string) => void;
   decrementQuantity: (productId: string) => void;
   updateColor: (productId: string, newColor: string) => void;
+  updateSize: (productId: string, newSize: string) => void;
 }
 
 export const useCart = create<CartState>()(
@@ -31,10 +34,12 @@ export const useCart = create<CartState>()(
     (set, get) => ({
       cart: [],
       addToCart: (
-        product: Product,
+        product: Product & {
+          stocks: Stock[]
+        },
         quantity: number = 1,
         size?: string,
-        color?: string
+        color?: string,
       ) => {
         set((state) => {
           const cartIndex = state.cart.findIndex(
@@ -46,7 +51,7 @@ export const useCart = create<CartState>()(
             // Product exists, update quantity
             let newCart = [...state.cart];
             newCart[cartIndex].quantity += quantity;
-            return { ...state, cart: newCart };
+            return { ...state, cart: newCart};
           } else {
             // New product, add to cart
             return {
@@ -59,7 +64,7 @@ export const useCart = create<CartState>()(
                   featureImageUrl: product.featureImageUrl,
                   price: product.price,
                   colors: product.colors,
-                  sizes: [],
+                  sizes: product.stocks,
                   size: size,
                   color: color,
                   quantity: quantity,
@@ -123,6 +128,23 @@ export const useCart = create<CartState>()(
             // Product exists, update size
             let newCart = [...state.cart];
             newCart[cartIndex].color = newColor;
+
+            return { ...state, cart: newCart };
+          }
+          // If product does not exist, do nothing
+          return state;
+        });
+      },
+      updateSize: (productId: string, newSize: string) => {
+        set((state) => {
+          const cartIndex = state.cart.findIndex(
+            (item) => item.id === productId
+          );
+
+          if (cartIndex > -1) {
+            // Product exists, update size
+            let newCart = [...state.cart];
+            newCart[cartIndex].size = newSize;
 
             return { ...state, cart: newCart };
           }

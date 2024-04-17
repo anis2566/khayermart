@@ -3,13 +3,13 @@
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { redirect, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { useTransition } from "react"
 import { PlusCircle } from 'lucide-react';
 import "react-quill/dist/quill.snow.css";
-import { Category } from "@prisma/client"
+import { Category, Brand } from "@prisma/client"
 import Image from "next/image"
 import { UploadDropzone } from "@/lib/uploadthing"
 import toast from "react-hot-toast"
@@ -22,25 +22,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger,SelectValue } from "@/
 import { Button } from "@/components/ui/button"
 import {
     Drawer,
-    DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Checkbox } from '@/components/ui/checkbox';
 
 import { createProduct } from "@/actions/product.action"
-import { ProductStock } from "./product-stock"
 import { getCategories } from "@/actions/category.action"
 import { SIZES } from '@/constant';
 import { createStock } from "@/actions/stock.action"
-
-
+import { getBrands } from "@/actions/brand.action"
 
 const formSchema = z.object({ 
   name: z.string().min(1, {
@@ -49,6 +45,7 @@ const formSchema = z.object({
     description: z.string().min(1, {
         message: "required"
     }),
+    brand: z.string().optional(),
     categoryId: z.string().min(1, {
         message: "required"
     }),
@@ -56,6 +53,7 @@ const formSchema = z.object({
         message: "required"
     }),
     discountPrice: z.string().optional(),
+    sellerPrice: z.string().optional(),
     featureImageUrl: z.string().min(1, {
       message: "required"
   }),
@@ -66,6 +64,7 @@ const formSchema = z.object({
 
 export const CreateVariantProduct = () => {
     const [categories, setCategories] = useState<Category[]>([])
+    const [brands, setBrands] = useState<Brand[]>([])
     const [productId, setProductId] = useState<string>("")
     const [open, setOpen] = useState<boolean>(false)
     const [stockVariants, setStockVariants] = useState([{ id: 1, size: 's', stock: '', custom: false }]);
@@ -81,15 +80,29 @@ export const CreateVariantProduct = () => {
             defaultValues: {
             name: "",
             description: "",
+            brand: "",
             categoryId: "",
             price: undefined,
             discountPrice: undefined,
+            sellerPrice: undefined,
             featureImageUrl: "",
             images: [],
             colors: [],
             status: "DRAFT"
         },
     })
+
+    useEffect(() => {
+        const fetchBrands = async () => {
+            getBrands()
+                .then(data => {
+                    if (data?.brands) {
+                    setBrands(data?.brands)
+                }
+            })
+        }
+        fetchBrands()
+    }, []);
 
     useEffect(() => {
         const fetchCategory = async () => {
@@ -151,10 +164,12 @@ export const CreateVariantProduct = () => {
             createProduct({
                 name: values.name,
                 description: values.description,
+                brand: values.brand,
                 featureImageUrl: values.featureImageUrl,
                 images: values.images,
                 price: values.price,
                 discountPrice: values.discountPrice,
+                sellerPrice: values.sellerPrice,
                 status: values.status,
                 categoryId: values.categoryId,
                 colors: values.colors,
@@ -224,6 +239,30 @@ export const CreateVariantProduct = () => {
                                                     onChange={field.onChange}
                                                 />
                                             </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="brand"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Brand Name</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a brand" />
+                                                </SelectTrigger>
+                                                </FormControl>
+                                                    <SelectContent>
+                                                        {
+                                                            brands && brands.map((brand) => (
+                                                                <SelectItem value={brand.id} key={brand.id}>{brand.name}</SelectItem>
+                                                            ))
+                                                        }
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -341,6 +380,8 @@ export const CreateVariantProduct = () => {
                                 </CardContent>
                             </CardHeader>
                         </Card>
+                    </div>
+                    <div className="space-y-6">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Category</CardTitle>
@@ -374,8 +415,6 @@ export const CreateVariantProduct = () => {
                                 </CardContent>
                             </CardHeader>
                         </Card>
-                    </div>
-                    <div className="space-y-6">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Pricing</CardTitle>
@@ -402,6 +441,19 @@ export const CreateVariantProduct = () => {
                                             <FormLabel>Discount price</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Enter product discount price..." {...field} type="number" />
+                                            </FormControl>
+                                            <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="sellerPrice"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormLabel>Seller price</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter seller price..." {...field} type="number" />
                                             </FormControl>
                                             <FormMessage />
                                             </FormItem>

@@ -106,7 +106,7 @@ export const ProductList = async ({ products }: ProductListProps) => {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
                                         <Link href={`/dashboard/products/edit/${product.id}`} className="flex items-center gap-x-3">
                                             <Pen className="w-4 h-4" />
                                             Edit

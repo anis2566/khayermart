@@ -1,10 +1,11 @@
 "use client"
 
 import {useState} from "react"
-import {Product} from "@prisma/client"
+import {Brand, Product, Stock} from "@prisma/client"
 import {StarIcon} from "lucide-react"
 import { MinusIcon, PlusIcon, HeartIcon } from "lucide-react"
 import toast from "react-hot-toast"
+import Image from "next/image"
 
 import { Label } from "@/components/ui/label"
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group"
@@ -17,12 +18,19 @@ import { useProduct } from "@/store/use-product"
 import { useWishlist } from "@/store/use-wishlist"
 
 interface ProductInfoProps {
-    product: Product
+    product: Product & {
+        category: {
+            name: string;
+        },
+        stocks?: Stock[],
+        brand?: Brand,
+    }
 }
 
 export const ProductInfo = ({product}:ProductInfoProps) => {
     const [quantity, setQuantity] = useState<number>(1)
     const [color, setColor] = useState<string>("")
+    const [size, setSize] = useState<string>("")
 
     const {addToCart} = useCart()
     const { onClose } = useProduct()
@@ -34,6 +42,8 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
         }
     }
 
+    console.log(product)
+
     const decreamentQuantity = () => {
         if(quantity > 1) {
             setQuantity(prev => prev - 1)
@@ -41,7 +51,11 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
     }
 
     const handleAddToCart = () => {
-        addToCart(product, quantity, "", color || product.colors[0])
+        const productWithStocks = {
+            ...product,
+            stocks: product.stocks || [] 
+        };
+        addToCart(productWithStocks, quantity, size || productWithStocks.stocks[0]?.size || undefined, color || product.colors[0] || undefined)
         onClose()
         toast.success("Added to cart")
     }
@@ -52,17 +66,35 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
     }
 
     return (
-        <div className="space-y-5">
-            <h1 className="text-2xl font-bold text-slate-700">{product.name}</h1>
-            <div className="flex items-center gap-x-4">
-                <div className="flex items-center gap-0.5">
-                <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
+        <div className="space-y-3">
+            {   
+                product.brand && (
+                    <div className="flex items-center gap-x-2">
+                        <Image
+                            alt="Brand"
+                            className="w-6 h-6 rounded-full object-cover"
+                            height="100"
+                            src={product.brand.imageUrl}
+                            width="100"
+                        />
+                        <Badge variant="outline">{product.brand.name}</Badge>
+                    </div>
+                )
+            }
+            <div className="space-y-1">
+                <h1 className="text-2xl font-bold text-slate-700">{product.name}</h1>
+                <div className="flex items-center gap-x-4">
+                    <div className="flex items-center gap-0.5">
+                    <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    <StarIcon className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">(32 Reviews)</p>
                 </div>
-                <p className="text-sm text-muted-foreground">(32 Reviews)</p>
+                <Badge variant="outline">{product.category.name}</Badge>
+
             </div>
             <div className="flex items-center gap-x-4">
                 <p className="text-3xl font-bold text-slate-600">&#2547;{product.discountPrice ? product.discountPrice : product.price}</p>
@@ -80,7 +112,7 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
             </div>
             
             {product.colors?.length > 0 && (
-                <div className="grid gap-2">
+                <div className="grid">
                     <Label className="text-lg font-medium">Color</Label>
                     <div className="flex items-center gap-2">
                         <RadioGroup className="flex items-center gap-2" onValueChange={(color) => setColor(color)} defaultValue={color || product.colors[0] || ""} id="size">
@@ -99,7 +131,27 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
                 </div>
             )}
 
-            <div className="grid gap-2">
+            {product.stocks && product.stocks?.length > 0 && (
+                <div className="grid">
+                    <Label className="text-lg font-medium">Size</Label>
+                    <div className="flex items-center gap-2">
+                        <RadioGroup className="flex items-center gap-2" onValueChange={(size) => setSize(size)} defaultValue={color || product.stocks[0].size || ""} id="size">
+                            {product.stocks.map((stock, i) => (
+                                <Label
+                                className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-gray-100 dark:[&:has(:checked)]:bg-gray-800 uppercase"
+                                htmlFor={stock.id}
+                                key={i}
+                                >
+                                    <RadioGroupItem id={stock.id} value={stock.size || ""} />
+                                    {stock.size}
+                                </Label>
+                            ))}
+                        </RadioGroup>
+                    </div>
+                </div>
+            )}
+
+            <div className="grid">
                 <Label className="text-lg font-medium">Quantity</Label>
                 <div className="flex items-center gap-2">
                     <Button size="icon" variant="outline" onClick={decreamentQuantity}>

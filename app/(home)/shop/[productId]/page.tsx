@@ -15,6 +15,11 @@ const ProductDetails = async ({params}:{params:{productId:string}}) => {
     const product = await db.product.findUnique({
         where: {
             id: params.productId
+        },
+        include: {
+            brand: true,
+            stocks: true,
+            category: true,
         }
     })
 
@@ -24,7 +29,13 @@ const ProductDetails = async ({params}:{params:{productId:string}}) => {
         <div className="w-full px-3 mt-7 space-y-6">
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ProductImages featureImage={product.featureImageUrl} images={product.images} />
-                <ProductInfo product={product} />
+                 <ProductInfo key={product.id} product={{ 
+                        ...product, 
+                        category: product.category ?? { name: "Default Category" },
+                        brand: product.brand ?? undefined,
+                        stocks: product.stocks ?? undefined,
+                    }}
+                />
             </div>
 
             <Separator />

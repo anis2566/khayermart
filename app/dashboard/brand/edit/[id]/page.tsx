@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation"
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,9 +9,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-import {db} from "@/lib/db"
-import {EditCoupon as EditCouponComp} from "@/components/dashboard/coupon/edit-coupon"
-import { redirect } from "next/navigation"
+import { db } from "@/lib/db"
+import {EditBrand as EditBrandComp} from "@/components/dashboard/brand/edit-brand"
 
 const EditBrand = async ({params}:{params:{id:string}}) => {
 
@@ -30,7 +31,7 @@ const EditBrand = async ({params}:{params:{id:string}}) => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                    <BreadcrumbLink href="/dashboard/coupon">Coupon</BreadcrumbLink>
+                    <BreadcrumbLink href="/dashboard/brand">Brand</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
@@ -39,7 +40,7 @@ const EditBrand = async ({params}:{params:{id:string}}) => {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            {/* <EditCouponComp brand={brand} /> */}
+            <EditBrandComp brand={brand} />
         </div>
     )
 }

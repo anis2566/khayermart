@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { Category } from "@prisma/client"
+import { Brand, Category } from "@prisma/client"
 import Image from "next/image"
 import toast from "react-hot-toast"
 import { Trash,RotateCw } from "lucide-react"
@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button"
 
 import { getCategories } from "@/actions/category.action"
 import { createProduct } from "@/actions/product.action"
+import { getBrands } from "@/actions/brand.action"
 
 const formSchema = z.object({ 
   name: z.string().min(1, {
@@ -31,6 +32,7 @@ const formSchema = z.object({
     description: z.string().min(1, {
         message: "required"
     }),
+    brand: z.string().optional(),
     categoryId: z.string().min(1, {
         message: "required"
     }),
@@ -38,6 +40,7 @@ const formSchema = z.object({
         message: "required"
     }),
     discountPrice: z.string().optional(),
+    sellerPrice: z.string().optional(),
     totalStock: z.string().min(1, {
         message: "required"
     }),
@@ -51,6 +54,7 @@ const formSchema = z.object({
 
 export const CreateNonVariantProduct = () => {
     const [categories, setCategories] = useState<Category[]>([])
+    const [brands, setBrands] = useState<Brand[]>([])
     const [pending, startTransition] = useTransition()
 
     const router = useRouter()
@@ -61,9 +65,11 @@ export const CreateNonVariantProduct = () => {
             defaultValues: {
             name: "",
             description: "",
+            brand: "",
             categoryId: "",
             price: undefined,
             discountPrice: undefined,
+            sellerPrice: undefined,
             totalStock: "",
             featureImageUrl: "",
             images: [],
@@ -72,6 +78,18 @@ export const CreateNonVariantProduct = () => {
         },
     })
 
+    useEffect(() => {
+        const fetchBrands = async () => {
+            getBrands()
+                .then(data => {
+                    if (data?.brands) {
+                    setBrands(data?.brands)
+                }
+            })
+        }
+        fetchBrands()
+    }, []);
+    
     useEffect(() => {
         const fetchCategory = async () => {
             getCategories()
@@ -83,16 +101,18 @@ export const CreateNonVariantProduct = () => {
         }
         fetchCategory()
     }, []);
-
+ 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         startTransition(() => {
             createProduct({
                 name: values.name,
                 description: values.description,
                 featureImageUrl: values.featureImageUrl,
+                brand: values.brand,
                 images: values.images,
                 price: values.price,
                 discountPrice: values.discountPrice,
+                sellerPrice: values.sellerPrice,
                 totalStock: values.totalStock,
                 status: values.status || "",
                 categoryId: values.categoryId,
@@ -107,6 +127,8 @@ export const CreateNonVariantProduct = () => {
         })
     }
 
+    // console.log(form.getValues("brand"))
+
     return (
         <div className="w-full space-y-8">
             <Form {...form}>
@@ -116,7 +138,7 @@ export const CreateNonVariantProduct = () => {
                             <CardHeader>
                                 <CardTitle>Identity</CardTitle>
                                 <CardDescription>
-                                    Provide product indentity with name and description
+                                    Provide product indentity with name, description and brand
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -150,6 +172,31 @@ export const CreateNonVariantProduct = () => {
                                         </FormItem>
                                     )}
                                 />
+
+                                <FormField
+                                    control={form.control}
+                                    name="brand"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Brand Name</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a brand" />
+                                                </SelectTrigger>
+                                                </FormControl>
+                                                    <SelectContent>
+                                                        {
+                                                            brands && brands.map((brand) => (
+                                                                <SelectItem value={brand.id} key={brand.id}>{brand.name}</SelectItem>
+                                                            ))
+                                                        }
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />                               
                             </CardContent>
                         </Card>
                         <Card>
@@ -263,7 +310,9 @@ export const CreateNonVariantProduct = () => {
                                 </CardContent>
                             </CardHeader>
                         </Card>
-                        <Card>
+                    </div>
+                    <div className="space-y-6">
+                       <Card>
                             <CardHeader>
                                 <CardTitle>Category</CardTitle>
                                 <CardDescription>Provide product category</CardDescription>
@@ -274,7 +323,7 @@ export const CreateNonVariantProduct = () => {
                                         render={({ field }) => (
                                             <FormItem>
                                             <FormLabel>Category</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={categories[0]?.id || field.value}>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a category" />
@@ -296,9 +345,6 @@ export const CreateNonVariantProduct = () => {
                                 </CardContent>
                             </CardHeader>
                         </Card>
-                    </div>
-                    <div className="space-y-6">
-
                         <Card>
                             <CardHeader>
                                 <CardTitle>Pricing</CardTitle>
@@ -311,7 +357,7 @@ export const CreateNonVariantProduct = () => {
                                             <FormItem>
                                             <FormLabel>Price</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Enter product price..." {...field} type="number" />
+                                                <Input placeholder="Enter price..." {...field} type="number" />
                                             </FormControl>
                                             <FormMessage />
                                             </FormItem>
@@ -324,7 +370,20 @@ export const CreateNonVariantProduct = () => {
                                             <FormItem>
                                             <FormLabel>Discount price</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Enter product discount price..." {...field} type="number" />
+                                                <Input placeholder="Enter discount price..." {...field} type="number" />
+                                            </FormControl>
+                                            <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="sellerPrice"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormLabel>Seller price</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter seller price..." {...field} type="number" />
                                             </FormControl>
                                             <FormMessage />
                                             </FormItem>

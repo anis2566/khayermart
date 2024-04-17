@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { Category,Product, Stock } from "@prisma/client"
+import { Category, Product, Stock, Brand } from "@prisma/client"
 import Image from "next/image"
 import { UploadDropzone } from "@/lib/uploadthing"
 import toast from "react-hot-toast"
@@ -38,8 +38,7 @@ import { getCategories } from "@/actions/category.action"
 import { updateProduct } from "@/actions/product.action"
 import { SIZES } from '@/constant';
 import { updateStock } from "@/actions/stock.action"
-
-
+import { getBrands } from "@/actions/brand.action"
 
 const formSchema = z.object({ 
   name: z.string().min(1, {
@@ -48,6 +47,7 @@ const formSchema = z.object({
     description: z.string().min(1, {
         message: "required"
     }),
+    brand: z.string().optional(),
     categoryId: z.string().min(1, {
         message: "required"
     }),
@@ -55,6 +55,7 @@ const formSchema = z.object({
         message: "required"
     }),
     discountPrice: z.string().optional(),
+    sellerPrice: z.string().optional(),
     totalStock: z.string().optional(),
     featureImageUrl: z.string().min(1, {
       message: "required"
@@ -68,12 +69,13 @@ const formSchema = z.object({
 
 interface EditProductProps {
     product: Product & {
-        stocks: Stock[]
+        stocks: Stock[],
     }
 }
 
 export const EditProduct = ({product}:EditProductProps) => {
     const [categories, setCategories] = useState<Category[]>([])
+    const [brands, setBrands] = useState<Brand[]>([])
     const router = useRouter()
     const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
     const [stockVariants, setStockVariants] = useState([{ id: 1, size: 's', stock: '', custom: false }]);
@@ -147,9 +149,11 @@ export const EditProduct = ({product}:EditProductProps) => {
             defaultValues: {
             name: product.name || "",
             description: product.description || "",
+            brand: product.brandId || "",
             categoryId: product.categoryId || "",
             price: product.price.toString() || undefined,
             discountPrice: product.discountPrice?.toString() || undefined,
+            sellerPrice: product.sellerPrice?.toString() || undefined,
             totalStock: product.totalStock?.toString() || "",
             featureImageUrl: product.featureImageUrl || "",
             images: product.images || [],
@@ -157,6 +161,18 @@ export const EditProduct = ({product}:EditProductProps) => {
             status: product.status || "DRAFT"
         },
     })
+
+    useEffect(() => {
+        const fetchBrands = async () => {
+            getBrands()
+                .then(data => {
+                    if (data?.brands) {
+                    setBrands(data?.brands)
+                }
+            })
+        }
+        fetchBrands()
+    }, []);
 
     useEffect(() => {
         const fetchCategory = async () => {
@@ -171,6 +187,7 @@ export const EditProduct = ({product}:EditProductProps) => {
     }, []);
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        console.log(values)
         startTransition(() => {
             updateProduct({product:values, id:product.id})
             .then(data => {
@@ -239,6 +256,30 @@ export const EditProduct = ({product}:EditProductProps) => {
                                         </FormItem>
                                     )}
                                 />
+                                <FormField
+                                    control={form.control}
+                                    name="brand"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Brand Name</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a brand" />
+                                                </SelectTrigger>
+                                                </FormControl>
+                                                    <SelectContent>
+                                                        {
+                                                            brands && brands.map((brand) => (
+                                                                <SelectItem value={brand.id} key={brand.id}>{brand.name}</SelectItem>
+                                                            ))
+                                                        }
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />            
                             </CardContent>
                         </Card>
                         <Card>
@@ -352,6 +393,8 @@ export const EditProduct = ({product}:EditProductProps) => {
                                 </CardContent>
                             </CardHeader>
                         </Card>
+                    </div>
+                    <div className="space-y-6">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Category</CardTitle>
@@ -385,9 +428,6 @@ export const EditProduct = ({product}:EditProductProps) => {
                                 </CardContent>
                             </CardHeader>
                         </Card>
-                    </div>
-                    <div className="space-y-6">
-
                         <Card>
                             <CardHeader>
                                 <CardTitle>Pricing</CardTitle>
@@ -400,7 +440,7 @@ export const EditProduct = ({product}:EditProductProps) => {
                                             <FormItem>
                                             <FormLabel>Price</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Enter product price..." {...field} type="number" />
+                                                <Input placeholder="Enter price..." {...field} type="number" />
                                             </FormControl>
                                             <FormMessage />
                                             </FormItem>
@@ -413,7 +453,20 @@ export const EditProduct = ({product}:EditProductProps) => {
                                             <FormItem>
                                             <FormLabel>Discount price</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Enter product discount price..." {...field} type="number" />
+                                                <Input placeholder="Enter discount price..." {...field} type="number" />
+                                            </FormControl>
+                                            <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="sellerPrice"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormLabel>Seller price</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter seller price..." {...field} type="number" />
                                             </FormControl>
                                             <FormMessage />
                                             </FormItem>

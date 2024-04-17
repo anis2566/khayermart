@@ -51,7 +51,7 @@ export const Cart = () => {
                 <div className="space-y-2 w-full">
                     {
                         cart.map((product, index) => (
-                            <div className="flex items-center justify-between hover:bg-muted/60" key={index}>
+                            <div className="flex items-center gap-x-2 justify-between hover:bg-muted/60" key={index}>
                                 <Image
                                     src={product.featureImageUrl}
                                     alt={product.name}
@@ -60,7 +60,7 @@ export const Cart = () => {
                                     width="50"
                                 />
                                 <div className="">
-                                    <p className="truncate text-sm text-slate-800">{product.name.slice(0,20)}...</p>
+                                    <p className="truncate text-sm text-slate-800">{product.name.slice(0,17)}...</p>
                                     <p className="text-sm text-muted-foreground">{product.quantity} x &#2547;{product.price}</p>
                                 </div>
                                 <Button size="icon" variant="ghost" onClick={() => removeFromCart(product.id)}>

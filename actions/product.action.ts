@@ -7,9 +7,11 @@ import { revalidatePath } from "next/cache";
 type CreateProduct = {
   name: string;
   description: string;
+  brand?: string;
   categoryId: string;
   price: string;
   discountPrice?: string;
+  sellerPrice?: string;
   totalStock?: string;
   featureImageUrl: string;
   images?: string[];
@@ -22,11 +24,13 @@ export const createProduct = async (values: CreateProduct) => {
     data: {
       name: values.name,
       description: values.description,
+      brandId: values.brand || "",
       featureImageUrl: values.featureImageUrl,
       images: values.images,
       totalStock: parseInt(values.totalStock || "0", 10),
       price: parseInt(values.price),
       discountPrice: parseInt(values.discountPrice || "0", 10),
+      sellerPrice: parseInt(values.sellerPrice || "0", 10),
       status: values.status,
       categoryId: values.categoryId,
       colors: values.colors,
@@ -67,11 +71,13 @@ export const updateProduct = async ({ id, product }: UpdateProduct) => {
     data: {
       name: product.name,
       description: product.description,
+      brandId: product.brand,
       featureImageUrl: product.featureImageUrl,
       images: product.images,
       totalStock: parseInt(product.totalStock || "0", 10),
       price: parseInt(product.price),
       discountPrice: parseInt(product.discountPrice || "0", 10),
+      sellerPrice: parseInt(product.sellerPrice || "0", 10),
       status: product.status,
       categoryId: product.categoryId,
       colors: product.colors,

@@ -1,6 +1,6 @@
 "use client"
 
-import { Product } from "@prisma/client"
+import { Product, Stock, Brand } from "@prisma/client"
 import Image from "next/image"
 import { useState } from "react" 
 import {Eye, Heart, ShoppingCart, StarIcon} from "lucide-react"
@@ -26,7 +26,9 @@ interface ProductCardProps {
     product: Product & {
         category: {
             name: string;
-        }
+        },
+        stocks?: Stock[],
+        brand?: Brand,
     }
 }
 
@@ -37,10 +39,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     const {addToCart, cart} = useCart()
     const {addToWishlist} = useWishlist()
 
-
     const handleAddToCart = () => {
-        addToCart(product, 1);
-        toast.success(`Added to cart!`);
+        const productWithStocks = {
+            ...product,
+            stocks: product.stocks || [] 
+        };
+        addToCart(productWithStocks, 1)
+        toast.success("Added to cart")
     }
 
     const handleAddToWishlist = () => {
@@ -49,12 +54,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     }
 
     return (
-        <div className="p-3 border border-gray-200 rounded-md w-full max-w-[300px] space-y-2 relative overflow-hidden group transition-all duration-300 ease-in-out hover:shadow-md" onMouseEnter={() => setIsHovered(true)} onMouseLeave={()  => setIsHovered(false)}>
+        <div className="p-3 border border-gray-200 rounded-md w-full max-w-[300px] min-h-[350px] relative space-y-2 overflow-hidden group transition-all duration-300 ease-in-out hover:shadow-md" onMouseEnter={() => setIsHovered(true)} onMouseLeave={()  => setIsHovered(false)}>
             {product.discountPrice && (
                 <Badge className="absolute -left-2 top-4 bg-amber-500 -rotate-45">{calculateDiscountPercentage(product.price, product.discountPrice)}% off</Badge>
             )}
 
-            <Link href={`/shop/${product.id}`}>
+            <Link href={`/shop/${product.id}`} className="space-y-2">
                 <div className="aspect-square w-full max-w-[100px] mx-auto">
                     <Image
                         alt="Thumbnail"
@@ -68,6 +73,21 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <Badge className="text-muted-foreground" variant="outline">{product.category.name}</Badge>
 
                 <p className="font-semibold">{product.name.length > 50 ? `${product.name.slice(0, 50)}...` : product.name}</p>
+
+                {   
+                    product.brand && (
+                        <div className="flex items-center gap-x-2">
+                            <Image
+                                alt="Brand"
+                                className="w-6 h-6 rounded-full object-cover"
+                                height="100"
+                                src={product.brand.imageUrl}
+                                width="100"
+                            />
+                            <Badge variant="outline">{product.brand.name}</Badge>
+                        </div>
+                    )
+                }
                 
                 <div className="flex items-center gap-x-4">
                     <div className="flex items-center gap-0.5">
@@ -90,7 +110,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 )}
             </Link>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between absolute bottom-2 left-0 w-full px-2">
                 <p className="text-sm text-muted-foreground">{product.totalStock} (stock)</p>
                 <Button className="flex items-center gap-x-2" onClick={handleAddToCart}>
                     <ShoppingCart className="w-5 h-5" />

@@ -3,6 +3,8 @@
 import {Brand} from "@prisma/client"
 import { EllipsisVertical, Pen,Trash2 } from "lucide-react"
 import { useState, useTransition } from "react"
+import Link from "next/link"
+import toast from "react-hot-toast"
 
 import {
   Table,
@@ -32,7 +34,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import Link from "next/link"
+
+import { deleteBrand } from "@/actions/brand.action"
 
 interface BrandListProps {
     brands: Brand[]
@@ -41,6 +44,24 @@ interface BrandListProps {
 export const BrandList = ({brands}:BrandListProps) => {
     const [id, setId] = useState<string>("")
     const [pending, startTransition] = useTransition()
+
+    const handleDelete = async () => {
+        if (!id) {
+            toast.error("Something went wrong")
+        } else {
+            startTransition(() => {
+                deleteBrand(id)
+                    .then(data => {
+                        if (data?.error) {
+                        toast.error(data?.error)
+                        }
+                        if (data?.success) {
+                            toast.success(data?.success)
+                    }
+                })
+            })
+        }
+    }
 
     return (
         <div className="w-full">
@@ -73,10 +94,10 @@ export const BrandList = ({brands}:BrandListProps) => {
                                 </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
+                                <DropdownMenuItem asChild>
                                     <Link href={`/dashboard/brand/edit/${brand.id}`} className="flex items-center gap-x-3">
-                                    <Pen className="w-4 h-4" />
-                                        Edit
+                                        <Pen className="w-4 h-4" />
+                                            Edit
                                     </Link>
                                 </DropdownMenuItem>
                                 <AlertDialog>
@@ -93,7 +114,7 @@ export const BrandList = ({brands}:BrandListProps) => {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction>Continue</AlertDialogAction>
+                                    <AlertDialogAction onClick={handleDelete} disabled={pending}>Continue</AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                                 </AlertDialog>

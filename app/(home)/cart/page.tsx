@@ -4,12 +4,12 @@ import {useEffect, useState} from "react"
 import { MinusIcon, PlusIcon, TrashIcon } from "lucide-react"
 import Image from "next/image"
 import { SignedIn, SignedOut, SignInButton  } from "@clerk/nextjs"
+import toast from "react-hot-toast"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Product } from "@prisma/client"
-import toast from "react-hot-toast"
 import {
   Select,
   SelectContent,
@@ -17,17 +17,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useRouter } from "next/navigation"
+
 import { useCart } from "@/store/user-cart"
+import { cn } from "@/lib/utils"
 
 const Cart = () => {
     const [insideDhaka, setInsideDhaka] = useState<boolean>(true)
-    const [quantity, setQuantity] = useState<number>(1)
-    const [color, setColor] = useState<string>("")
     const [isClient, setIsClient] = useState(false);
 
-    const router = useRouter()
-    const {removeFromCart, cart, incrementQuantity, decrementQuantity, updateColor} = useCart()
+    const {removeFromCart, cart, incrementQuantity, decrementQuantity, updateColor, updateSize} = useCart()
 
     const handleRemove = (id: string) => {
         removeFromCart(id)
@@ -42,6 +40,9 @@ const Cart = () => {
         return null;
     }
 
+    const total = cart.reduce((acc, product) => acc + (product.price * product.quantity), 0)
+    const items = cart.reduce((acc, product) => acc + product.quantity, 0)
+    
     return (
         <div className="w-full space-y-6 p-3 mt-6">
             <div className="grid flex-1 items-start gap-4 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
@@ -50,7 +51,7 @@ const Cart = () => {
                         <CardHeader className="pb-4">
                             <CardTitle>Shopping Cart</CardTitle>
                             <CardDescription>
-                                You have {cart.length} items in your cart
+                                You have {cart.length} product in your cart
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
@@ -58,7 +59,7 @@ const Cart = () => {
                                 {
                                     cart.map((product, index) => (
                                         <div className="flex flex-col sm:flex-row justify-between p-4" key={index}>
-                                            <div className="flex gap-x-2">
+                                            <div className="flex flex-col md:flex-row gap-x-2">
                                                 <div className="aspect-square w-full max-w-[100px]">
                                                 <Image
                                                     alt="Thumbnail"
@@ -71,10 +72,10 @@ const Cart = () => {
                                                 <div className="space-y-2">
                                                     <h3 className="font-semibold text-base">{product.name}</h3>
                                                     <div className="flex items-center gap-2 text-sm">
-                                                        <div className="font-medium">Color: {product.color}</div>
+                                                        <div className="font-medium capitalize">Color: {product.color}</div>
                                                     </div>
                                                     <div className="flex items-center gap-2 text-sm">
-                                                        <div className="font-medium">Size: XL</div>
+                                                        <div className="font-medium">Size: <span className="font-medium uppercase">{product.size}</span></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -100,6 +101,16 @@ const Cart = () => {
                                                     </Button>
                                                 </div>
                                                 <div className="flex items-center gap-x-2 md:justify-end">
+                                                    <Select onValueChange={(size) => updateSize(product.id, size)} defaultValue={product.size}>
+                                                        <SelectTrigger className="w-[100px]">
+                                                            <SelectValue placeholder="Size" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {product?.sizes?.map((item, i) => (
+                                                                <SelectItem value={item.size || ""} key={i} className="uppercase">{item.size}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
                                                     <Select onValueChange={(color) => updateColor(product.id, color)} defaultValue={product.color}>
                                                         <SelectTrigger className="w-[100px]">
                                                             <SelectValue placeholder="Color" />
@@ -115,11 +126,23 @@ const Cart = () => {
                                         </div>
                                     ))
                                 }
+                                {cart.length < 1 && (
+                                    <div className="min-h-[20vh] flex flex-col items-center justify-center">
+                                        <div className="space-y-3 mt-3">
+                                            <p className="text-center text-muted-foreground">Your cart is empty</p>
+                                            <Link href="/" className="flex justify-center">
+                                                <Button>
+                                                    Continue shopping
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
                 </div>
-                <div>
+                <div className={cn("block", cart.length < 1 && "hidden")}>
                     <Card className="flex flex-col">
                         <CardHeader className="pb-4">
                             <CardTitle>Cart Summary</CardTitle>
@@ -127,8 +150,8 @@ const Cart = () => {
                         <CardContent className="">
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between gap-2 border-t">
-                                    <div>Items 3</div>
-                                    <div className="font-semibold">&#2547;200</div>
+                                    <div>Items {items}</div>
+                                    <div className="font-semibold">&#2547;{total}</div>
                                 </div>
                                 <div className="border-t pt-1">
                                     <div className="flex items-center space-x-2">
@@ -155,13 +178,15 @@ const Cart = () => {
                             <div className="flex flex-col gap-1 text-sm">
                                 <div className="flex items-center gap-2">
                                     Total
-                                    <span className="text-base font-semibold">$226</span>
+                                    <span className="text-base font-semibold">&#2547;{total + (insideDhaka ? 80 : 120)}</span>
                                 </div>
                             </div>
                             <SignedIn>
-                                <Button className="w-full md:w-auto bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary" size="lg">
-                                Proceed to Checkout
-                                </Button>
+                                <Link href="/checkout">
+                                    <Button className="w-full md:w-auto bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary" size="lg">
+                                        Proceed to Checkout
+                                    </Button>
+                                </Link>
                             </SignedIn>
                             <SignedOut>
                                 <SignInButton mode="modal" afterSignInUrl="/cart" afterSignUpUrl="/cart">
