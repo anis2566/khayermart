@@ -13,9 +13,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 import { calculateDiscountPercentage } from "@/lib/utils"
-import {useCart} from "@/store/user-cart"
-import { useProduct } from "@/store/use-product"
-import { useWishlist } from "@/store/use-wishlist"
 
 interface ProductInfoProps {
     product: Product & {
@@ -32,9 +29,6 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
     const [color, setColor] = useState<string>("")
     const [size, setSize] = useState<string>("")
 
-    const {addToCart} = useCart()
-    const { onClose } = useProduct()
-    const {addToWishlist} = useWishlist()
 
     const increamentQuantity = () => {
         if(product.totalStock && quantity < product.totalStock) {
@@ -48,21 +42,6 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
         if(quantity > 1) {
             setQuantity(prev => prev - 1)
         }
-    }
-
-    const handleAddToCart = () => {
-        const productWithStocks = {
-            ...product,
-            stocks: product.stocks || [] 
-        };
-        addToCart(productWithStocks, quantity, size || productWithStocks.stocks[0]?.size || undefined, color || product.colors[0] || undefined)
-        onClose()
-        toast.success("Added to cart")
-    }
-
-    const handleAddToWishlist = () => {
-        addToWishlist(product)
-        toast.success("Added to wishlist")
     }
 
     return (
@@ -167,8 +146,8 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
             </div>
 
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button size="lg" onClick={handleAddToCart}>Add to cart</Button>
-                <Button size="lg" variant="outline" onClick={handleAddToWishlist}>
+                <Button size="lg">Add to cart</Button>
+                <Button size="lg" variant="outline">
                     <HeartIcon className="w-4 h-4 mr-2" />
                     Add to wishlist
                 </Button>

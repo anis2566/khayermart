@@ -13,15 +13,12 @@ import {
 import { Button } from "../ui/button"
 import { Separator } from "@/components/ui/separator"
 
-import { useWishlist } from "@/store/use-wishlist"
-
 export const Wishlist = () => {
-    const { wishlist, removeFromWishlist} = useWishlist()
 
-    const handleRemoveFromWishlist = (id: string) => {
-        removeFromWishlist(id)
-        toast.success("Removed from wishlist")
-    } 
+    // const handleRemoveFromWishlist = (id: string) => {
+    //     removeFromWishlist(id)
+    //     toast.success("Removed from wishlist")
+    // } 
 
     return (
        <HoverCard>
@@ -34,12 +31,12 @@ export const Wishlist = () => {
                         </Button>
                     </Link>
                     <div className="flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white">
-                        {wishlist.length}
+                        {5}
                     </div>
                 </div>
             </HoverCardTrigger>
             <HoverCardContent align="end" className="p-2 w-[270px] space-y-4">
-                <div className="space-y-2 w-full">
+                {/* <div className="space-y-2 w-full">
                     {
                         wishlist.map((product, index) => (
                             <div className="flex items-center justify-between hover:bg-muted/60" key={index}>
@@ -54,13 +51,13 @@ export const Wishlist = () => {
                                     <p className="truncate text-sm text-slate-800">{product.name.slice(0,20)}...</p>
                                     <p className="text-sm text-muted-foreground">&#2547;{product.discountPrice}</p>
                                 </div>
-                                <Button size="icon" variant="ghost" onClick={() => handleRemoveFromWishlist(product.id)}>
+                                <Button size="icon" variant="ghost">
                                     <Trash2 className="w-5 h-5 text-rose-500" />
                                 </Button>
                             </div>
                         ))
                     }
-                </div>
+                </div> */}
 
                 <Separator />
 

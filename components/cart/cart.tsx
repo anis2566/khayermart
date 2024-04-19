@@ -14,13 +14,9 @@ import {
 } from "@/components/ui/hover-card"
 import { Button } from "../ui/button"
 import { Separator } from "@/components/ui/separator"
-import { useCart } from "@/store/user-cart"
-
-
 
 
 export const Cart = () => {
-    const { cart, addToCart, removeFromCart } = useCart();
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
@@ -43,12 +39,12 @@ export const Cart = () => {
                         </Button>
                     </Link>
                     <div className="flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white">
-                        {cart.length}
+                        {5}
                     </div>
                 </div>
             </HoverCardTrigger>
             <HoverCardContent align="end" className="p-2 w-[270px] space-y-4 z-50">
-                <div className="space-y-2 w-full">
+                {/* <div className="space-y-2 w-full">
                     {
                         cart.map((product, index) => (
                             <div className="flex items-center gap-x-2 justify-between hover:bg-muted/60" key={index}>
@@ -81,7 +77,7 @@ export const Cart = () => {
                             </div>
                         )
                     }
-                </div>
+                </div> */}
 
                 <Separator />
 

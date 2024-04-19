@@ -16,7 +16,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
-import { useProduct } from "@/store/use-product"
 import { ProductInfo } from "../product/product-details"
 import { cn } from "@/lib/utils"
 
@@ -24,18 +23,17 @@ import { cn } from "@/lib/utils"
 export const QuickViewModal = () => {
     const [activeImage, setActiveImage] = useState<string>("")
 
-    const { open, onClose, product } = useProduct()
 
-    useEffect(() => {
-        setActiveImage(product?.featureImageUrl || "")
-    }, [product?.featureImageUrl])
+    // useEffect(() => {
+    //     setActiveImage(product?.featureImageUrl || "")
+    // }, [product?.featureImageUrl])
     
     
     
     return (
-        <Dialog open={open} onOpenChange={onClose}>
+        <Dialog open={false}>
         <DialogContent className="w-full max-w-[900px]">
-            {product && (
+            {/* {product && (
             <div className="w-full px-3 mt-7 space-y-6">
                 <div className="w-full flex gap-x-4">
                     <div className="w-full">
@@ -88,7 +86,7 @@ export const QuickViewModal = () => {
                     />
                 </div>
             </div>
-            )}
+            )} */}
         </DialogContent>
         </Dialog>
     )

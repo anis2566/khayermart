@@ -18,14 +18,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { useCart } from "@/store/user-cart"
 import { cn } from "@/lib/utils"
 
 const Cart = () => {
     const [insideDhaka, setInsideDhaka] = useState<boolean>(true)
     const [isClient, setIsClient] = useState(false);
 
-    const {removeFromCart, cart, incrementQuantity, decrementQuantity, updateColor, updateSize} = useCart()
 
     const handleRemove = (id: string) => {
         removeFromCart(id)
@@ -40,9 +38,7 @@ const Cart = () => {
         return null;
     }
 
-    const total = cart.reduce((acc, product) => acc + (product.price * product.quantity), 0)
-    const items = cart.reduce((acc, product) => acc + product.quantity, 0)
-    
+   
     return (
         <div className="w-full space-y-6 p-3 mt-6">
             <div className="grid flex-1 items-start gap-4 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
@@ -51,11 +47,11 @@ const Cart = () => {
                         <CardHeader className="pb-4">
                             <CardTitle>Shopping Cart</CardTitle>
                             <CardDescription>
-                                You have {cart.length} product in your cart
+                                You have {3} product in your cart
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
-                            <div className="border divide-y">
+                            {/* <div className="border divide-y">
                                 {
                                     cart.map((product, index) => (
                                         <div className="flex flex-col sm:flex-row justify-between p-4" key={index}>
@@ -138,11 +134,11 @@ const Cart = () => {
                                         </div>
                                     </div>
                                 )}
-                            </div>
+                            </div> */}
                         </CardContent>
                     </Card>
                 </div>
-                <div className={cn("block", cart.length < 1 && "hidden")}>
+                <div>
                     <Card className="flex flex-col">
                         <CardHeader className="pb-4">
                             <CardTitle>Cart Summary</CardTitle>
@@ -150,8 +146,8 @@ const Cart = () => {
                         <CardContent className="">
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between gap-2 border-t">
-                                    <div>Items {items}</div>
-                                    <div className="font-semibold">&#2547;{total}</div>
+                                    <div>Items 3</div>
+                                    <div className="font-semibold">&#2547;{356}</div>
                                 </div>
                                 <div className="border-t pt-1">
                                     <div className="flex items-center space-x-2">
@@ -178,7 +174,7 @@ const Cart = () => {
                             <div className="flex flex-col gap-1 text-sm">
                                 <div className="flex items-center gap-2">
                                     Total
-                                    <span className="text-base font-semibold">&#2547;{total + (insideDhaka ? 80 : 120)}</span>
+                                    <span className="text-base font-semibold">&#2547;{36 + (insideDhaka ? 80 : 120)}</span>
                                 </div>
                             </div>
                             <SignedIn>

@@ -1,4 +1,4 @@
-import { Category, Product, Stock } from "@prisma/client";
+import { Category, Product, Stock, Brand } from "@prisma/client";
 import { create } from "zustand";
 
 interface ProductState {
@@ -6,10 +6,13 @@ interface ProductState {
   product?: Product & {
     stocks?: Stock[];
     category?: Category;
+    brand?: Brand
   };
   onOpen: () => void;
   onClose: () => void;
-  setProduct: (product: Product & { stocks?: Stock[], category?: Category[] }) => void;
+  setProduct: (
+    product: Product & { stocks?: Stock[]; category?: Category; brand?: Brand }
+  ) => void;
 }
 
 export const useProduct = create<ProductState>()((set) => ({
@@ -17,6 +20,6 @@ export const useProduct = create<ProductState>()((set) => ({
   product: undefined,
   onOpen: () => set(() => ({ open: true })),
   onClose: () => set(() => ({ open: false })),
-  setProduct: (product: Product & { stocks?: Stock[] }) =>
+  setProduct: (product: Product & { stocks?: Stock[], category?: Category, brand?: Brand }) =>
     set(() => ({ product })),
 }));

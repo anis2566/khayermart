@@ -1,6 +1,6 @@
 "use client"
 
-import { Product, Stock, Brand } from "@prisma/client"
+import { Product, Stock, Brand, Category } from "@prisma/client"
 import Image from "next/image"
 import { useState } from "react" 
 import {Eye, Heart, ShoppingCart, StarIcon} from "lucide-react"
@@ -16,42 +16,23 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import { useProduct } from "@/store/use-product"
 import { calculateDiscountPercentage } from "@/lib/utils"
-import { useCart } from "@/store/user-cart"
-import { useWishlist } from "@/store/use-wishlist"
 
 
 interface ProductCardProps {
     product: Product & {
-        category: {
-            name: string;
-        },
+        category: Category,
         stocks?: Stock[],
         brand?: Brand,
     }
 }
 
+const handleAddProduct = () => {
+
+}
+
 export const ProductCard = ({ product }: ProductCardProps) => {
     const [isHovered, setIsHovered] = useState<boolean>(false)
-
-    const { onOpen, setProduct } = useProduct()
-    const {addToCart, cart} = useCart()
-    const {addToWishlist} = useWishlist()
-
-    const handleAddToCart = () => {
-        const productWithStocks = {
-            ...product,
-            stocks: product.stocks || [] 
-        };
-        addToCart(productWithStocks, 1)
-        toast.success("Added to cart")
-    }
-
-    const handleAddToWishlist = () => {
-        addToWishlist(product)
-        toast.success("Added to wishlist")
-    }
 
     return (
         <div className="p-3 border border-gray-200 rounded-md w-full max-w-[300px] min-h-[350px] relative space-y-2 overflow-hidden group transition-all duration-300 ease-in-out hover:shadow-md" onMouseEnter={() => setIsHovered(true)} onMouseLeave={()  => setIsHovered(false)}>
@@ -112,7 +93,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
             <div className="flex items-center justify-between absolute bottom-2 left-0 w-full px-2">
                 <p className="text-sm text-muted-foreground">{product.totalStock} (stock)</p>
-                <Button className="flex items-center gap-x-2" onClick={handleAddToCart}>
+                <Button className="flex items-center gap-x-2">
                     <ShoppingCart className="w-5 h-5" />
                     Add to cart
                 </Button>
@@ -123,10 +104,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost" onClick={() => {
-                                setProduct({...product, stocks: product.stocks, category: product.category as any})
-                                onOpen()
-                            }}>
+                            <Button size="icon" variant="ghost">
                                 <Eye className="w-5 h-5" />
                             </Button>
                         </TooltipTrigger>
@@ -138,7 +116,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost" onClick={handleAddToWishlist}>
+                            <Button size="icon" variant="ghost">
                                 <Heart className="w-5 h-5" />
                             </Button>
                         </TooltipTrigger>

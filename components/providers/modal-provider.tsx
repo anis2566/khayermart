@@ -1,11 +1,11 @@
 "use client"
 
-import { QuickViewModal } from "../modal/quick-view"
+// import { QuickViewModal } from "../modal/quick-view"
 
 export const ModalProvider = () => {
     return (
         <>
-            <QuickViewModal />
+            {/* <QuickViewModal /> */}
         </>
     )
 }

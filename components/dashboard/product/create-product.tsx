@@ -32,7 +32,9 @@ const formSchema = z.object({
     description: z.string().min(1, {
         message: "required"
     }),
-    brand: z.string().optional(),
+    brand: z.string().min(1, {
+        message: "required"
+    }),
     categoryId: z.string().min(1, {
         message: "required"
     }),
