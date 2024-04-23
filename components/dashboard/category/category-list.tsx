@@ -47,7 +47,7 @@ export const CategoryList = ({ categories }: CategoryListProps) => {
     const [id, setId] = useState<string>("")
     const [pending, startTransition] = useTransition()
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if(!id) {
           toast.error("Something went wrong")
         } else {

@@ -20,7 +20,10 @@ export default authMiddleware({
     "/favicon.ico",
     "/api/uploadthing",
     "/api/webhooks(.*)",
-    "/cart"
+    "/cart",
+    "/wishlist",
+    "/shop",
+    "/shop(.*)"
   ],
   ignoredRoutes: ["/((?!api|trpc))(_next.*|.+.[w]+$)", "/api/uploadthing"],
 });

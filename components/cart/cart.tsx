@@ -2,10 +2,8 @@
 
 import { ShoppingBasket, Trash2 } from "lucide-react"
 import Link from "next/link"
-import toast from "react-hot-toast"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { Product } from "@prisma/client"
 
 import {
   HoverCard,
@@ -15,9 +13,12 @@ import {
 import { Button } from "../ui/button"
 import { Separator } from "@/components/ui/separator"
 
+import { useCart } from "@/store/use-cart"
+
 
 export const Cart = () => {
     const [isClient, setIsClient] = useState(false);
+    const {cart, removeFromCart} = useCart()
 
     useEffect(() => {
         setIsClient(true);
@@ -26,7 +27,6 @@ export const Cart = () => {
     if (!isClient) {
         return null;
     }
-
 
     return (
        <HoverCard>
@@ -39,12 +39,12 @@ export const Cart = () => {
                         </Button>
                     </Link>
                     <div className="flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white">
-                        {5}
+                        {cart.length}
                     </div>
                 </div>
             </HoverCardTrigger>
             <HoverCardContent align="end" className="p-2 w-[270px] space-y-4 z-50">
-                {/* <div className="space-y-2 w-full">
+                <div className="space-y-2 w-full">
                     {
                         cart.map((product, index) => (
                             <div className="flex items-center gap-x-2 justify-between hover:bg-muted/60" key={index}>
@@ -77,7 +77,7 @@ export const Cart = () => {
                             </div>
                         )
                     }
-                </div> */}
+                </div>
 
                 <Separator />
 

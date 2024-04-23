@@ -7,8 +7,6 @@ import {Eye, Heart, ShoppingCart, StarIcon} from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
 
-import { Badge } from "./ui/badge"
-import { Button } from "./ui/button"
 import {
   Tooltip,
   TooltipContent,
@@ -17,6 +15,11 @@ import {
 } from "@/components/ui/tooltip"
 
 import { calculateDiscountPercentage } from "@/lib/utils"
+import { useProduct } from "@/store/use-product"
+import { useCart } from "@/store/use-cart"
+import { useWishlist } from "@/store/use-wishlist"
+import { Badge } from "../ui/badge"
+import { Button } from "../ui/button"
 
 
 interface ProductCardProps {
@@ -27,12 +30,22 @@ interface ProductCardProps {
     }
 }
 
-const handleAddProduct = () => {
-
-}
-
 export const ProductCard = ({ product }: ProductCardProps) => {
     const [isHovered, setIsHovered] = useState<boolean>(false)
+
+    const { setProduct, onOpen } = useProduct()
+    const { addToCart } = useCart()
+    const {addToWishlist} = useWishlist()
+    
+    const handleAddToCart = () => {
+        addToCart(product, 1)
+        toast.success("Added to cart")
+    }
+
+    const handleAddToWishlist = () => {
+        addToWishlist(product)
+        toast.success("Added to wishlist")
+    }
 
     return (
         <div className="p-3 border border-gray-200 rounded-md w-full max-w-[300px] min-h-[350px] relative space-y-2 overflow-hidden group transition-all duration-300 ease-in-out hover:shadow-md" onMouseEnter={() => setIsHovered(true)} onMouseLeave={()  => setIsHovered(false)}>
@@ -44,7 +57,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <div className="aspect-square w-full max-w-[100px] mx-auto">
                     <Image
                         alt="Thumbnail"
-                        className="object-cover rounded-lg group-hover:scale-110 transition-all duration-300 ease-in-out"
+                        className="h-[120px] rounded-lg group-hover:scale-110 transition-all duration-300 ease-in-out"
                         height="100"
                         src={isHovered ? product.images[0] ? product.images[0] : product.featureImageUrl : product.featureImageUrl}
                         width="100"
@@ -93,7 +106,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
             <div className="flex items-center justify-between absolute bottom-2 left-0 w-full px-2">
                 <p className="text-sm text-muted-foreground">{product.totalStock} (stock)</p>
-                <Button className="flex items-center gap-x-2">
+                <Button className="flex items-center gap-x-2" onClick={handleAddToCart}>
                     <ShoppingCart className="w-5 h-5" />
                     Add to cart
                 </Button>
@@ -104,7 +117,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost">
+                            <Button size="icon" variant="ghost" onClick={() => {
+                                setProduct(product)
+                                onOpen()
+                            }}>
                                 <Eye className="w-5 h-5" />
                             </Button>
                         </TooltipTrigger>
@@ -116,7 +132,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost">
+                            <Button size="icon" variant="ghost" onClick={handleAddToWishlist}>
                                 <Heart className="w-5 h-5" />
                             </Button>
                         </TooltipTrigger>

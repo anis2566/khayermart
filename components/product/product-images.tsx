@@ -4,7 +4,6 @@ import Image from "next/image"
 import {useState, useEffect} from "react"
 import {Loader} from "lucide-react"
 
-import { Card, CardContent } from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,
@@ -35,7 +34,7 @@ export const ProductImages = ({images, featureImage}:ProductImagesProps) => {
                 ) : (
                     <Image
                         alt="Product"
-                        className="aspect-object object-cover rounded-lg"
+                        className="h-[300px] object-cover rounded-lg"
                         height="300"
                         src={activeImage}
                         width="300"

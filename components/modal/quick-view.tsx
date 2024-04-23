@@ -9,8 +9,8 @@ import {
   DialogContent,
 } from "@/components/ui/dialog"
 import {
-    Carousel,
-    CarouselContent,
+  Carousel,
+  CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
@@ -18,22 +18,25 @@ import {
 
 import { ProductInfo } from "../product/product-details"
 import { cn } from "@/lib/utils"
+import { useProduct } from "@/store/use-product"
 
 
 export const QuickViewModal = () => {
     const [activeImage, setActiveImage] = useState<string>("")
 
+    const {open, onClose, product} = useProduct()
 
-    // useEffect(() => {
-    //     setActiveImage(product?.featureImageUrl || "")
-    // }, [product?.featureImageUrl])
+
+    useEffect(() => {
+        setActiveImage(product?.featureImageUrl || "")
+    }, [product?.featureImageUrl])
     
     
     
     return (
-        <Dialog open={false}>
+        <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className="w-full max-w-[900px]">
-            {/* {product && (
+            {product && (
             <div className="w-full px-3 mt-7 space-y-6">
                 <div className="w-full flex gap-x-4">
                     <div className="w-full">
@@ -43,9 +46,9 @@ export const QuickViewModal = () => {
                             ) : (
                                 <Image
                                     alt="Product"
-                                    className="aspect-object object-cover rounded-lg"
-                                    height="300"
+                                    className="w-full h-[300px] object-contain rounded-lg"
                                     src={activeImage}
+                                    height="300"
                                     width="300"
                                 />
                             )}
@@ -81,12 +84,12 @@ export const QuickViewModal = () => {
                         product={{
                             ...product,
                             stocks: product.stocks || [],
-                            category: product.category || { name: "Default Category" },
+                            category: product.category || { name: "" },
                         }}
                     />
                 </div>
             </div>
-            )} */}
+            )}
         </DialogContent>
         </Dialog>
     )

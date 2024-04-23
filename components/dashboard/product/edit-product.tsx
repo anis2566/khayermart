@@ -72,7 +72,7 @@ interface EditProductProps {
         stocks: Stock[],
     }
 }
-
+ 
 export const EditProduct = ({product}:EditProductProps) => {
     const [categories, setCategories] = useState<Category[]>([])
     const [brands, setBrands] = useState<Brand[]>([])
@@ -187,7 +187,6 @@ export const EditProduct = ({product}:EditProductProps) => {
     }, []);
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values)
         startTransition(() => {
             updateProduct({product:values, id:product.id})
             .then(data => {
@@ -209,7 +208,7 @@ export const EditProduct = ({product}:EditProductProps) => {
                     toast.success(data?.success)
                     setOpen(false)
                 }
-            })
+        })
     }
 
     return (

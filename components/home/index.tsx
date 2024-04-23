@@ -1,17 +1,23 @@
 import { Banner } from "./banner"
+import { DailyBestDeal } from "./daily-best-deal"
 import { FeatureCategory } from "./feature-category"
 import { FeatureProducts } from "./feature-products"
 import { PopularProducts } from "./popular-products"
+import { DealOfTheDay } from "./deal-of-the-day"
+import { ProductHouse } from "./product-house"
 
 export const Home = () => {
     return (
-        <div className="w-full max-w-screen-2xl mx-auto space-y-10">
+        <div className="w-full max-w-screen-2xl mx-auto space-y-[100px]">
             <div className="px-[50px]">
               <Banner />
              </div>
             <FeatureCategory />
             <FeatureProducts />
             <PopularProducts />
+            <DailyBestDeal />
+            <DealOfTheDay />
+            <ProductHouse />
         </div>
     )
 }

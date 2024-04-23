@@ -43,11 +43,11 @@ interface ProductListProps {
     products: Product[]
 }
 
-export const ProductList = async ({ products }: ProductListProps) => {
+export const ProductList = ({ products }: ProductListProps) => {
     const [id, setId] = useState<string>("")
     const [pending, startTransition] = useTransition()
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if(!id) {
           toast.error("Something went wrong")
         } else {

@@ -1,7 +1,7 @@
 "use client"
 
 import {useState} from "react"
-import {Brand, Product, Stock} from "@prisma/client"
+import {Brand, Category, Product, Stock} from "@prisma/client"
 import {StarIcon} from "lucide-react"
 import { MinusIcon, PlusIcon, HeartIcon } from "lucide-react"
 import toast from "react-hot-toast"
@@ -13,12 +13,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 import { calculateDiscountPercentage } from "@/lib/utils"
+import { useCart } from "@/store/use-cart"
+import { useProduct } from "@/store/use-product"
+import { useWishlist } from "@/store/use-wishlist"
 
 interface ProductInfoProps {
     product: Product & {
-        category: {
-            name: string;
-        },
+        category: Category,
         stocks?: Stock[],
         brand?: Brand,
     }
@@ -29,6 +30,10 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
     const [color, setColor] = useState<string>("")
     const [size, setSize] = useState<string>("")
 
+    const { addToCart } = useCart()
+    const { onClose } = useProduct()
+    const {addToWishlist} = useWishlist()
+
 
     const increamentQuantity = () => {
         if(product.totalStock && quantity < product.totalStock) {
@@ -36,12 +41,22 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
         }
     }
 
-    console.log(product)
-
     const decreamentQuantity = () => {
         if(quantity > 1) {
             setQuantity(prev => prev - 1)
         }
+    }
+
+    const handleAddToCart = () => {
+        addToCart(product, quantity, size || product.stocks?.[0]?.size || '', color || product.colors?.[0] || '')
+        onClose()
+        toast.success("Added to cart")
+    }
+
+    const handleAddToWishlist = () => {
+        addToWishlist(product)
+        onClose()
+        toast.success("Added to wishlist")
     }
 
     return (
@@ -146,8 +161,8 @@ export const ProductInfo = ({product}:ProductInfoProps) => {
             </div>
 
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button size="lg">Add to cart</Button>
-                <Button size="lg" variant="outline">
+                <Button size="lg" onClick={handleAddToCart}>Add to cart</Button>
+                <Button size="lg" variant="outline" onClick={handleAddToWishlist}>
                     <HeartIcon className="w-4 h-4 mr-2" />
                     Add to wishlist
                 </Button>
