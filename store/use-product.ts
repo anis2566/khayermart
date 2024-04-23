@@ -5,13 +5,13 @@ interface ProductState {
   open: boolean;
   product?: Product & {
     stocks?: Stock[];
-    category?: Category;
+    category: Category;
     brand?: Brand
   };
   onOpen: () => void;
   onClose: () => void;
   setProduct: (
-    product: Product & { stocks?: Stock[]; category?: Category; brand?: Brand }
+    product: Product & { stocks?: Stock[]; category: Category; brand?: Brand }
   ) => void;
 }
 
@@ -20,6 +20,7 @@ export const useProduct = create<ProductState>()((set) => ({
   product: undefined,
   onOpen: () => set(() => ({ open: true })),
   onClose: () => set(() => ({ open: false })),
-  setProduct: (product: Product & { stocks?: Stock[], category?: Category, brand?: Brand }) =>
-    set(() => ({ product })),
+  setProduct: (
+    product: Product & { stocks?: Stock[]; category: Category; brand?: Brand }
+  ) => set(() => ({ product })),
 }));

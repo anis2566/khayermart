@@ -31,8 +31,6 @@ export const QuickViewModal = () => {
         setActiveImage(product?.featureImageUrl || "")
     }, [product?.featureImageUrl])
     
-    
-    
     return (
         <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className="w-full max-w-[900px]">
@@ -81,11 +79,7 @@ export const QuickViewModal = () => {
                         </div>
                     </div>
                     <ProductInfo 
-                        product={{
-                            ...product,
-                            stocks: product.stocks || [],
-                            category: product.category || { name: "" },
-                        }}
+                        product={product}
                     />
                 </div>
             </div>

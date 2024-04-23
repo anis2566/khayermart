@@ -17,15 +17,17 @@ import { useCart } from "@/store/use-cart"
 import { useProduct } from "@/store/use-product"
 import { useWishlist } from "@/store/use-wishlist"
 
-interface ProductInfoProps {
-    product: Product & {
-        category: Category,
-        stocks?: Stock[],
-        brand?: Brand,
-    }
+interface PrismaProduct extends Product {
+    stocks?: Stock[];
+    brand?: Brand,
+    category: Category
 }
 
-export const ProductInfo = ({product}:ProductInfoProps) => {
+interface Props {
+    product: PrismaProduct
+}
+
+export const ProductInfo = ({product}:Props) => {
     const [quantity, setQuantity] = useState<number>(1)
     const [color, setColor] = useState<string>("")
     const [size, setSize] = useState<string>("")
