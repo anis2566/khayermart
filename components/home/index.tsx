@@ -5,6 +5,7 @@ import { FeatureProducts } from "./feature-products"
 import { PopularProducts } from "./popular-products"
 import { DealOfTheDay } from "./deal-of-the-day"
 import { ProductHouse } from "./product-house"
+import { NewsLetter } from "./newsletter"
 
 export const Home = () => {
     return (
@@ -18,6 +19,7 @@ export const Home = () => {
             <DailyBestDeal />
             <DealOfTheDay />
             <ProductHouse />
+            <NewsLetter />
         </div>
     )
 }

@@ -14,6 +14,7 @@ import { Button } from "../ui/button"
 import { Separator } from "@/components/ui/separator"
 
 import { useCart } from "@/store/use-cart"
+import { cn } from "@/lib/utils"
 
 
 export const Cart = () => {
@@ -38,7 +39,7 @@ export const Cart = () => {
                             <span className="sr-only">Open Notification</span>
                         </Button>
                     </Link>
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white">
+                    <div className={cn("flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white", cart.length === 0 && "hidden")}>
                         {cart.length}
                     </div>
                 </div>

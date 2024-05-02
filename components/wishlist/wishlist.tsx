@@ -12,6 +12,7 @@ import {
 import { Button } from "../ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useWishlist } from "@/store/use-wishlist"
+import { cn } from "@/lib/utils"
 
 export const Wishlist = () => {
     const {wishlist, removeFromWishlist} = useWishlist()
@@ -26,7 +27,7 @@ export const Wishlist = () => {
                             <span className="sr-only">Open Notification</span>
                         </Button>
                     </Link>
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white">
+                    <div className={cn("flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white", wishlist.length === 0 && "hidden")}>
                         {wishlist.length}
                     </div>
                 </div>

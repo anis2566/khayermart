@@ -21,6 +21,9 @@ model User {
   imageUrl String?
   role    String      @default("user")
 
+  orders Order[]
+  address ShippingInfo[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -54,6 +57,8 @@ model Product {
 
   brandId String
   brand  Brand @relation(fields: [brandId], references: [id])
+
+  orderProducts OrderProduct[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -106,6 +111,56 @@ model Coupon {
   startDate DateTime
   expiryDate DateTime
   status String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  products OrderProduct[]
+
+  totalAmount Int
+  status String @default("PENDING")
+  paymentMethod String
+  paymentStatus String? 
+
+  shippingInfoId String @unique
+  shippingInfo ShippingInfo @relation(fields: [shippingInfoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderProduct {
+  quantity Int
+  size String?
+  color String?  
+
+  orderId String
+  order Order @relation(fields: [orderId], references: [id])
+
+  productId String
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+
+  @@id([orderId, productId])
+}
+
+model ShippingInfo {
+  id String @id @default(uuid())
+  infoName String?
+  name String
+  division String
+  address String
+  phone String
+
+  order Order?
+  userId String?
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,8 +1,8 @@
 const Shop = () => {
     return (
-        <div>
+        <main className="px-4 mt-6">
             Shop
-        </div>
+        </main>
     )
 }
 

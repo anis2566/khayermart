@@ -1,11 +1,15 @@
-import { Headset, Mail, MapPin } from "lucide-react"
+import { Copyright, Facebook, Headset, Mail, MapPin, Twitter, Youtube } from "lucide-react"
 import { Logo } from "./logo"
 import Link from "next/link"
-import { Button } from "./ui/button"
+
+import { Separator } from "./ui/separator"
+
+import { SocialIcon } from "./social-icon"
 
 export const Footer = () => {
     return (
         <div className="px-4 space-y-6 mt-6">
+            <Separator />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-y-7">
                 <div className="space-y-3">
                     <div>
@@ -54,6 +58,32 @@ export const Footer = () => {
                     <Link href="/support" className="hover:ml-2 hover:underline transition-all duration-200">
                         Support
                     </Link>
+                </div>
+            </div>
+            <Separator />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-y-7 min-h-[100px] items-center">
+                <div className="space-y-1">
+                    <p className="flex items-center gap-x-2"><Copyright className="w-5 h-5" />{new Date().getFullYear()}, Khayermart</p>
+                    <p className="text-sm text-muted-foreground">All right reserved</p>
+                </div>
+                <div className="hidden md:flex items-center gap-x-2">
+                    <Headset className="w-10 h-10 text-green-500" />
+                    <div>
+                        <p className="text-xl font-semibold text-sky-500">01312-344006</p>
+                        <span className="text-muted-foreground text-sm">24/7 Support Center</span>
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <p>Follow Us</p>
+                    <div className="flex items-center gap-x-2">
+                        <SocialIcon icon={Facebook} bgcolor="bg-[#1877F2]" href="https://facebook.com" />
+                        <SocialIcon icon={Twitter} bgcolor="bg-[#1DA1F2]" href="https://twitter.com" />
+                        <SocialIcon icon={Youtube} bgcolor="bg-[#FF0000]" href="https://youtube.com" />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <p>Maintenance By</p>
+                    <p className="font-semibold">Animegh IT Care</p>
                 </div>
             </div>
         </div>

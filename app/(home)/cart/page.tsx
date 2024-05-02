@@ -22,9 +22,8 @@ import { cn } from "@/lib/utils"
 import { useCart } from "@/store/use-cart"
 
 const Cart = () => {
-    const [insideDhaka, setInsideDhaka] = useState<boolean>(true)
     const [isClient, setIsClient] = useState(false);
-    const {cart, removeFromCart, incrementQuantity, decrementQuantity, updateColor, updateSize} = useCart()
+    const {cart, removeFromCart, incrementQuantity, decrementQuantity, updateColor, updateSize, updateDeliveryFee} = useCart()
 
 
     const handleRemove = (id: string) => {
@@ -48,7 +47,6 @@ const Cart = () => {
         return acc + (curr.price * curr.quantity)
     },0)
 
-   
     return (
         <div className="w-full space-y-6 p-3 mt-6">
             <div className="grid flex-1 items-start gap-4 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
@@ -159,22 +157,7 @@ const Cart = () => {
                                     <div>Items {totalItems}</div>
                                     <div className="font-semibold">&#2547;{total}</div>
                                 </div>
-                                <div className="border-t pt-1">
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox id="terms" onCheckedChange={(checked) => setInsideDhaka(checked === true)} />
-                                        <label
-                                            htmlFor="terms"
-                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
-                                        >
-                                            Inside Dhaka
-                                        </label>
-                                    </div>
-                                    <div className="flex items-center justify-between gap-2">
-                                        <div>Delivery Charge</div>
-                                        <div className="font-semibold">&#2547;{insideDhaka ? 80 : 120}</div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between gap-2 border-t">
+                                 <div className="flex items-center justify-between gap-2 border-t">
                                     <div>Vat & Taxes</div>
                                     <div className="font-semibold">&#2547;0</div>
                                 </div>
@@ -184,12 +167,12 @@ const Cart = () => {
                             <div className="flex flex-col gap-1 text-sm">
                                 <div className="flex items-center gap-2">
                                     Total
-                                    <span className="text-base font-semibold">&#2547;{total + (insideDhaka ? 80 : 120)}</span>
+                                    <span className="text-base font-semibold">&#2547;{total}</span>
                                 </div>
                             </div>
                             <SignedIn>
                                 <Link href="/checkout">
-                                    <Button className="w-full md:w-auto bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary" size="lg">
+                                    <Button className="w-full md:w-auto bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary" size="lg" disabled={cart.length < 1}>
                                         Proceed to Checkout
                                     </Button>
                                 </Link>

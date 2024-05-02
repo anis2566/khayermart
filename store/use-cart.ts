@@ -14,35 +14,42 @@ interface CartState {
         color?: string;
         quantity: number;
     }[];
+    deliveryFee: number;
     addToCart: (product: Product & { stocks?: Stock[], brand?: Brand, category: Category }, quantity: number, color?: string, size?: string) => void;
     removeFromCart: (productId: string) => void;
     incrementQuantity: (productId: string) => void;
     decrementQuantity: (productId: string) => void;
     updateColor: (productId: string, newColor: string) => void;
     updateSize: (productId: string, newSize: string) => void;
+    updateDeliveryFee: (fee: number) => void;
+    resetCart: () => void;
 }
 
 export const useCart = create<CartState>()(
   persist(
     (set, get) => ({
       cart: [],
+      deliveryFee: 120,
       addToCart: (
-        product: Product & {stocks?: Stock[], brand?: Brand, category: Category},
+        product: Product & {
+          stocks?: Stock[];
+          brand?: Brand;
+          category: Category;
+        },
         quantity: number = 1,
         size,
-        color,
+        color
       ) => {
         set((state) => {
           const cartIndex = state.cart.findIndex(
-            (item) =>
-              item.id === product.id
+            (item) => item.id === product.id
           );
 
           if (cartIndex > -1) {
             // Product exists, update quantity
             let newCart = [...state.cart];
             newCart[cartIndex].quantity += quantity;
-            return { ...state, cart: newCart};
+            return { ...state, cart: newCart };
           } else {
             // New product, add to cart
             return {
@@ -64,13 +71,13 @@ export const useCart = create<CartState>()(
             };
           }
         });
-          },
+      },
       removeFromCart: (productId: string) => {
         set((state) => ({
           ...state,
           cart: state.cart.filter((item) => item.id !== productId),
         }));
-          },
+      },
       incrementQuantity: (productId: string) => {
         set((state) => {
           const cartIndex = state.cart.findIndex(
@@ -86,7 +93,7 @@ export const useCart = create<CartState>()(
           // If product does not exist, do nothing
           return state;
         });
-          },
+      },
       decrementQuantity: (productId: string) => {
         set((state) => {
           const cartIndex = state.cart.findIndex(
@@ -108,7 +115,7 @@ export const useCart = create<CartState>()(
           // If product does not exist, do nothing
           return state;
         });
-          },
+      },
       updateColor: (productId: string, newColor: string) => {
         set((state) => {
           const cartIndex = state.cart.findIndex(
@@ -142,6 +149,17 @@ export const useCart = create<CartState>()(
           // If product does not exist, do nothing
           return state;
         });
+      },
+      updateDeliveryFee: (fee: number) => {
+        set((state) => {
+          return { ...state, deliveryFee: fee };
+        });
+      },
+      resetCart: () => {
+        set(() => ({
+          cart: [],
+          deliveryFee: 120,
+        }));
       },
     }),
     {
