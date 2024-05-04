@@ -127,6 +127,7 @@ model Order {
   status String @default("PENDING")
   paymentMethod String
   paymentStatus String? 
+  deliveryFee Int @default(120)
 
   shippingInfoId String @unique
   shippingInfo ShippingInfo @relation(fields: [shippingInfoId], references: [id])

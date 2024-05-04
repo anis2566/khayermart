@@ -3,9 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { useEffect, useState, useTransition } from "react"
-import toast from "react-hot-toast"
-import { RotateCw } from "lucide-react"
+import { Suspense, useEffect, useState, useTransition } from "react"
 import { useAuth } from "@clerk/nextjs"
 import { redirect, useRouter } from "next/navigation"
 
@@ -34,39 +32,94 @@ import {
 
 import { useCart } from "@/store/use-cart"
 import { createOrder } from "@/actions/order.action"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { getUserAddresses } from "@/actions/shipping.action"
+import { toast } from "sonner"
+import SkeletonWrapper from "@/components/skeleton-wrapper"
 
 
 const formSchema = z.object({
-  name: z.string().min(4, {
-    message: "required",
-  }),
-  division: z.string().min(1, {
-    message: "required",
-  }),
-  address: z.string().min(10, {
-    message: "required",
-  }),
-  phone: z.string().min(10, {
-    message: "required",
-  }),
-})
+  shippingInfoId: z.string().optional(),
+  name: z.string(),
+  division: z.string(),
+  address: z.string(),
+  phone: z.string(),
+}).superRefine((data, ctx) => {
+  if (!data.shippingInfoId) {
+    if (data.name.length < 4) {
+      ctx.addIssue({
+        path: ["name"],
+        message: "required",
+        code: z.ZodIssueCode.too_small,
+        minimum: 4,
+        inclusive: true,
+        type: 'string'
+    });
+    }
+    if (data.division.length < 1) {
+      ctx.addIssue({
+        path: ["division"],
+        message: "required",
+        code: z.ZodIssueCode.too_small,
+        minimum: 1,
+        inclusive: true,
+        type: 'string'
+      });
+    }
+    if (data.address.length < 10) {
+      ctx.addIssue({
+        path: ["address"],
+        message: "required",
+        code: z.ZodIssueCode.too_small,
+        minimum: 10,
+        inclusive: true,
+        type: 'string'
+      });
+    }
+    if (data.phone.length < 10) {
+      ctx.addIssue({
+        path: ["phone"],
+        message: "required",
+        code: z.ZodIssueCode.too_small,
+        minimum: 10,
+        inclusive: true,
+        type: 'string'
+    });
+    }
+  }
+});
+
+
 
 const Checkout = () => {
     const [divisions, setDivisions] = useState([])
     const [paymentMethod, setPaymentMethod] = useState<string>("cod")
-    const [pending, startTransition] = useTransition()
+    const [shippingInfoId, setShippingInfoId] = useState<string>("")
     
     const router = useRouter()
     const { userId } = useAuth()
     const { cart, deliveryFee, updateDeliveryFee, resetCart } = useCart()
 
-    const { data } = useQuery({
+    const { data:addresses, isFetching } = useQuery({
         queryKey: ["user-address"],
         queryFn: async () => {
             const queryData = await getUserAddresses()
-            return queryData.addresses
+            return queryData.addresses.map(item => ({name: item.infoName, id: item.id}))
+        },
+        staleTime: 60 * 60 * 1000, 
+    })
+
+    const { mutate, isPending} = useMutation({
+        mutationFn: createOrder,
+        onError: (error) => {
+            toast.error(error.message, {
+                id: "create-order"
+            })
+        },
+        onSuccess: (data) => {
+            toast.success(data.success, {
+                id: "create-order"
+            })
         }
     })
     
@@ -112,20 +165,18 @@ const Checkout = () => {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        startTransition(() => {
-            createOrder({ shippingInfo: values, paymentMethod, products: cart, deliveryFee })
-                .then(data => {
-                    if (data?.error) {
-                    toast.error(data?.error)
-                    }
-                    if (data?.success) {
-                        router.push("/")
-                        resetCart()
-                        toast.success(data?.success)
-                    }
-            })
+        toast.loading("Placing order...", {
+            id: "create-order"
         })
-    }
+        const products = cart.map(product => ({
+            id: product.id,
+            price: product.price,
+            quantity: product.quantity,
+            size: product.size,
+            color: product.color
+        }))
+        mutate({ shippingInfo: values, paymentMethod, products: products, deliveryFee,shippingInfoId })
+    } 
 
     return (
         <Form {...form}>
@@ -136,7 +187,37 @@ const Checkout = () => {
                             <CardHeader>
                                 <CardTitle>Saved Address</CardTitle>
                             </CardHeader>
-                            <CardContent>Address</CardContent>
+                            <CardContent>
+                                 <FormField
+                                    control={form.control}
+                                    name="shippingInfoId"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-3">
+                                        <FormControl>
+                                            <RadioGroup
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                            className="flex "
+                                                >
+                                                    {
+                                                        addresses?.map(address => (
+                                                            <FormItem className="flex items-center space-x-3 space-y-0" key={address.id}>
+                                                                <FormControl>
+                                                                    <RadioGroupItem value={address.id} />
+                                                                </FormControl>
+                                                                <FormLabel>
+                                                                    {address.name}
+                                                                </FormLabel>
+                                                            </FormItem>
+                                                        ))
+                                                    }
+                                             </RadioGroup>
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </CardContent>
                         </Card>
                 <Card>
                     <CardHeader>
@@ -268,10 +349,7 @@ const Checkout = () => {
                 </div>
             </div>
             <div className="mt-8 flex justify-end">
-                <Button type="submit" className="w-full max-w-[200px] bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary" disabled={pending}>
-                    {pending && (
-                        <RotateCw className="mr-2 h-4 w-4 animate-spin" />  
-                    )}
+                <Button type="submit" className="w-full max-w-[200px] bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary" disabled={isPending}>
                     Place Order
                 </Button>
             </div>

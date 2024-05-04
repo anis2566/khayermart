@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
@@ -19,7 +19,6 @@ import { createShipping } from "@/actions/shipping.action"
 export const AddressForm = () => {
     const [divisions, setDivisions] = useState([])
 
-    const queryClient = useQueryClient()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,7 +54,6 @@ export const AddressForm = () => {
                 id: "create-address"
             })
             form.reset()
-            queryClient.invalidateQueries({ queryKey: ["user-addresses"] })
         }
     })
 
