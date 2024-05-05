@@ -129,7 +129,7 @@ model Order {
   paymentStatus String? 
   deliveryFee Int @default(120)
 
-  shippingInfoId String @unique
+  shippingInfoId String
   shippingInfo ShippingInfo @relation(fields: [shippingInfoId], references: [id])
 
   createdAt DateTime @default(now())
@@ -159,7 +159,7 @@ model ShippingInfo {
   address String
   phone String
 
-  order Order?
+  orders Order[]
   userId String?
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 

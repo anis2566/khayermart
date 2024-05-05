@@ -10,3 +10,7 @@ export function calculateDiscountPercentage(price: number, discountPrice: number
     const discountPercentage = Math.floor((discount / price) * 100);
     return discountPercentage;
 }
+
+export function formatPrice(amount: number): string {
+    return `৳${amount.toFixed(2)}`;
+}

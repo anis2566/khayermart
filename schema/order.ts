@@ -38,8 +38,8 @@ export const OrderSchema = z.object({
   deliveryFee: z.number().min(1, {
     message: "required",
   }),
-    products: ProductSchema.array().min(1, {
-      message: "required"
+  products: ProductSchema.array().min(1, {
+    message: "required"
   })
 });
 

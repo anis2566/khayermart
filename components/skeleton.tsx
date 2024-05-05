@@ -2,11 +2,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { cn } from "@/lib/utils";
 
-function SkeletonComp({ className }: { className?: string }) {
+function SkeletonComp({ className, childrens }: { className?: string, childrens: number }) {
   return (
-    <Skeleton className={cn("", className)}>
-        <div className="w-full" />
-    </Skeleton>
+    <div className="space-y-2">
+      {
+        [...Array(childrens)].map((_, i) => (
+          <Skeleton className={cn("", className)} key={i}>
+            <div className="w-full" />
+          </Skeleton>
+        ))
+      }
+    </div>
   );
 }
 
