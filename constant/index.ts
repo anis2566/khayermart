@@ -5,9 +5,7 @@ import {
   Package,
   ShoppingCart,
   ShoppingBasket,
-  MapPinned,
   MapPin,
-  UserCog,
   Users,
   Ribbon,
 } from "lucide-react";
@@ -82,41 +80,31 @@ export const CUSTOMER_SIDEBAR = [
     icon: ShoppingBasket,
   },
   {
-    label: "Track Order",
-    href: "/account/order-tracking",
-    icon: MapPinned,
-  },
-  {
-    label: "My Address",
+    label: "Address",
     href: "/account/address",
     icon: MapPin,
-  },
-  {
-    label: "Setting",
-    href: "/account/setting",
-    icon: UserCog,
   },
 ] as const;
 
 export const ORDER_STATUS = [
   {
     label: "Pending",
-    value: "pending"
+    value: "PENDING"
   },
   {
     label: "Processing",
-    value: "processing"
+    value: "PROCESSING"
   },
   {
     label: "Shipping",
-    value: "shipping"
+    value: "SHIPPING"
   },
   {
     label: "Delivered",
-    value: "delivered"
+    value: "DELIVERED"
   },
   {
     label: "Returned",
-    value: "returned"
+    value: "RETURNED"
   },
 ] as const;

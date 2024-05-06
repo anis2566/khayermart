@@ -14,17 +14,45 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 import { db } from "@/lib/db"
+import { getUserId } from "@/service/user.service"
+import { cn, formatPrice } from "@/lib/utils"
+import { format } from "date-fns"
 
 
 export const Dashboard = async () => {
+    const userId = await getUserId()
     const user = await currentUser()
+
+    const orders = await db.order.findMany({
+        where: {
+            userId
+        },
+        include: {
+            products: {
+                include: {
+                    product: {
+                        select: {
+                            featureImageUrl: true,
+                            name: true
+                        }
+                    }
+                }
+            }
+        },
+        orderBy: {
+            createdAt: "desc"
+        },
+        take: 5
+    })
+
     const products = await db.product.findMany()
     return (
         <div className="space-y-5 w-full px-3 flex-1">
             <Card className="border shadow-sm w-full">
-                <CardContent className="flex items-center gap-4 p-4 md:p-6">
+                <CardContent className="flex flex-col md:flex-row items-center gap-4 p-4 md:p-6">
                     <Image
                         alt="Avatar"
                         className="rounded-full"
@@ -51,55 +79,54 @@ export const Dashboard = async () => {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                            <TableHead >Invoice</TableHead>
-                            <TableHead>Price</TableHead>
+                            <TableHead >Products</TableHead>
+                            <TableHead>Total</TableHead>
+                            <TableHead className="hidden md:table-cell">Date</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow className="p-0">
-                                <TableCell className="py-1">INV001</TableCell>
-                                <TableCell className="py-1">&#2547;2500</TableCell>
-                                <TableCell className="py-1">
-                                    <Badge variant="outline" className="bg-green-500 text-white">Delivered</Badge>
-                                </TableCell>
-                                <TableCell className="py-1">
-                                    <Link href="/order/123">
-                                        <Button variant="ghost" size="icon">
-                                            <Eye className="w-5 h-5" />
-                                        </Button>
-                                    </Link>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow className="p-0">
-                                <TableCell className="py-1">INV001</TableCell>
-                                <TableCell className="py-1">&#2547;2500</TableCell>
-                                <TableCell className="py-1">
-                                    <Badge variant="outline" className="bg-green-500 text-white">Delivered</Badge>
-                                </TableCell>
-                                <TableCell className="py-1">
-                                    <Link href="/order/123">
-                                        <Button variant="ghost" size="icon">
-                                            <Eye />
-                                        </Button>
-                                    </Link>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow className="p-0">
-                                <TableCell className="py-1">INV001</TableCell>
-                                <TableCell className="py-1">&#2547;2500</TableCell>
-                                <TableCell className="py-1">
-                                    <Badge variant="outline" className="bg-green-500 text-white">Delivered</Badge>
-                                </TableCell>
-                                <TableCell className="py-1">
-                                    <Link href="/order/123">
-                                        <Button variant="ghost" size="icon">
-                                            <Eye />
-                                        </Button>
-                                    </Link>
-                                </TableCell>
-                            </TableRow>
+                            {
+                                orders.map(order => (
+                                    <TableRow className="p-0" key={order.id}>
+                                        <TableCell className="py-1 flex items-center gap-x-2">
+                                            {
+                                                order.products.map(item => (
+                                                    <Avatar key={item.productId}>
+                                                        <AvatarImage src={item.product.featureImageUrl} />
+                                                        <AvatarFallback>{item.product.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                ))
+                                            }
+                                        </TableCell>
+                                        <TableCell className="py-1">
+                                            {formatPrice(order.totalAmount + order.deliveryFee)}
+                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell py-1">
+                                            {format(order.createdAt, "yy-mm-dd")}
+                                        </TableCell>
+                                        <TableCell className="py-1">
+                                            <Badge
+                                                className={cn("text-white",
+                                                    order.status === "PENDING" && "bg-amber-600",
+                                                    order.status === "SHIPPING" && "bg-indogo-600",
+                                                    order.status === "DELIVERED" && "bg-green-600",
+                                                )}
+                                            >{
+                                                order.status}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="py-1">
+                                            <Link href={`/account/orders/${order.id}`}>
+                                                <Button variant="ghost" size="icon">
+                                                    <Eye className="w-5 h-5" />
+                                                </Button>
+                                            </Link>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            }
                         </TableBody>
                     </Table>
                 </CardContent>
