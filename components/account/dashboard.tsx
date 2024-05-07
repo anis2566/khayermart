@@ -2,6 +2,7 @@ import { currentUser } from "@clerk/nextjs"
 import { Eye } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { format } from "date-fns"
 
 import { CardContent, Card, CardTitle, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -19,7 +20,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { db } from "@/lib/db"
 import { getUserId } from "@/service/user.service"
 import { cn, formatPrice } from "@/lib/utils"
-import { format } from "date-fns"
 
 
 export const Dashboard = async () => {

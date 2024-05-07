@@ -39,7 +39,7 @@ export const createCategory = async (values: CreateCategory) => {
 export const getCategories = async () => {
   const categories = await db.category.findMany({
     orderBy: {
-      createdAt: "desc",
+      name: "asc",
     },
   });
 

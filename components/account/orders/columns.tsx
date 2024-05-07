@@ -2,14 +2,15 @@
 
 import { Order, OrderProduct } from "@prisma/client"
 import { ColumnDef } from "@tanstack/react-table"
+import { format } from "date-fns"
+import Link from "next/link"
+import { Eye } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { cn, formatPrice } from "@/lib/utils"
-import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Eye } from "lucide-react"
+
+import { cn, formatPrice } from "@/lib/utils"
 
 
 interface UserOrderProducts extends OrderProduct {
