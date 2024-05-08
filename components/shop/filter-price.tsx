@@ -47,7 +47,7 @@ export const FilterPrice = () => {
     }
 
     return (
-        <div className="grid gap-2">
+        <div className="grid">
             <h3 className="font-semibold text-lg">Price Range</h3>
             <div className="grid gap-2">
                 <Slider

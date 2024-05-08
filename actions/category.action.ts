@@ -48,6 +48,25 @@ export const getCategories = async () => {
   };
 };
 
+export const getCategoriesWithProductCount = async () => {
+  const categories = await db.category.findMany({
+    orderBy: {
+      name: "asc",
+    },
+    include: {
+      products: {
+        select: {
+          id: true
+        }
+      }
+    }
+  });
+
+  return {
+    categories,
+  };
+};
+
 type UpdateCategory = {
   category: {
     name: string;
@@ -117,3 +136,4 @@ export const deleteCategory = async (id:string) => {
     success: "Category deleted"
   }
 }
+

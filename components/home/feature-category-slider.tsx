@@ -2,6 +2,9 @@
 
 import Autoplay from "embla-carousel-autoplay"
 import Image from "next/image"
+import { Category } from "@prisma/client"
+import { useRouter } from "next/navigation"
+import queryString from "query-string"
 
 import {
   Carousel,
@@ -11,11 +14,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
-import cake from "@/assets/cake.png"
-import apple from "@/assets/apple.png"
-import orange from "@/assets/orange.png"
 import { Card, CardContent } from "@/components/ui/card"
-import { Category } from "@prisma/client"
 
 interface Product {
   id: string;
@@ -29,19 +28,36 @@ interface Props {
     categories: PrismaCategory[]
 }
 
-export function FeatureCategorySlider({categories}:Props) {
+export function FeatureCategorySlider({ categories }: Props) {
+    const router = useRouter()
+
+    const handleClick = (category: string) => {
+        const url = queryString.stringifyUrl({
+            url: "/shop",
+            query: {
+                category: category
+            }
+        }, { skipEmptyString: true, skipNull: true });
+        router.push(url);
+    }
+
     return (
         <Carousel
             opts={{
                 align: "start",
             }}
+            plugins={[
+                Autoplay({
+                delay: 2000,
+                }),
+            ]}
             className="w-full max-w-[1400px]"
             >
             <CarouselContent>
                 {categories.map((category) => (
                 <CarouselItem key={category.id} className="basis-1/2 sm:basis-1/3 md:basis-1/6 lg:basis-1/6">
                     <div className="p-0">
-                        <Card className="group hover:border-green-200 cursor-pointer">
+                        <Card className="group hover:border-green-200 cursor-pointer" onClick={() => handleClick(category.name)}>
                             <CardContent className="flex flex-col aspect-square items-center justify-center p-0">
                                 <div className="transition-transform duration-300 ease-in-out transform group-hover:scale-110">
                                     <Image

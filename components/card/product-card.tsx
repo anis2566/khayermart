@@ -5,7 +5,6 @@ import Image from "next/image"
 import { useState } from "react" 
 import {Eye, Heart, ShoppingCart, StarIcon} from "lucide-react"
 import Link from "next/link"
-import toast from "react-hot-toast"
 
 import {
   Tooltip,
@@ -13,13 +12,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Badge } from "../ui/badge"
+import { Button } from "../ui/button"
 
-import { calculateDiscountPercentage } from "@/lib/utils"
+import { calculateDiscountPercentage, cn } from "@/lib/utils"
 import { useProduct } from "@/store/use-product"
 import { useCart } from "@/store/use-cart"
 import { useWishlist } from "@/store/use-wishlist"
-import { Badge } from "../ui/badge"
-import { Button } from "../ui/button"
+import toast from "react-hot-toast"
 
 
 interface ProductCardProps {
@@ -54,12 +54,19 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             )}
 
             <Link href={`/shop/${product.id}`} className="space-y-2">
-                <div className="aspect-square w-full max-w-[100px] mx-auto">
+                <div className="aspect-square w-full max-w-[100px] mx-auto relative">
                     <Image
                         alt="Thumbnail"
-                        className="h-[120px] rounded-lg group-hover:scale-110 transition-all duration-300 ease-in-out"
+                        className={cn("h-[120px] rounded-lg group-hover:scale-110 transition-all duration-300 ease-in-out absolute top-0 left-0", isHovered && "translate-x-52 opacity-0")}
                         height="100"
-                        src={isHovered ? product.images[0] ? product.images[0] : product.featureImageUrl : product.featureImageUrl}
+                        src={product.featureImageUrl}
+                        width="100"
+                    />
+                    <Image
+                        alt="Thumbnail"
+                        className={cn("h-[120px] rounded-lg group-hover:scale-110 transition-all duration-300 ease-in-out -translate-x-52 absolute top-0 left-0 opacity-0", isHovered && "translate-x-0 opacity-1")}
+                        height="100"
+                        src={product.images[0]}
                         width="100"
                     />
                 </div>
@@ -108,7 +115,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <p className="text-sm text-muted-foreground">{product.totalStock} (stock)</p>
                 <Button className="flex items-center gap-x-2" onClick={handleAddToCart}>
                     <ShoppingCart className="w-5 h-5" />
-                    Add to cart
+                    Add
                 </Button>
             </div>
 

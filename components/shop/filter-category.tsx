@@ -23,7 +23,7 @@ export const FilterCategory = ({ categories }: Props) => {
                 brand: searchParams.get("brand"),
                 sort: searchParams.get("sort"),
                 minPrice: searchParams.get("minPrice"),
-                maxPrice: searchParams.get("maxPrice")
+                maxPrice: searchParams.get("maxPrice"),
             }
         }, { skipEmptyString: true, skipNull: true });
         

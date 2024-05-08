@@ -23,7 +23,7 @@ export const FilterSort = () => {
                 category: searchParams.get("category"),
                 search: searchParams.get("search"),
                 minPrice: searchParams.get("minPrice"),
-                maxPrice: searchParams.get("maxPrice")
+                maxPrice: searchParams.get("maxPrice"),
             }
         }, { skipEmptyString: true, skipNull: true });
         router.push(url);

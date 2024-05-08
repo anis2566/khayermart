@@ -27,7 +27,7 @@ export const FilterBrand = ({ brands }: Props) => {
                 search: searchParams.get("search"),
                 sort: searchParams.get("sort"),
                 minPrice: searchParams.get("minPrice"),
-                maxPrice: searchParams.get("maxPrice")
+                maxPrice: searchParams.get("maxPrice"),
             }
         }, { skipEmptyString: true, skipNull: true });
         router.push(url);

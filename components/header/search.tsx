@@ -1,5 +1,14 @@
 "use client"
 
+import { useQuery } from "@tanstack/react-query"
+import { useState } from "react"
+import qs from "query-string"
+import { useRouter, useSearchParams } from "next/navigation"
+import { SearchIcon, X } from "lucide-react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+
 import {
   Select,
   SelectContent,
@@ -10,20 +19,48 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { SearchIcon } from "lucide-react"
-import { useQuery } from "@tanstack/react-query"
-import { getCategories } from "@/actions/category.action"
-import { useState } from "react"
-import qs from "query-string"
-import { useRouter, useSearchParams } from "next/navigation"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+} from "@/components/ui/form"
 
+import { getCategories } from "@/actions/category.action"
+import { cn } from "@/lib/utils"
+
+const formSchema = z.object({
+  category: z.string().optional(),
+  searchValue: z.string().optional()
+})
 
 export function Search() {
-  const [searchValue, setSearchValue] = useState<string>("")
-  const [category, setCategory] = useState<string>("")
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      category: "",
+      searchValue: ""
+    },
+  })
 
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    const url = qs.stringifyUrl({
+        url: `/shop`,
+        query: {
+          search: values.searchValue,
+          sort: searchParams.get("sort"),
+          brand: searchParams.get("brand"),
+          category: values.category || searchParams.get("category"),
+          minPrice: searchParams.get("minPrice"),
+          maxPrice: searchParams.get("maxPrice"),
+        }
+    }, { skipEmptyString: true, skipNull: true });
+    router.push(url);
+  }
 
   const { data: categories} = useQuery({
     queryKey: ["get-categories"],
@@ -34,41 +71,58 @@ export function Search() {
     staleTime: 60 * 60 * 1000
   })
 
-  const hanldeSearch = () => {
-    if (!searchValue) return 
-    const url = qs.stringifyUrl({
-        url: `/shop`,
-        query: {
-          search: searchValue,
-          sort: searchParams.get("sort"),
-          brand: searchParams.get("brand"),
-          category: category || searchParams.get("category"),
-          minPrice: searchParams.get("minPrice"),
-          maxPrice: searchParams.get("maxPrice")
-        }
-    }, { skipEmptyString: true, skipNull: true });
-    router.push(url);
-  }
-
   return (
-      <div className="hidden sm:flex flex-1 max-w-[800px] items-center gap-x-1 border border-gray-400 p-1 relative">
-          <Select onValueChange={setCategory}>
-            <SelectTrigger className="w-[180px] border-none focus:ring-0 focus:ring-offset-0">
-                <SelectValue placeholder="All Category" />
-              </SelectTrigger>
-            <SelectContent>
-              {categories && categories.map(category => (
-                <SelectItem value={category.name} key={category.id}>{category.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="hidden sm:flex flex-1 max-w-[800px] items-center gap-x-1 border border-gray-400 p-1 relative">
+        <FormField
+          control={form.control}
+          name="category"
+          render={
+            ({ field }) => (
+              <FormItem>
+                <Select defaultValue={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-[180px] border-none focus:ring-0 focus:ring-offset-0">
+                      <SelectValue placeholder="All Category" />
+                    </SelectTrigger>
+                  <SelectContent>
+                    {categories && categories.map(category => (
+                      <SelectItem value={category.name} key={category.id}>{category.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )
+          }
+        />
           <Separator orientation="vertical" className="h-8 bg-gray-300" />
-          <div className="w-full">
-            <Input className="focus-visible:ring-0 focus-visible:ring-offset-0 border-none w-full" placeholder="Search for anything" onChange={(e) => setSearchValue(e.target.value)} />
+        <div className="w-full">
+          <FormField
+            control={form.control}
+            name="searchValue"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input className="focus-visible:ring-0 focus-visible:ring-offset-0 border-none w-full" placeholder="Search for anything" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
           </div>
-          <Button variant="ghost" size="icon" className="absolute right-0" onClick={hanldeSearch}>
+          <Button variant="ghost" size="icon" className="absolute right-0" type="submit">
               <SearchIcon className="h-5 w-5" />
           </Button>
-    </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn("hidden absolute right-10", form.getValues("searchValue") && "flex")}
+            onClick={() => {
+                form.reset()
+                router.push("/shop")
+            }}
+          >
+            <X className="h-5 w-5" />
+          </Button>
+      </form>
+    </Form>
   )
 }
