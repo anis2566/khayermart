@@ -20,7 +20,7 @@ const Address = async () => {
 
     return (
         <div className="space-y-6 px-4">
-            <Suspense fallback={<SkeletonComp />}>
+            <Suspense fallback={<SkeletonComp childrens={1} />}>
                 <AddressList address={address} />
             </Suspense>
             <AddressForm />
