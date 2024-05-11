@@ -39,7 +39,8 @@ import { useCart } from "@/store/use-cart"
 import { createOrder } from "@/actions/order.action"
 import { getUserAddresses } from "@/actions/shipping.action"
 import SkeletonComp from "@/components/skeleton"
-import { PlusCircle } from "lucide-react"
+import { CreditCard, HandCoins, PlusCircle } from "lucide-react"
+import { calculateDeliveryFee, cn } from "@/lib/utils"
 
 
 const formSchema = z.object({
@@ -50,7 +51,10 @@ const formSchema = z.object({
   phone: z.string(),
   paymentMethod: z.string().min(1, {
     message: "required"
-  })
+  }),
+    deliveryFee: z.number().min(1, {
+      message: "required"
+  }),
 }).superRefine((data, ctx) => {
   if (!data.shippingInfoId) {
     if (data.name.length < 4) {
@@ -104,7 +108,7 @@ const Checkout = () => {
     
     const router = useRouter()
     const { userId } = useAuth()
-    const { cart, deliveryFee, updateDeliveryFee, resetCart } = useCart()
+    const { cart, deliveryFee, resetCart } = useCart()
 
     useEffect(() => {
         if (!userId || (cart.length < 1 && !orderPlaced)) {
@@ -116,7 +120,7 @@ const Checkout = () => {
         queryKey: ["user-address"],
         queryFn: async () => {
             const queryData = await getUserAddresses()
-            return queryData.addresses.map(item => ({name: item.infoName, id: item.id}))
+            return queryData.addresses.map(item => ({name: item.infoName, id: item.id, division:item.division}))
         },
         staleTime: 60 * 60 * 1000, 
     })
@@ -172,35 +176,40 @@ const Checkout = () => {
             address: "",
             phone: "",
             shippingInfoId: "",
-            paymentMethod: "cod"
+            paymentMethod: "cod",
+            deliveryFee: 120
         },
     })
 
-async function onSubmit(values: z.infer<typeof formSchema>) {
-    toast.loading("Placing order...", {
-        id: "create-order"
-    })
-    const products = cart.map(product => ({
-        id: product.id,
-        price: product.price,
-        quantity: product.quantity,
-        size: product.size,
-        color: product.color
-    }))
+    const { watch, setValue } = form
+    watch("deliveryFee")
+    watch("paymentMethod")
 
-    const shippingInfo = {
-        name: values.name,
-        division: values.division,
-        address: values.address,
-        phone: values.phone
-    }
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        toast.loading("Placing order...", {
+            id: "create-order"
+        })
+        const products = cart.map(product => ({
+            id: product.id,
+            price: product.price,
+            quantity: product.quantity,
+            size: product.size,
+            color: product.color
+        }))
 
-    if (!values.shippingInfoId) {
-        mutate({shippingInfo, paymentMethod: values.paymentMethod, deliveryFee, shippingInfoId: values.shippingInfoId, products})
-    } else {
-        mutate({paymentMethod: values.paymentMethod, deliveryFee, shippingInfoId: values.shippingInfoId, products})
-    }
-}   
+        const shippingInfo = {
+            name: values.name,
+            division: values.division,
+            address: values.address,
+            phone: values.phone
+        }
+
+        if (!values.shippingInfoId) {
+            mutate({shippingInfo, paymentMethod: values.paymentMethod, deliveryFee, shippingInfoId: values.shippingInfoId, products})
+        } else {
+            mutate({paymentMethod: values.paymentMethod, deliveryFee, shippingInfoId: values.shippingInfoId, products})
+        }
+    }   
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
@@ -218,21 +227,25 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
                                         <FormItem className="space-y-3">
                                         <FormControl>
                                             <RadioGroup
-                                            onValueChange={field.onChange}
+                                                onValueChange={value => {
+                                                    field.onChange(value)
+                                                    const dis = addresses?.find(item => item.id === value)?.division
+                                                    setValue("deliveryFee", calculateDeliveryFee(dis || ""))
+                                                }}
                                             defaultValue={field.value}
                                             className="space-y-3"
                                             disabled={isPending }
                                             >
                                                 {
                                                     isFetching ? (
-                                                        <SkeletonComp className="w-full h-10" />
+                                                        <SkeletonComp childrens={1} className="w-full h-10" />
                                                     ) : 
                                                     addresses?.map(address => (
-                                                        <FormItem className="flex items-center space-x-3 space-y-0" key={address.id}>
+                                                        <FormItem className={cn("flex border w-full max-w-[250px] px-2 py-3 rounded-md border-gray-300 items-center space-x-3 space-y-0", field.value === address.id && "border-primary")} key={address.id}>
                                                             <FormControl>
                                                                 <RadioGroupItem value={address.id} checked={field.value === address.id} />
                                                             </FormControl>
-                                                            <FormLabel>
+                                                            <FormLabel className={cn("", field.value === address.id && "text-primary")}>
                                                                 {address.name}
                                                             </FormLabel>
                                                         </FormItem>
@@ -282,15 +295,13 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
                                             render={({ field }) => (
                                                 <FormItem className="space-y-0">
                                                 <FormLabel>Division</FormLabel>
-                                                    <Select value={field.value} onValueChange={(value) => {
-                                                        if (value === "Dhaka") {
-                                                            updateDeliveryFee(80)
+                                                    <Select
+                                                        value={field.value}
+                                                        onValueChange={(value) => {
                                                             field.onChange(value)
-                                                        } else {
-                                                            updateDeliveryFee(120)
-                                                            field.onChange(value)
-                                                        }
-                                                }} defaultValue={field.value} disabled={isPending}>
+                                                            setValue("deliveryFee", calculateDeliveryFee(value))
+                                                        }}
+                                                        defaultValue={field.value} disabled={isPending}>
                                                     <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a division" />
@@ -357,7 +368,7 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
                                 </div>
                                 <div className="flex items-center justify-between">
                                 <span>Shipping</span>
-                                <span>&#2547;{deliveryFee}</span>
+                                <span>&#2547;{form.getValues("deliveryFee")}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                 <span>Taxes</span>
@@ -366,7 +377,7 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
                                 <Separator />
                                 <div className="flex items-center justify-between font-medium">
                                 <span>Total</span>
-                                <span>&#2547;{subTotal + deliveryFee}</span>
+                                <span>&#2547;{subTotal + form.getValues("deliveryFee")}</span>
                                 </div>
                             </div>
                             </CardContent>
@@ -375,41 +386,29 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
                             <CardHeader>
                                 <CardTitle>Payment Method</CardTitle>
                             </CardHeader>
-                                <CardContent>
-                                    <FormField
-                                        control={form.control}
-                                        name="paymentMethod"
-                                        render={({ field }) => (
-                                            <FormItem className="space-y-3">
-                                            <FormControl>
-                                                <RadioGroup
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                                className="space-y-4"
-                                                disabled={isPending}
-                                                >   
-                                                    <FormItem className="flex items-center space-x-3 space-y-0">
-                                                        <FormControl>
-                                                            <RadioGroupItem value="cod" />
-                                                        </FormControl>
-                                                        <FormLabel>
-                                                            Cash On Deliver
-                                                        </FormLabel>
-                                                    </FormItem>
-                                                    <FormItem className="flex items-center space-x-3 space-y-0">
-                                                        <FormControl>
-                                                            <RadioGroupItem value="mob" />
-                                                        </FormControl>
-                                                        <FormLabel>
-                                                            Mobile Banking
-                                                        </FormLabel>
-                                                    </FormItem>
-                                                </RadioGroup>
-                                            </FormControl>
-                                            <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                            <CardContent className="flex items-center gap-x-3">
+                                <Card className={cn("w-full max-w-[170px] cursor-pointer hover:border-primary/50", form.getValues("paymentMethod") === "cod" && "border-primary text-primary")} onClick={() => setValue("paymentMethod", "cod")}>
+                                    <CardContent className="p-2 flex flex-col items-center space-y-2">
+                                        <div className={cn("shadow-lg w-16 h-16 rounded-full flex items-center justify-center", form.getValues("paymentMethod") === "cod" && "shadow-primary")}>
+
+                                        <HandCoins className="w-8 h-8" />
+                                        </div>
+                                        <p className="font-semibold text-center">
+                                            Cash on Delivery
+                                        </p>
+                                    </CardContent>
+                                </Card>    
+                                <Card className={cn("w-full max-w-[170px] cursor-pointer hover:border-primary/50", form.getValues("paymentMethod") === "mob" && "border-primary text-primary")} onClick={() => setValue("paymentMethod", "mob")}>
+                                    <CardContent className="p-2 flex flex-col items-center space-y-2">
+                                        <div className={cn("shadow-lg w-16 h-16 rounded-full flex items-center justify-center", form.getValues("paymentMethod") === "mob" && "shadow-primary")}>
+
+                                        <CreditCard className="w-8 h-8" />
+                                        </div>
+                                        <p className="font-semibold text-center">
+                                            Mobile Banking
+                                        </p>
+                                    </CardContent>
+                                </Card>    
                             </CardContent>
                         </Card>
                         <div className="flex justify-end mt-5">

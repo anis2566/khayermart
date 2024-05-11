@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster as HotToaster } from "react-hot-toast";
+import { ConfettiProvider } from "@/components/providers/confetti-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
             </QueryProvider>
             <Toaster />
             <HotToaster />
+            <ConfettiProvider />
           </ThemeProvider>
         </body>
       </html>

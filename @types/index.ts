@@ -1,51 +1,21 @@
-export type Product = {
-  id: string;
-  name: string;
-  description: string;
-  featureImageUrl: string;
-  images: string[];
-  totalStock?: number | null;
-  price: number;
-  discountPrice?: number | null;
-  sellerPrice?: number | null;
-  status: string;
-  stocks: Stock[];
-  colors: string[];
-  categoryId: string;
-  category: Category;
-  brandId: string;
-  brand: Brand;
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { Category, Product, Stock, Brand, Order, ShippingInfo, User, OrderProduct} from "@prisma/client";
 
-export type Stock = {
-  id: string;
-  total: number;
-  size?: string | null;
-  color?: string | null;
-  productId?: string | null;
-  product?: Product | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
+export interface ProductWithFeature extends Product {
+  stocks?: Stock[];
+  category: Category,
+  brand: Brand,
+}
 
-export type Brand = {
-  id: string;
-  name: string;
-  imageUrl: string;
-  products: Product[];
-  createdAt: Date;
-  updatedAt: Date;
-};
+interface OrderProducts extends OrderProduct {
+    product: {
+        featureImageUrl: string;
+        name: string;
+    }
+}
 
-export type Category = {
-  id: string;
-  name: string;
-  description?: string | null;
-  imageUrl: string;
-  tags: string[];
-  products: Product[];
-  createdAt: Date;
-  updatedAt: Date;
-};
+export interface UserOrdersWithFeature extends Order {
+    user: User;
+    shippingInfo: ShippingInfo;
+    products: OrderProducts[]
+}
+

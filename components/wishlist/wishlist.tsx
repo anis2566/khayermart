@@ -27,7 +27,7 @@ export const Wishlist = () => {
                             <span className="sr-only">Open Notification</span>
                         </Button>
                     </Link>
-                    <div className={cn("flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white", wishlist.length === 0 && "hidden")}>
+                    <div className={cn("flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-amber-500 text-white", wishlist.length === 0 && "hidden")}>
                         {wishlist.length}
                     </div>
                 </div>
@@ -54,13 +54,25 @@ export const Wishlist = () => {
                             </div>
                         ))
                     }
+                    {
+                        wishlist.length === 0 && (
+                            <div className="space-y-3 mt-3">
+                                <p className="text-center text-muted-foreground">Your wishlist is empty</p>
+                                <Link href="/" className="flex justify-center">
+                                    <Button size="sm" variant="outline" className="border-primary">
+                                        Continue shopping
+                                    </Button>
+                                </Link>
+                            </div>
+                        )
+                    }
                 </div>
 
                 <Separator />
 
                 <div className="w-full flex items-center justify-end">
                     <Link href="/wishlist">
-                        <Button variant="outline">View Wishlist</Button>
+                        <Button>View Wishlist</Button>
                     </Link>
                 </div>
 

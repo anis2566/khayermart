@@ -39,7 +39,7 @@ export const Cart = () => {
                             <span className="sr-only">Open Notification</span>
                         </Button>
                     </Link>
-                    <div className={cn("flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-rose-500 text-white", cart.length === 0 && "hidden")}>
+                    <div className={cn("flex items-center justify-center w-6 h-6 rounded-full absolute -right-1 -top-1 bg-primary text-white", cart.length === 0 && "hidden")}>
                         {cart.length}
                     </div>
                 </div>
@@ -71,7 +71,7 @@ export const Cart = () => {
                             <div className="space-y-3 mt-3">
                                 <p className="text-center text-muted-foreground">Your cart is empty</p>
                                 <Link href="/" className="flex justify-center">
-                                    <Button size="sm" variant="outline">
+                                    <Button size="sm" variant="outline" className="border-primary">
                                         Continue shopping
                                     </Button>
                                 </Link>

@@ -2,6 +2,8 @@ import { Category, Product, Stock, Brand } from "@prisma/client";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware"; 
 
+import { ProductWithFeature } from "@/@types";
+
 interface CartState {
     cart: {
         id: string;
@@ -15,7 +17,7 @@ interface CartState {
         quantity: number;
     }[];
     deliveryFee: number;
-    addToCart: (product: Product & { stocks?: Stock[], brand?: Brand, category: Category }, quantity: number, color?: string, size?: string) => void;
+    addToCart: (product: ProductWithFeature, quantity: number, color?: string, size?: string) => void;
     removeFromCart: (productId: string) => void;
     incrementQuantity: (productId: string) => void;
     decrementQuantity: (productId: string) => void;
@@ -31,11 +33,7 @@ export const useCart = create<CartState>()(
       cart: [],
       deliveryFee: 120,
       addToCart: (
-        product: Product & {
-          stocks?: Stock[];
-          brand?: Brand;
-          category: Category;
-        },
+        product,
         quantity: number = 1,
         size,
         color

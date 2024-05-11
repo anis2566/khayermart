@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { db } from "@/lib/db"
 import { getUserId } from "@/service/user.service"
 import { cn, formatPrice } from "@/lib/utils"
+import { Wishlist } from "./wishlist"
 
 
 export const Dashboard = async () => {
@@ -48,10 +49,9 @@ export const Dashboard = async () => {
         take: 5
     })
 
-    const products = await db.product.findMany()
     return (
-        <div className="space-y-5 w-full px-3 flex-1">
-            <Card className="border shadow-sm w-full">
+        <div className="space-y-8 w-full px-3 flex-1">
+            <Card className="border shadow-sm shadow-primary w-full">
                 <CardContent className="flex flex-col md:flex-row items-center gap-4 p-4 md:p-6">
                     <Image
                         alt="Avatar"
@@ -65,15 +65,15 @@ export const Dashboard = async () => {
                         width="100"
                     />
                 <div className="grid gap-1 text-sm md:gap-2">
-                    <div className="font-semibold">{`${user?.firstName} ${user?.lastName}`}</div>
+                        <div className="font-semibold text-xl">{`${user?.firstName}`} <span className="text-primary">{user?.lastName}</span></div>
                     <div>{user?.emailAddresses[0].emailAddress}</div>
                 </div>
                 </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border border-primary">
                 <CardHeader>
-                <CardTitle>Recent Orders</CardTitle>
+                <CardTitle className="text-primary">Recent Orders</CardTitle>
                 </CardHeader>
                 <CardContent className="px-2">
                     <Table>
@@ -104,7 +104,7 @@ export const Dashboard = async () => {
                                             {formatPrice(order.totalAmount + order.deliveryFee)}
                                         </TableCell>
                                         <TableCell className="hidden md:table-cell py-1">
-                                            {format(order.createdAt, "yy-mm-dd")}
+                                            {format(order.createdAt, "dd MMMM yyyy")}
                                         </TableCell>
                                         <TableCell className="py-1">
                                             <Badge
@@ -120,7 +120,7 @@ export const Dashboard = async () => {
                                         <TableCell className="py-1">
                                             <Link href={`/account/orders/${order.id}`}>
                                                 <Button variant="ghost" size="icon">
-                                                    <Eye className="w-5 h-5" />
+                                                    <Eye className="w-5 h-5 text-primary" />
                                                 </Button>
                                             </Link>
                                         </TableCell>
@@ -132,37 +132,7 @@ export const Dashboard = async () => {
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader>
-                <CardTitle>Wishlist</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid gap-4">
-                        {
-                            products.map((product) => (
-                                <div className="flex items-center gap-4" key={product.id}>
-                                <Image
-                                    alt="Product image"
-                                    className="aspect-square rounded-md object-cover"
-                                    height="100"
-                                    src={product.featureImageUrl}
-                                    width="100"
-                                />
-                                <div className="grid gap-1 text-sm md:gap-2">
-                                    <div className="font-semibold">{product.name}</div>
-                                    <div className="text-muted-foreground">&#2547;{product.discountPrice}</div>
-                                    <div className="text-sm">
-                                    <Button size="sm">
-                                        Add to cart
-                                    </Button>
-                                    </div>
-                                </div>
-                                </div>
-                            ))
-                        }
-                    </div>
-                </CardContent>
-            </Card>
+            <Wishlist />
         </div>
     )
 }

@@ -7,7 +7,7 @@ import { Brand, Category, Product, Stock } from "@prisma/client"
 import toast from "react-hot-toast"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { useWishlist } from "@/store/use-wishlist"
 import { useCart } from "@/store/use-cart"
@@ -71,12 +71,19 @@ const Wishlist = () => {
                         </div>
                     </div>
                 ))}
+                {wishlist.length < 1 && (
+                    <div className="min-h-[20vh] flex flex-col items-center justify-center">
+                        <div className="space-y-3 mt-3">
+                            <p className="text-center text-muted-foreground">Your wishlist is empty</p>
+                            <Link href="/" className="flex justify-center">
+                                <Button className="bg-amber-500 hover:bg-amber-600">
+                                    Continue shopping
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                )}
             </CardContent>
-            <CardFooter className="flex flex-col gap-2 p-4">
-                <Link href="/">
-                    <Button size="sm" className="bg-slate-700 dark:bg-slate-800 dark:hover:bg-slate-900 dark:text-primary">Continue shopping</Button>
-                </Link>
-            </CardFooter>
         </Card>
     )
 }

@@ -1,7 +1,6 @@
 "use client"
 
 import {useState} from "react"
-import {Brand, Category, Product, Stock} from "@prisma/client"
 import {StarIcon} from "lucide-react"
 import { MinusIcon, PlusIcon, HeartIcon } from "lucide-react"
 import toast from "react-hot-toast"
@@ -16,15 +15,10 @@ import { calculateDiscountPercentage } from "@/lib/utils"
 import { useCart } from "@/store/use-cart"
 import { useProduct } from "@/store/use-product"
 import { useWishlist } from "@/store/use-wishlist"
-
-interface PrismaProduct extends Product {
-    stocks?: Stock[];
-    brand?: Brand,
-    category: Category
-}
+import { ProductWithFeature } from "@/@types"
 
 interface Props {
-    product: PrismaProduct
+    product: ProductWithFeature
 }
 
 export const ProductInfo = ({product}:Props) => {
@@ -50,7 +44,7 @@ export const ProductInfo = ({product}:Props) => {
     }
 
     const handleAddToCart = () => {
-        addToCart(product, quantity, size || product.stocks?.[0]?.size || '', color || product.colors?.[0] || '')
+        addToCart({...product, price: product.discountPrice || product.price}, quantity, size || product.stocks?.[0]?.size || '', color || product.colors?.[0] || '')
         onClose()
         toast.success("Added to cart")
     }

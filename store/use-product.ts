@@ -1,26 +1,17 @@
-import { Category, Product, Stock, Brand } from "@prisma/client";
 import { create } from "zustand";
+
+import { ProductWithFeature } from "@/@types";
 
 interface ProductState {
   open: boolean;
-  product?: Product & {
-    stocks?: Stock[];
-    category: Category;
-    brand?: Brand
-  };
-  onOpen: () => void;
+  product?: ProductWithFeature;
+  onOpen: (product: ProductWithFeature) => void;
   onClose: () => void;
-  setProduct: (
-    product: Product & { stocks?: Stock[]; category: Category; brand?: Brand }
-  ) => void;
 }
 
 export const useProduct = create<ProductState>()((set) => ({
   open: false,
   product: undefined,
-  onOpen: () => set(() => ({ open: true })),
-  onClose: () => set(() => ({ open: false })),
-  setProduct: (
-    product: Product & { stocks?: Stock[]; category: Category; brand?: Brand }
-  ) => set(() => ({ product })),
+  onOpen: (product) => set(() => ({ open: true, product })),
+  onClose: () => set(() => ({ open: false, product:undefined })),
 }));

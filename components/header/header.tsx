@@ -3,8 +3,8 @@ import { Menu } from "lucide-react"
 import { Logo } from "@/components/logo"
 
 import { Search } from "./search"
-import { HeaderOptions } from "./header-options"
 import { Sidebar } from "./sidebar"
+import { Support } from "./support"
 
 export function Header() {
   return (
@@ -17,7 +17,7 @@ export function Header() {
         </div>
         <Logo callbackUrl="/" />
         <Search />
-        <HeaderOptions />
+        <Support />
       </div>
     </div>
   )

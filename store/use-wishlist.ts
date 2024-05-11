@@ -1,10 +1,11 @@
-import { Brand, Category, Product, Stock } from "@prisma/client";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import { ProductWithFeature } from "@/@types";
+
 interface WishlistState {
-  wishlist: Product[];
-  addToWishlist: (product: Product & { stocks?: Stock[], brand?: Brand, category: Category }) => void;
+  wishlist: ProductWithFeature[];
+  addToWishlist: (product: ProductWithFeature) => void;
   removeFromWishlist: (productId: string) => void;
 }
 

@@ -73,7 +73,7 @@ export function Search() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="hidden sm:flex flex-1 max-w-[800px] items-center gap-x-1 border border-gray-400 p-1 relative">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="hidden sm:flex flex-1 max-w-[800px] items-center gap-x-1 border border-primary p-1 relative">
         <FormField
           control={form.control}
           name="category"
@@ -109,7 +109,7 @@ export function Search() {
           />
           </div>
           <Button variant="ghost" size="icon" className="absolute right-0" type="submit">
-              <SearchIcon className="h-5 w-5" />
+              <SearchIcon className="h-5 w-5 text-primary" />
           </Button>
           <Button
             variant="ghost"

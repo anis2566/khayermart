@@ -1,10 +1,10 @@
 "use client"
 
-import { Product, Stock, Brand, Category } from "@prisma/client"
 import Image from "next/image"
 import { useState } from "react" 
 import {Eye, Heart, ShoppingCart, StarIcon} from "lucide-react"
 import Link from "next/link"
+import toast from "react-hot-toast"
 
 import {
   Tooltip,
@@ -19,26 +19,22 @@ import { calculateDiscountPercentage, cn } from "@/lib/utils"
 import { useProduct } from "@/store/use-product"
 import { useCart } from "@/store/use-cart"
 import { useWishlist } from "@/store/use-wishlist"
-import toast from "react-hot-toast"
+import { ProductWithFeature } from "@/@types"
 
 
 interface ProductCardProps {
-    product: Product & {
-        category: Category,
-        stocks?: Stock[],
-        brand?: Brand,
-    }
+    product: ProductWithFeature;
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
     const [isHovered, setIsHovered] = useState<boolean>(false)
 
-    const { setProduct, onOpen } = useProduct()
+    const { onOpen } = useProduct()
     const { addToCart } = useCart()
     const {addToWishlist} = useWishlist()
     
     const handleAddToCart = () => {
-        addToCart(product, 1)
+        addToCart({...product, price:product.discountPrice || product.price}, 1)
         toast.success("Added to cart")
     }
 
@@ -125,8 +121,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button size="icon" variant="ghost" onClick={() => {
-                                setProduct(product)
-                                onOpen()
+                                onOpen(product)
                             }}>
                                 <Eye className="w-5 h-5" />
                             </Button>

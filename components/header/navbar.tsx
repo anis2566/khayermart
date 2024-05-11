@@ -1,6 +1,6 @@
+import { HeaderOptions } from "./header-options";
 import { NavbarCategory } from "./navbar-category";
 import { NavbarNav } from "./navbar-nav";
-import { Support } from "./support";
 
 
 export function Navbar() {
@@ -9,7 +9,7 @@ export function Navbar() {
       <div className="w-full flex items-center justify-between">
         <NavbarCategory />
         <NavbarNav />
-        <Support />
+        <HeaderOptions />
       </div>
     </div>
   )

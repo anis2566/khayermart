@@ -1,20 +1,28 @@
+"use client"
+
 import { LayoutDashboard } from "lucide-react"
 import Image from "next/image"
+import { useQuery } from "@tanstack/react-query"
+import Link from "next/link"
 
 import {
   Menubar,
   MenubarContent,
+  MenubarItem,
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar"
 
-import { db } from "@/lib/db"
+import { getCategories } from "@/actions/category.action"
 
-export async function NavbarCategory() {
-    const categories = await db.category.findMany({
-        orderBy: {
-            createdAt: "desc"
-        }
+export function NavbarCategory() {
+    const {data:categories} = useQuery({
+        queryKey: ["get-categories"],
+        queryFn: async () => {
+            const data = await getCategories()
+            return data.categories
+        },
+        staleTime: 60 * 60 * 1000
     })
 
   return (
@@ -28,16 +36,18 @@ export async function NavbarCategory() {
             </MenubarTrigger>
               <MenubarContent align="end" className="w-[500px] p-4 border-slate-400-200 grid grid-cols-2 gap-x-5 gap-y-5">
                   {
-                      categories.map(category => (
-                        <div className="flex-1 border border-slate-300 hover:border-green-300 text-slate-800 hover:text-green-700 p-1 rounded-sm flex items-center gap-x-3 cursor-pointer transition-all" key={category.id}>
-                            <Image
-                                src={category.imageUrl}
-                                alt={category.name}
-                                height={40}
-                                width={40}
-                            />
-                            <span>{category.name}</span>
-                        </div>
+                      categories && categories.map(category => (
+                          <MenubarItem key={category.id} asChild>
+                            <Link href={`/shop?category=${category.name}`} className="flex-1 border border-slate-300 hover:border-primary text-slate-800 hover:text-green-700 p-1 rounded-sm flex items-center gap-x-3 cursor-pointer transition-all" key={category.id}>
+                                <Image
+                                    src={category.imageUrl}
+                                    alt={category.name}
+                                    height={40}
+                                    width={40}
+                                />
+                                <span>{category.name}</span>
+                            </Link>
+                          </MenubarItem>
                       ))
                   }
             </MenubarContent>

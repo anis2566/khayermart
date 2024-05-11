@@ -1,8 +1,10 @@
 "use client"
 
+import { ShoppingCart } from "lucide-react"
 import { Logo } from "../logo"
 import { SidebarItem } from "./sidebar-item"
 import { DASHBOARD_SIDEBAR } from "@/constant"
+import { Separator } from "../ui/separator"
 
 export const Sidebar = () => {
     return (
@@ -11,7 +13,15 @@ export const Sidebar = () => {
                 <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
                     <Logo callbackUrl="/dashboard" />
                 </div>
+                <div>
+                    <p className="text-muted-foreground px-2 lg:px-7">Advertisement</p>
+                    <nav className="grid items-start px-2 text-sm font-medium lg:px-4 space-y-2">
+                        <SidebarItem label="Orders" href="/dashboard/quick-orders" icon={ShoppingCart} />
+                    </nav>
+                </div>
+                <Separator />
                 <div className="flex-1 mt-3">
+                    <p className="text-muted-foreground px-2 lg:px-7">Main</p>
                     <nav className="grid items-start px-2 text-sm font-medium lg:px-4 space-y-2">
                         {
                             DASHBOARD_SIDEBAR.map((item) => (
