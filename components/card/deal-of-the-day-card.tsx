@@ -13,15 +13,10 @@ import {
 } from "@/components/ui/card"
 import { Button } from "../ui/button"
 import { useCart } from "@/store/use-cart";
-
-interface PropsWithExtend extends Product {
-    stocks?: Stock[];
-    brand?: Brand;
-    category: Category
-}
+import { ProductWithFeature } from "@/@types";
 
 interface Props {
-    product: PropsWithExtend
+    product: ProductWithFeature
 }
 
 export const DealOfTheDayCard = ({ product }: Props) => {
