@@ -21,7 +21,6 @@ const QuickOrderProduct = async ({ params }: Props) => {
             stocks: true
         }
     })
-console.log(params.productId)
     if(!product) redirect("/")
     return (
         <div className="w-full px-3 mt-7 space-y-6">

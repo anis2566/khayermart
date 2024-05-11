@@ -71,30 +71,36 @@ const SuccessQuickOrder = ({ params }: { params: { orderId: string } }) => {
                             </div>
                         </div>
                         </div>
-                        <div className="mt-8">
-                            <Table>
-                                <TableHeader>
-                                <TableRow>
-                                    <TableHead>Product</TableHead>
-                                    <TableHead>Quantity</TableHead>
-                                    <TableHead>D. Fee</TableHead>
-                                    <TableHead>Total</TableHead>
-                                </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                <TableRow>
-                                    <TableCell>
-                                        <Avatar>
-                                            <AvatarImage src={order?.product.featureImageUrl} />
-                                            <AvatarFallback>{order?.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                    </TableCell>
-                                    <TableCell>{order?.quantity}</TableCell>
-                                    <TableCell>{formatPrice(order?.deliveryFee || 0)}</TableCell>
-                                    <TableCell>{formatPrice(order?.total || 0)}</TableCell>
-                                </TableRow>
-                                </TableBody>
-                            </Table>
+                                <div className="mt-8">
+                                    {
+                                        order && (
+                                            <Table>
+                                                <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Product</TableHead>
+                                                    <TableHead>Quantity</TableHead>
+                                                    <TableHead>Price</TableHead>
+                                                    <TableHead>D. Fee</TableHead>
+                                                    <TableHead>Total</TableHead>
+                                                </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                <TableRow>
+                                                    <TableCell>
+                                                        <Avatar>
+                                                            <AvatarImage src={order?.product.featureImageUrl} />
+                                                            <AvatarFallback>{order?.name.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                    </TableCell>
+                                                    <TableCell>{order?.quantity}</TableCell>
+                                                    <TableCell>{formatPrice(order?.deliveryFee)}</TableCell>
+                                                    <TableCell>{formatPrice(order?.total)}</TableCell>
+                                                    <TableCell>{formatPrice(order?.total + order?.deliveryFee)}</TableCell>
+                                                </TableRow>
+                                                </TableBody>
+                                            </Table>
+                                        )
+                                    }
                         </div>
                         <p className="text-center text-lg mt-4 text-muted-foreground">Product will reach in your hand upto <span className="font-bold text-primary">3 days</span></p>
                         
