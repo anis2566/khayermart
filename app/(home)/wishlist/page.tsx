@@ -3,7 +3,6 @@
 import Link from "next/link"
 import {TrashIcon, StarIcon } from "lucide-react"
 import Image from "next/image"
-import { Brand, Category, Product, Stock } from "@prisma/client"
 import toast from "react-hot-toast"
 
 import { Button } from "@/components/ui/button"
@@ -11,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 import { useWishlist } from "@/store/use-wishlist"
 import { useCart } from "@/store/use-cart"
+import {ProductWithFeature} from "@/@types"
 
 const Wishlist = () => {
     const {wishlist, removeFromWishlist} = useWishlist()
@@ -22,18 +22,13 @@ const Wishlist = () => {
         toast.success("Removed from wishlist")
     } 
 
-    const handleAddToCart = (product: Product & { stocks?: Stock[], brand?: Brand, category?: Category }) => {
+    const handleAddToCart = (product: ProductWithFeature) => {
     if (!product.category) {
         toast.error("Product category is undefined. Cannot add to cart.");
         return;
     }
-    const productWithDefaults = {
-        ...product,
-        category: product.category,
-        stocks: product.stocks ?? [],
-        brand: product.brand
-    };
-    addToCart(productWithDefaults, 1);
+
+    addToCart(product, 1);
     toast.success("Added to cart");
     removeFromWishlist(product.id);
 }
