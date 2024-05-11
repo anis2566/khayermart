@@ -1,6 +1,6 @@
 "use client"
 
-import {EllipsisVertical,Pen, Trash2} from "lucide-react"
+import {Copy, EllipsisVertical,Pen, Trash2} from "lucide-react"
 import Link from "next/link"
 import { Product } from "@prisma/client"
 import toast from "react-hot-toast"
@@ -47,6 +47,8 @@ export const ProductList = ({ products }: ProductListProps) => {
     const [id, setId] = useState<string>("")
     const [pending, startTransition] = useTransition()
 
+    console.log(window.location.origin)
+
     const handleDelete = async () => {
         if(!id) {
           toast.error("Something went wrong")
@@ -63,6 +65,17 @@ export const ProductList = ({ products }: ProductListProps) => {
             })
         })
         }
+    }
+
+    const handleCopyLink = (productId: string) => {
+        const link = `${window.location.origin}/quick-order/${productId}`
+        navigator.clipboard.writeText(link)
+            .then(() => {
+                toast.success("Link copied to clipboard!")
+            })
+            .catch(() => {
+                toast.error("Failed to copy link")
+            })
     }
     
     return (
@@ -111,6 +124,10 @@ export const ProductList = ({ products }: ProductListProps) => {
                                             <Pen className="w-4 h-4" />
                                             Edit
                                         </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleCopyLink(product.id)} className="flex items-center gap-x-2">
+                                            <Copy className="w-4 h-4" />
+                                            Copy quick order link
                                         </DropdownMenuItem>
                                         <AlertDialog>
                                             <AlertDialogTrigger className="flex gap-x-3 text-rose-500 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 select-none items-center rounded-sm px-2 py-1.5 text-sm w-full" onClick={() => setId(product.id)}>

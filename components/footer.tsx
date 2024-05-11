@@ -18,15 +18,15 @@ export const Footer = () => {
                     </div>
                     <div className="flex items-center gap-x-2">
                         <MapPin className="w-5 h-5 text-sky-500" />
-                        <p><span className="font-bold">Address:</span> Armanitola, Bongshal, Dhaka</p>
+                        <p><span className="font-bold">Address:</span> Chakbazar, Dhaka</p>
                     </div>
                     <div className="flex items-center gap-x-2">
                         <Headset className="w-5 h-5 text-sky-500" />
-                        <p><span className="font-bold">Call:</span> 01312-344660</p>
+                        <p><span className="font-bold">Call:</span> 01969-764382</p>
                     </div>
                     <div className="flex items-center gap-x-2">
                         <Mail className="w-5 h-5 text-sky-500" />
-                        <p><span className="font-bold">Email:</span> khayermart@gmail.com</p>
+                        <p><span className="font-bold">Email:</span> padmacart23@gmail.com</p>
                     </div>
                 </div>
                 <div className="flex flex-col space-y-2">
@@ -63,13 +63,13 @@ export const Footer = () => {
             <Separator />
             <div className="grid grid-cols-1 md:grid-cols-4 gap-y-7 min-h-[100px] items-center">
                 <div className="space-y-1">
-                    <p className="flex items-center gap-x-2"><Copyright className="w-5 h-5" />{new Date().getFullYear()}, Khayermart</p>
+                    <p className="flex items-center gap-x-2"><Copyright className="w-5 h-5" />{new Date().getFullYear()}, Padmashops</p>
                     <p className="text-sm text-muted-foreground">All right reserved</p>
                 </div>
                 <div className="hidden md:flex items-center gap-x-2">
                     <Headset className="w-10 h-10 text-green-500" />
                     <div>
-                        <p className="text-xl font-semibold text-sky-500">01312-344006</p>
+                        <p className="text-xl font-semibold text-sky-500">01969-764382</p>
                         <span className="text-muted-foreground text-sm">24/7 Support Center</span>
                     </div>
                 </div>
