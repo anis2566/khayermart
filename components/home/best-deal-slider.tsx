@@ -1,7 +1,6 @@
 "use client"
 
 import Autoplay from "embla-carousel-autoplay"
-import { Brand, Category, Product, Stock } from "@prisma/client"
 
 import {
   Carousel,
@@ -11,15 +10,10 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { BestDealCard } from "../card/best-deal-card";
-
-interface PropsWithExtend extends Product {
-    stocks?: Stock[];
-    brand?: Brand;
-    category: Category
-}
+import { ProductWithFeature } from "@/@types";
 
 interface Props {
-    products: PropsWithExtend[]
+    products: ProductWithFeature[]
 }
 
 export const BestDealSlider = ({products}:Props) => {

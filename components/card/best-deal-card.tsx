@@ -12,17 +12,14 @@ import { Progress } from "@/components/ui/progress"
 
 import { calculateDiscountPercentage, cn } from "@/lib/utils"
 import { useCart } from "@/store/use-cart"
+import { ProductWithFeature } from "@/@types"
 
-
-interface ProductCardProps {
-    product: Product & {
-        category: Category,
-        stocks?: Stock[],
-        brand?: Brand,
-    }
+interface Props {
+    product: ProductWithFeature
 }
 
-export const BestDealCard = ({ product }: ProductCardProps) => {
+
+export const BestDealCard = ({ product }: Props) => {
     const { addToCart } = useCart()
     
     const handleAddToCart = () => {
