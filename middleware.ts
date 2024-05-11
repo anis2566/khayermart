@@ -23,7 +23,8 @@ export default authMiddleware({
     "/cart",
     "/wishlist",
     "/shop",
-    "/shop(.*)"
+    "/shop(.*)",
+    "/quick-order(.*)"
   ],
   ignoredRoutes: ["/((?!api|trpc))(_next.*|.+.[w]+$)", "/api/uploadthing"],
 });
