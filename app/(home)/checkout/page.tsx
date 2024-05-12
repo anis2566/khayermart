@@ -41,6 +41,7 @@ import { getUserAddresses } from "@/actions/shipping.action"
 import SkeletonComp from "@/components/skeleton"
 import { CreditCard, HandCoins, PlusCircle } from "lucide-react"
 import { calculateDeliveryFee, cn } from "@/lib/utils"
+import { useConfettiStore } from "@/store/use-confetti-store"
 
 
 const formSchema = z.object({
@@ -109,6 +110,7 @@ const Checkout = () => {
     const router = useRouter()
     const { userId } = useAuth()
     const { cart, deliveryFee, resetCart } = useCart()
+    const {onOpen} = useConfettiStore()
 
     useEffect(() => {
         if (!userId || (cart.length < 1 && !orderPlaced)) {
@@ -134,6 +136,7 @@ const Checkout = () => {
         },
         onSuccess: (data) => {
             setOrderPlaced(true);
+            onOpen()
             router.push("/account/orders")
             resetCart()
             toast.success(data.success, {
@@ -148,21 +151,18 @@ const Checkout = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-        const options = {
-            method: 'GET',
-            headers: {
-            'X-RapidAPI-Key': '3cf92c7a23msh629dd8c92371568p184e13jsn31a73a90a274',
-            'X-RapidAPI-Host': 'bdapi.p.rapidapi.com'
+            try {
+                const response = await fetch('http://api.geonames.org/childrenJSON?geonameId=1210997&username=anis256');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setDivisions(data.geonames);
+            } catch (error) {
+                toast.error("Failed to fetch divisions", {
+                    id: "fetch-divisions"
+                });
             }
-        };
-
-        try {
-            const response = await fetch('https://bdapi.p.rapidapi.com/v1.1/divisions', options);
-            const data = await response.json();
-            setDivisions(data.data)
-        } catch (error) {
-            console.error(error);
-        }
         };
 
         fetchData();
@@ -217,7 +217,7 @@ const Checkout = () => {
                     <div className="space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Saved Address</CardTitle>
+                                <CardTitle className="text-primary">Saved Address</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <FormField
@@ -273,7 +273,7 @@ const Checkout = () => {
                             <CollapsibleContent>
                                 <Card>
                                     <CardHeader>
-                                    <CardTitle>Billing Information</CardTitle>
+                                    <CardTitle className="text-primary">Billing Information</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <FormField
@@ -309,7 +309,7 @@ const Checkout = () => {
                                                     </FormControl>
                                                         <SelectContent>
                                                             {divisions && divisions.map((division:any, i) => (
-                                                            <SelectItem value={division?.division} key={i}>{division?.division}</SelectItem>
+                                                                <SelectItem value={division?.adminName1?.split(" ")[0]} key={i}>{division?.adminName1?.split(" ")[0]}</SelectItem>
                                                             ))}
                                                     </SelectContent>
                                                 </Select>
@@ -354,11 +354,9 @@ const Checkout = () => {
                         </Collapsible>
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold">Checkout</h1>
-                        <p className="text-gray-500 dark:text-gray-400 mb-4">Review your order and complete your purchase.</p>
                         <Card>
                             <CardHeader>
-                            <CardTitle>Order Summary</CardTitle>
+                            <CardTitle className="text-primary">Order Summary</CardTitle>
                             </CardHeader>
                             <CardContent>
                             <div className="grid gap-4">
@@ -384,7 +382,7 @@ const Checkout = () => {
                         </Card>
                         <Card className="mt-5">
                             <CardHeader>
-                                <CardTitle>Payment Method</CardTitle>
+                                <CardTitle className="text-primary">Payment Method</CardTitle>
                             </CardHeader>
                             <CardContent className="flex items-center gap-x-3">
                                 <Card className={cn("w-full max-w-[170px] cursor-pointer hover:border-primary/50", form.getValues("paymentMethod") === "cod" && "border-primary text-primary")} onClick={() => setValue("paymentMethod", "cod")}>

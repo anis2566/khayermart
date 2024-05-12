@@ -52,11 +52,7 @@ export function Search() {
         url: `/shop`,
         query: {
           search: values.searchValue,
-          sort: searchParams.get("sort"),
-          brand: searchParams.get("brand"),
           category: values.category || searchParams.get("category"),
-          minPrice: searchParams.get("minPrice"),
-          maxPrice: searchParams.get("maxPrice"),
         }
     }, { skipEmptyString: true, skipNull: true });
     router.push(url);

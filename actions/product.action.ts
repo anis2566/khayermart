@@ -117,3 +117,21 @@ export const deleteProduct = async (id: string) => {
     success: "Product deleted"
   }
 }
+
+
+export const getProductIdsAndName = async (name?: string) => {
+
+  const products = await db.product.findMany({
+    where: {
+      ...(name && {name: {contains: name, mode: "insensitive"}})
+    },
+    select: {
+      id: true,
+      name: true
+    }
+  })
+
+  return {
+    products
+  }
+}

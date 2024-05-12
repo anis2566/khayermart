@@ -37,11 +37,7 @@ export const SearchInput = () => {
             url: `/shop`,
             query: {
             search: values.searchValue,
-            sort: searchParams.get("sort"),
-            brand: searchParams.get("brand"),
             category: searchParams.get("category"),
-            minPrice: searchParams.get("minPrice"),
-            maxPrice: searchParams.get("maxPrice"),
             }
         }, { skipEmptyString: true, skipNull: true });
         router.push(url)
@@ -63,6 +59,7 @@ export const SearchInput = () => {
                 />
                 <Button
                     variant="ghost"
+                    type="button"
                     size="icon"
                     className={cn("hidden absolute top-1 right-7", form.getValues("searchValue") && "flex")}
                     onClick={() => {

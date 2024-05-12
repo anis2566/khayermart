@@ -1,18 +1,28 @@
-import { UserOrderTable } from "@/components/account/orders/data-table"
-import { columns } from "@/components/account/orders/columns"
 import { db } from "@/lib/db"
 import { getUserId } from "@/service/user.service"
 import { UserOrders } from "@/components/account/orders"
 
 
+interface SearchParamsProps {
+    searchParams: {
+        status: string;
+        page: string;
+        perPage: string;
+    }
+}
 
 
-const Orders = async () => {
+const Orders = async ({ searchParams }: SearchParamsProps) => {
     const userId = await getUserId()
+    
+    const { status, perPage, page } = searchParams;
+    const pageNumber = parseInt(page) || 1;
+    const pageSize = parseInt(perPage);
     
     const orders = await db.order.findMany({
         where: {
-            userId
+            userId,
+            ...(status !== "ALL" && {status})
         },
         include: {
             products: {
@@ -31,7 +41,8 @@ const Orders = async () => {
         orderBy: {
             createdAt: "desc"
         },
-        take: 5
+        skip: (pageNumber - 1) * pageSize || 0,
+        take: pageSize || 5
     })
 
     return (

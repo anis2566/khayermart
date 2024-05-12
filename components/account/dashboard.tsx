@@ -51,7 +51,7 @@ export const Dashboard = async () => {
 
     return (
         <div className="space-y-8 w-full px-3 flex-1">
-            <Card className="border shadow-sm shadow-primary w-full">
+            <Card className="border border-primary w-full">
                 <CardContent className="flex flex-col md:flex-row items-center gap-4 p-4 md:p-6">
                     <Image
                         alt="Avatar"

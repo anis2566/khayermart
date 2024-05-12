@@ -18,6 +18,7 @@ export const Pagination = () => {
                 url: pathname,
                 query: {
                     search: searchParams.get("search"),
+                    status: searchParams.get("status"),
                     perPage: searchParams.get("perPage") || "5",
                     page: "2"
                 }
@@ -53,7 +54,7 @@ export const Pagination = () => {
     }
 
     return (
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-end">
             <div className="flex items-center gap-x-3">
                 <Button
                     variant="ghost"

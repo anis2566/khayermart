@@ -8,6 +8,7 @@ import {
   MapPin,
   Users,
   Ribbon,
+  TicketSlash,
 } from "lucide-react";
 
 export const DASHBOARD_SIDEBAR = [
@@ -106,5 +107,13 @@ export const ORDER_STATUS = [
   {
     label: "Returned",
     value: "RETURNED"
+  },
+] as const;
+
+export const CLIENT_SIDEBAR = [
+  {
+    label: "Banner",
+    href: "/dashboard/banner",
+    icon: TicketSlash,
   },
 ] as const;

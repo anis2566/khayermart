@@ -31,8 +31,6 @@ const OrderDetails = async({ params }:{params:{orderId:string}}) => {
 
     if(!order) redirect("/account")
 
-    console.log(order)
-
     return (
         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8 px-4">
             <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8 ">

@@ -49,6 +49,8 @@ model Product {
   sellerPrice Int?
   status  String @default("DRAFT")
 
+  genre String[]
+
   stocks  Stock[]
   colors String[] @default([])
 
@@ -159,7 +161,6 @@ model ShippingInfo {
   division String
   address String
   phone String
-  deliveryFee Int @default(120)
 
   orders Order[]
   userId String?
@@ -185,6 +186,17 @@ model QuickOrder {
 
   productId String
   product Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Banner {
+  id String @id @default(uuid())
+  imageUrl String
+  status String @default("DRAFT")
+
+  productId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

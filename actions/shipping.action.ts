@@ -17,7 +17,8 @@ export const createShipping = async (values: ShippingSchemaType) => {
 
     const existShippingAddress = await db.shippingInfo.findFirst({
         where: {
-            infoName: values.infoName
+            infoName: values.infoName,
+            userId
         }
     })
 
