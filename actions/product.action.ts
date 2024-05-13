@@ -127,8 +127,10 @@ export const getProductIdsAndName = async (name?: string) => {
     },
     select: {
       id: true,
-      name: true
-    }
+      name: true,
+      featureImageUrl: true
+    },
+    take: 3
   })
 
   return {
