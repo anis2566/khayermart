@@ -9,6 +9,7 @@ import {
   Users,
   Ribbon,
   TicketSlash,
+  Feather,
 } from "lucide-react";
 
 export const DASHBOARD_SIDEBAR = [
@@ -115,5 +116,10 @@ export const CLIENT_SIDEBAR = [
     label: "Banner",
     href: "/dashboard/banner",
     icon: TicketSlash,
+  },
+  {
+    label: "F. Products",
+    href: "/dashboard/feature-products",
+    icon: Feather,
   },
 ] as const;

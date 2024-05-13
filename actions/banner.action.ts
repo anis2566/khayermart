@@ -47,3 +47,13 @@ export const deleteBanner = async (bannerId: string) => {
         success: "Banner deleted"
     }
 }
+
+export const getBanners = async () => {
+    const banners = await db.banner.findMany({
+        orderBy: {
+            createdAt: "desc"
+        }
+    })
+
+    return banners
+}

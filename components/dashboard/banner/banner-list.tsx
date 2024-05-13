@@ -72,7 +72,7 @@ export const BannerList = ({ banners }: Props) => {
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
             {
                 banners.map((banner) => (
-                    <div id={banner.id} className="relative aspect-video border border-primary p-2 rounded-md">
+                    <div key={banner.id} className="relative aspect-video border border-primary p-2 rounded-md">
                         <Image
                             src={banner.imageUrl}
                             alt={banner.productId}
