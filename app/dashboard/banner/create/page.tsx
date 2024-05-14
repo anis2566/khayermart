@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { toast } from "sonner"
-import { usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {

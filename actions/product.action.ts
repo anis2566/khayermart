@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { FeatureFormSchema, FeatureFormSchemaType } from "@/schema/feature-products";
 import { Product } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -136,4 +137,83 @@ export const getProductIdsAndName = async (name?: string) => {
   return {
     products
   }
+}
+
+export const addFeatureProduct = async (values: FeatureFormSchemaType) => {
+  const parseBody = FeatureFormSchema.safeParse(values)
+
+  if (!parseBody.success) {
+    throw new Error("Invalid input value")
+  }
+
+
+  const product = await db.product.findUnique({
+    where: {
+      id: values.productId
+    }
+  })
+
+  if (!product) {
+    throw new Error("Product not found")
+  }
+
+  await db.product.update({
+    where: {
+      id: values.productId,
+    },
+    data: {
+      genre: [...(product.genre || []), "featured"],
+      featureTitle: values.featureTitle
+    },
+  });
+
+  revalidatePath("/dashboard/feature-products")
+
+  return {
+    success: "Product added to feature"
+  }
+}
+
+export const removeFeatureProduct = async (productId: string) => {
+  const product = await db.product.findUnique({
+    where: {
+      id: productId,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  await db.product.update({
+    where: {
+      id: productId,
+    },
+    data: {
+      genre: (product.genre || []).filter((g) => g !== "featured"),
+    },
+  });
+
+  revalidatePath("/dashboard/feature-products");
+
+  return {
+    success: "Product removed from feature",
+  };
+};
+
+
+export const getFeatureProducts = async () => {
+  const products = await db.product.findMany({
+    where: {
+      genre: {
+        has: "featured"
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    take: 3
+  })
+
+  return {products}
 }

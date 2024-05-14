@@ -48,6 +48,7 @@ model Product {
   discountPrice Int?
   sellerPrice Int?
   status  String @default("DRAFT")
+  featureTitle String?
 
   genre String[]
 

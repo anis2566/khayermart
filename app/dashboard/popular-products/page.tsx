@@ -10,6 +10,7 @@ import {
 import { FeatureProductCard } from "@/components/card/feature-product-card";
 import { FeatureProductForm } from "@/components/dashboard/feature-products/feature-product-form";
 import { db } from "@/lib/db";
+import { PopularProductForm } from "@/components/dashboard/popular-products/popular-product-form";
 
 const FeatureProducts = async () => {
     const products = await db.product.findMany({
@@ -33,7 +34,7 @@ const FeatureProducts = async () => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                    <BreadcrumbPage>Feature Products</BreadcrumbPage>
+                    <BreadcrumbPage>Popular Products</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -46,7 +47,7 @@ const FeatureProducts = async () => {
                         ))
                     }
                 </div>
-                <FeatureProductForm />
+                <PopularProductForm />
                 
             </div>
         </div>
