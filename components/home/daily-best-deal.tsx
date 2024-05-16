@@ -1,19 +1,19 @@
-import { db } from "@/lib/db"
+"use client"
+
 import { BestDealSlider } from "./best-deal-slider"
+import { useQuery } from "@tanstack/react-query";
+import { getBestDealProducts } from "@/actions/product.action";
 
-export const DailyBestDeal = async () => {
-    const products = await db.product.findMany({
-    orderBy: {
-      createdAt: "desc"
-    },
-    include: {
-      category: true,
-      stocks: true,
-      brand: true,
-    }
-  })
+export const DailyBestDeal = () => {
+    const { data: products = [] } = useQuery({
+        queryKey: ["get-popular"],
+        queryFn: async () => {
+            const { products } = await getBestDealProducts();
+            return products;
+        },
+        staleTime: 60 * 60 * 1000
+    });
 
-  if (products.length < 1) return null
     return (
         <div className="w-full px-4 space-y-5">
             <h1 className="text-xl md:text-2xl font-bold text-slate-800">Daily Best Deal</h1>

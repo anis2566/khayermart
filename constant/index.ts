@@ -11,6 +11,7 @@ import {
   TicketSlash,
   Feather,
   Popcorn,
+  CalendarClock,
 } from "lucide-react";
 
 export const DASHBOARD_SIDEBAR = [
@@ -127,5 +128,15 @@ export const CLIENT_SIDEBAR = [
     label: "P. Products",
     href: "/dashboard/popular-products",
     icon: Popcorn,
+  },
+  {
+    label: "Best Deal",
+    href: "/dashboard/best-deal",
+    icon: CirclePercent,
+  },
+  {
+    label: "Deal Of The Day",
+    href: "/dashboard/deal-of-day",
+    icon: CalendarClock,
   },
 ] as const;

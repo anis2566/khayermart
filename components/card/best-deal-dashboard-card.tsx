@@ -15,29 +15,29 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import { removeFeatureProduct } from "@/actions/product.action";
+import { removeBestDealProduct } from "@/actions/product.action";
 
-export const FeatureProductCard = ({ product }: { product: Product }) => {
+export const BestDealCard = ({ product }: { product: Product }) => {
 
-    const {mutate: removeFeature, isPending} = useMutation({
-        mutationFn: removeFeatureProduct,
+    const {mutate: removeBestDeal, isPending} = useMutation({
+        mutationFn: removeBestDealProduct,
         onSuccess: (data) => {
             toast.success(data.success, {
-                id: "remove-feature"
+                id: "remove-best-deal"
             })
         },
         onError: (error) => {
             toast.error(error.message, {
-                id: "remove-feature"
+                id: "remove-best-deal"
             })
         }
     })
 
-    const handleRemoveFeature = () => {
+    const handleRemoveBestDeal = () => {
         toast.loading("Removing feature...", {
-            id: "remove-feature"
+            id: "remove-best-deal"
         });
-        removeFeature(product.id)
+        removeBestDeal(product.id)
     }
   
     return (
@@ -68,7 +68,7 @@ export const FeatureProductCard = ({ product }: { product: Product }) => {
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" onClick={handleRemoveFeature} disabled={isPending}>
+                                    <Button variant="ghost" size="icon" onClick={handleRemoveBestDeal} disabled={isPending}>
                                         <Trash2 className="text-rose-500" />
                                     </Button>
                                 </TooltipTrigger>

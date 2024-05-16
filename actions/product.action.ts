@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { DealOfTheDaySchema, DealOfTheDaySchemaType } from "@/schema/deal-of-day-day";
 import { FeatureFormSchema, FeatureFormSchemaType } from "@/schema/feature-products";
 import { Product } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -217,3 +218,186 @@ export const getFeatureProducts = async () => {
 
   return {products}
 }
+
+export const addPopularProduct = async (productId: string) => {
+  const product = await db.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  await db.product.update({
+    where: {
+      id: productId
+    },
+    data: {
+      genre: [...(product.genre || []), "popular"],
+    }
+  })
+
+  revalidatePath("/dashboard/popular-products");
+
+  return {
+    success: "Product added to popular",
+  };
+}
+
+export const removePopularProduct = async (productId: string) => {
+  const product = await db.product.findUnique({
+    where: {
+      id: productId,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  await db.product.update({
+    where: {
+      id: productId,
+    },
+    data: {
+      genre: (product.genre || []).filter((g) => g !== "popular"),
+    },
+  });
+
+  revalidatePath("/dashboard/popular-products");
+
+  return {
+    success: "Product removed from popular",
+  };
+};
+
+export const getPopularProducts = async () => {
+  const products = await db.product.findMany({
+    where: {
+      genre: {
+        has: "popular"
+      }
+    },
+    include: {
+      brand: true,
+      category: true,
+      stocks: true
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    take: 3
+  });
+
+  return { products };
+};
+
+export const addBestDealProduct = async (productId: string) => {
+  const product = await db.product.findUnique({
+    where: {
+      id: productId,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  await db.product.update({
+    where: {
+      id: productId,
+    },
+    data: {
+      genre: [...(product.genre || []), "best-deal"],
+    },
+  });
+
+  revalidatePath("/dashboard/best-deal");
+
+  return {
+    success: "Product added to best-deal",
+  };
+};
+
+export const removeBestDealProduct = async (productId: string) => {
+  const product = await db.product.findUnique({
+    where: {
+      id: productId,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  await db.product.update({
+    where: {
+      id: productId,
+    },
+    data: {
+      genre: (product.genre || []).filter((g) => g !== "best-deal"),
+    },
+  });
+
+  revalidatePath("/dashboard/best-deal");
+
+  return {
+    success: "Product removed from best-deal",
+  };
+};
+
+export const getBestDealProducts = async () => {
+  const products = await db.product.findMany({
+    where: {
+      genre: {
+        has: "best-deal"
+      }
+    },
+    include: {
+      brand: true,
+      category: true,
+      stocks: true
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    take: 10
+  });
+
+  return { products };
+};
+
+// export const addDealOfTheDayProduct = async (values: DealOfTheDaySchemaType) => {
+//   const parseBody = DealOfTheDaySchema.safeParse(values) 
+  
+//   if (!parseBody.success) {
+//     throw new Error("Invalid input value")
+//   } 
+
+//   const product = await db.product.findUnique({
+//     where: {
+//       id: values.productId,
+//     },
+//   });
+
+//   if (!product) {
+//     throw new Error("Product not found");
+//   }
+
+//   await db.product.update({
+//     where: {
+//       id: values.productId
+//     },
+//     data: {
+//       st
+//     }
+//   })
+
+//   revalidatePath("/dashboard/deal-of-the-day");
+
+//   return {
+//     success: "Product added to deal-of-the-day",
+//   };
+// };

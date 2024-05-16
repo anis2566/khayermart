@@ -7,17 +7,17 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-import { FeatureProductCard } from "@/components/card/feature-product-card";
-import { FeatureProductForm } from "@/components/dashboard/feature-products/feature-product-form";
 import { db } from "@/lib/db";
 import { PopularProductForm } from "@/components/dashboard/popular-products/popular-product-form";
 import { PopulareProductCard } from "@/components/card/popular-product-card";
+import { BestDealForm } from "@/components/dashboard/best-deal/best-deal-form";
+import { BestDealCard } from "@/components/card/best-deal-dashboard-card";
 
-const FeatureProducts = async () => {
+const BestDealProduct = async () => {
     const products = await db.product.findMany({
         where: {
             genre: {
-                has: "popular"
+                has: "best-deal"
             }
         },
         orderBy: {
@@ -35,7 +35,7 @@ const FeatureProducts = async () => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                    <BreadcrumbPage>Popular Products</BreadcrumbPage>
+                    <BreadcrumbPage>Best Deal</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -44,15 +44,15 @@ const FeatureProducts = async () => {
                 <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 justify-center gap-x-3 gap-y-4">
                     {
                         products.map((product) => (
-                            <PopulareProductCard key={product.id} product={product} />
+                            <BestDealCard key={product.id} product={product} />
                         ))
                     }
                 </div>
-                <PopularProductForm />
+                <BestDealForm />
                 
             </div>
         </div>
     )
 }
 
-export default FeatureProducts;
+export default BestDealProduct;

@@ -49,6 +49,9 @@ model Product {
   sellerPrice Int?
   status  String @default("DRAFT")
   featureTitle String?
+  startDeal DateTime?
+  endDeal DateTime?
+  stairs String?
 
   genre String[]
 

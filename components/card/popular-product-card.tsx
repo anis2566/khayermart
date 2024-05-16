@@ -15,12 +15,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import { removeFeatureProduct } from "@/actions/product.action";
+import { removePopularProduct } from "@/actions/product.action";
 
-export const FeatureProductCard = ({ product }: { product: Product }) => {
+export const PopulareProductCard = ({ product }: { product: Product }) => {
 
-    const {mutate: removeFeature, isPending} = useMutation({
-        mutationFn: removeFeatureProduct,
+    const {mutate: removePopular, isPending} = useMutation({
+        mutationFn: removePopularProduct,
         onSuccess: (data) => {
             toast.success(data.success, {
                 id: "remove-feature"
@@ -33,11 +33,11 @@ export const FeatureProductCard = ({ product }: { product: Product }) => {
         }
     })
 
-    const handleRemoveFeature = () => {
+    const handleRemovePopular = () => {
         toast.loading("Removing feature...", {
             id: "remove-feature"
         });
-        removeFeature(product.id)
+        removePopular(product.id)
     }
   
     return (
@@ -68,7 +68,7 @@ export const FeatureProductCard = ({ product }: { product: Product }) => {
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" onClick={handleRemoveFeature} disabled={isPending}>
+                                    <Button variant="ghost" size="icon" onClick={handleRemovePopular} disabled={isPending}>
                                         <Trash2 className="text-rose-500" />
                                     </Button>
                                 </TooltipTrigger>

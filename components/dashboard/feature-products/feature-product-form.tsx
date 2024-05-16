@@ -23,7 +23,6 @@ import { Input } from "@/components/ui/input"
 
 import { useDebounce } from "@/store/use-debounce";
 import { FeatureFormSchema } from "@/schema/feature-products"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 type Product = {
     id: string;
@@ -78,7 +77,7 @@ export const FeatureProductForm = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="text-primary">Add Product</CardTitle>
+                <CardTitle className="text-primary">Assign Product</CardTitle>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -102,13 +101,7 @@ export const FeatureProductForm = () => {
                                             value={product.id}
                                             className="flex flex-row items-center gap-2"
                                             >
-                                                <Avatar>
-                                                    <AvatarImage className="w-8 h-8" src={product.featureImageUrl} />
-                                                    <AvatarFallback>PS</AvatarFallback>
-                                                </Avatar>
-                                                <p>
-                                                {product.name.slice(0,30)}...
-                                                </p>
+                                               {product.name.slice(0,30)}...
                                         </SelectItem>
                                         ))}
                                     </SelectContent>

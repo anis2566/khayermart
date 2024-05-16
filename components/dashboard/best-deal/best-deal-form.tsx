@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { addPopularProduct, getProductIdsAndName } from "@/actions/product.action";
+import { addBestDealProduct, addPopularProduct, getProductIdsAndName } from "@/actions/product.action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
 import {
@@ -37,7 +37,7 @@ type Product = {
     featureImageUrl: string;
 }
 
-export const PopularProductForm = () => {
+export const BestDealForm = () => {
     const [search, setSearch] = useState<string>("")
     const [products, setProducts] = useState<Product[]>([])
 
@@ -58,26 +58,26 @@ export const PopularProductForm = () => {
         }
     })
 
-    const {mutate: addPopular, isPending} = useMutation({
-        mutationFn: addPopularProduct,
+    const {mutate: addBestDeal, isPending} = useMutation({
+        mutationFn: addBestDealProduct,
         onSuccess: (data) => {
             toast.success(data.success, {
-                id: "add-feature"
+                id: "add-best-deal"
             })
             form.reset()
         },
         onError: (error) => {
             toast.error(error.message, {
-                id: "add-feature"
+                id: "add-best-deal"
             })
         }
     })
 
     function onSubmit(data: z.infer<typeof formSchema>) {
-        toast.loading("Creating feature...", {
-            id: "add-feature"
+        toast.loading("Creating best deal...", {
+            id: "add-best-deal"
         });
-        addPopular(data.productId)
+        addBestDeal(data.productId)
     }
 
     return (

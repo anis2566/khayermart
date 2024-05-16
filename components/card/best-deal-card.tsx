@@ -42,7 +42,7 @@ export const BestDealCard = ({ product }: Props) => {
                     />
                 </div>
 
-                <p className="font-semibold">{product.name.length > 50 ? `${product.name.slice(0, 50)}...` : product.name}</p>
+                <p className="font-semibold">{product.name.length > 40 ? `${product.name.slice(0, 40)}...` : product.name}</p>
              
                 <div className="flex items-center gap-x-4">
                     <div className="flex items-center gap-0.5">
