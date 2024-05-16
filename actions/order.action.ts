@@ -86,8 +86,57 @@ export const createOrder = async (values: OrderSchemaType) => {
       },
     });
 
-    return {
-      success: "Order placed",
-    };
+    for (const product of products) {
+      if (!product.size) {
+        await db.product.update({
+          where: { id: product.id },
+          data: { totalStock: { decrement: product.quantity } },
+        });
+        return {
+          success: "Order placed",
+        };
+      } else {
+        const stock = await db.stock.findFirst({
+          where: {
+            productId: product.id
+          }
+        })
+
+        if (!stock) {
+          throw new Error("Stock not found")
+        }
+
+        await db.stock.update({
+          where: {
+            id: stock.id,
+            size: product.size
+          },
+          data: {
+            total: {decrement: product.quantity}
+          }
+        })
+
+        const stocks = await db.stock.findMany({
+          where: {
+            productId: product.id
+          }
+        })
+
+        const totalStock = stocks.reduce((acc, curr) => acc+curr.total,0)
+
+        await db.product.update({
+          where: {
+            id: product.id
+          },
+          data: {
+            totalStock
+          }
+        })
+
+        return {
+          success: "Order placed",
+        };
+      }
+    }
   }
 };

@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import toast from "react-hot-toast";
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Brand, Category, Product, Stock } from "@prisma/client"
+
 import {
   Card,
   CardContent,
@@ -29,12 +29,7 @@ export const DealOfTheDayCard = ({ product }: Props) => {
 
     const {addToCart} = useCart()
 
-    const dealEndTime = (() => {
-        const now = new Date();
-        now.setDate(now.getDate() + 3);
-        now.setHours(23, 59, 59, 999);
-        return now;
-    })();
+    const dealEndTime = product?.endDeal ? new Date(product.endDeal) : new Date();
 
     useEffect(() => {
         const timer = setInterval(() => {

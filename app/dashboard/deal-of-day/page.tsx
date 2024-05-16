@@ -8,19 +8,29 @@ import {
 } from "@/components/ui/breadcrumb"
 
 import { db } from "@/lib/db";
-import { PopularProductForm } from "@/components/dashboard/popular-products/popular-product-form";
+
 import { PopulareProductCard } from "@/components/card/popular-product-card";
 import { DealOfTheDayForm } from "@/components/dashboard/deal-of-day-day/deal-of-the-day-form";
+import { DealOfTheDayCard } from "@/components/card/deal-of-the-day-card";
+import { DealOfTheDay } from "@/components/card/deal-of-they-dashboard-card";
 
 const FeatureProducts = async () => {
     const products = await db.product.findMany({
         where: {
             genre: {
-                has: "popular"
-            }
+                has: "deal-of-day",
+            },
+            endDeal: {
+                gt: new Date(), 
+            },
+        },
+        include: {
+            stocks: true,
+            brand: true,
+            category: true
         },
         orderBy: {
-            createdAt: "desc"
+            createdAt: "desc" 
         }
     })
 
@@ -43,7 +53,7 @@ const FeatureProducts = async () => {
                 <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 justify-center gap-x-3 gap-y-4">
                     {
                         products.map((product) => (
-                            <PopulareProductCard key={product.id} product={product} />
+                            <DealOfTheDay key={product.id} product={product} />
                         ))
                     }
                 </div>

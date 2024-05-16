@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { addPopularProduct, getProductIdsAndName } from "@/actions/product.action";
+import { addDealOfTheDayProduct, addPopularProduct, getProductIdsAndName } from "@/actions/product.action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
 import {
@@ -22,8 +22,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 
 import { useDebounce } from "@/store/use-debounce";
-import { FeatureFormSchema } from "@/schema/feature-products"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DealOfTheDaySchema } from "@/schema/deal-of-day-day"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
@@ -60,8 +58,8 @@ export const DealOfTheDayForm = () => {
         }
     })
 
-    const {mutate: addPopular, isPending} = useMutation({
-        mutationFn: addPopularProduct,
+    const {mutate: addDealOfTheDay, isPending} = useMutation({
+        mutationFn: addDealOfTheDayProduct,
         onSuccess: (data) => {
             toast.success(data.success, {
                 id: "add-feature"
@@ -77,10 +75,10 @@ export const DealOfTheDayForm = () => {
 
     function onSubmit(data: z.infer<typeof DealOfTheDaySchema>) {
         console.log(data)
-        // toast.loading("Creating feature...", {
-        //     id: "add-feature"
-        // });
-        // addPopular(data.productId)
+        toast.loading("Creating feature...", {
+            id: "add-feature"
+        });
+        addDealOfTheDay(data)
     }
 
     return (

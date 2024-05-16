@@ -369,35 +369,129 @@ export const getBestDealProducts = async () => {
   return { products };
 };
 
-// export const addDealOfTheDayProduct = async (values: DealOfTheDaySchemaType) => {
-//   const parseBody = DealOfTheDaySchema.safeParse(values) 
+export const addDealOfTheDayProduct = async (values: DealOfTheDaySchemaType) => {
+  const parseBody = DealOfTheDaySchema.safeParse(values) 
   
-//   if (!parseBody.success) {
-//     throw new Error("Invalid input value")
-//   } 
+  if (!parseBody.success) {
+    throw new Error("Invalid input value")
+  } 
 
-//   const product = await db.product.findUnique({
-//     where: {
-//       id: values.productId,
-//     },
-//   });
+  const product = await db.product.findUnique({
+    where: {
+      id: values.productId,
+    },
+  });
 
-//   if (!product) {
-//     throw new Error("Product not found");
-//   }
+  if (!product) {
+    throw new Error("Product not found");
+  }
 
-//   await db.product.update({
-//     where: {
-//       id: values.productId
-//     },
-//     data: {
-//       st
-//     }
-//   })
+  await db.product.update({
+    where: {
+      id: values.productId,
+    },
+    data: {
+      startDeal: values.startDeal,
+      endDeal: values.endDeal,
+      genre: [...(product.genre || []), "deal-of-day"],
+    },
+  });
 
-//   revalidatePath("/dashboard/deal-of-the-day");
+  revalidatePath("/dashboard/deal-of-day");
 
-//   return {
-//     success: "Product added to deal-of-the-day",
-//   };
-// };
+  return {
+    success: "Product added to deal-of-the-day",
+  };
+};
+
+export const removeDealOfTheDayProduct = async (productId: string) => {
+  const product = await db.product.findUnique({
+    where: {
+      id: productId,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  await db.product.update({
+    where: {
+      id: productId,
+    },
+    data: {
+      startDeal: null,
+      endDeal: null,
+      genre: (product.genre || []).filter((g) => g !== "deal-of-day"),
+    },
+  });
+
+  revalidatePath("/dashboard/deal-of-day");
+
+  return {
+    success: "Product removed from deal-of-the-day",
+  };
+};
+
+export const getDealOfTheDayProducts = async () => {
+  const currentDate = new Date();
+
+  const products = await db.product.findMany({
+    where: {
+      genre: {
+        has: "deal-of-day"
+      },
+      endDeal: {
+        gte: currentDate
+      }
+    },
+    include: {
+      brand: true,
+      category: true,
+      stocks: true
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    take: 3
+  });
+
+  return { products };
+};
+
+
+export const getTopSellingProducts = async () => {
+  const productSales = await db.product.findMany({
+    include: {
+      orderProducts: {
+        select: {
+          quantity: true,
+        },
+      },
+    },
+  });
+
+  const productSalesWithTotal = productSales.map(product => ({
+    ...product,
+    totalSold: product.orderProducts.reduce((sum, orderProduct) => sum + orderProduct.quantity, 0),
+  }));
+
+  productSalesWithTotal.sort((a, b) => b.totalSold - a.totalSold);
+
+  return {
+    products: productSalesWithTotal.slice(0, 3),
+  }
+}
+
+export const getNewProducts = async () => {
+  const products = await db.product.findMany({
+    orderBy: {
+      createdAt: 'asc'
+    },
+    take: 3
+  });
+
+  console.log(products)
+
+  return { products };
+};
