@@ -139,7 +139,7 @@ const Checkout = () => {
             onOpen()
             router.push("/account/orders")
             resetCart()
-            toast.success(data.success, {
+            toast.success(data?.success || "Order created", {
                 id: "create-order"
             })
         }
