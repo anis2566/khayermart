@@ -12,6 +12,10 @@ export default authMiddleware({
     if (role !== "admin" && isAdminRoute) {
       return NextResponse.redirect(new URL("/", req.url));
     }
+    const isSellerRoute = req.nextUrl.pathname.startsWith("/seller")
+    if (isSellerRoute && role !== "seller") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
   },
   publicRoutes: [
     "/",
@@ -25,7 +29,6 @@ export default authMiddleware({
     "/shop",
     "/shop(.*)",
     "/quick-order(.*)",
-    "/seller(.*)"
   ],
   ignoredRoutes: ["/((?!api|trpc))(_next.*|.+.[w]+$)", "/api/uploadthing"],
 });

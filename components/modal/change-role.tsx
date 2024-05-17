@@ -31,10 +31,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { useQuickOrder } from "@/store/use-quick-order"
-import { QuickOrderSchema } from "@/schema/quick-order"
-import { createQuickOrder } from "@/actions/quick-order.action"
-import { useConfettiStore } from "@/store/use-confetti-store"
 import { useRole } from "@/store/use-role"
 import React from "react"
 import { chnageRole } from "@/actions/user.action"
@@ -45,10 +41,9 @@ const formSchema = z.object({
     })
 })
 
-export const ChangeRoleModal = ({children, userId}:{children:React.ReactNode, userId:string}) => {
-
-    const { open, onClose } = useRole()
-    console.log(open)
+export const ChangeRoleModal = () => {
+    
+    const {onClose, open, userId} = useRole()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -76,10 +71,8 @@ export const ChangeRoleModal = ({children, userId}:{children:React.ReactNode, us
     }
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                {children}
-            </DialogTrigger>
+        <Dialog open={open} onOpenChange={onClose}>
+            
             <DialogContent>
                 <DialogHeader>
                 <DialogTitle>Assign Role</DialogTitle>

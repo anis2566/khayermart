@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster as HotToaster } from "react-hot-toast";
 import { ConfettiProvider } from "@/components/providers/confetti-provider";
+import { ModalProvider } from "@/components/providers/modal-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,11 +35,12 @@ export default function RootLayout({
           >
             <QueryProvider>
               {children}
+              <Toaster />
+              <HotToaster />
+              <ConfettiProvider />
+              <NextTopLoader showSpinner={false} color="#7C3AED" />
+              <ModalProvider />
             </QueryProvider>
-            <Toaster />
-            <HotToaster />
-            <ConfettiProvider />
-            <NextTopLoader showSpinner={false} color="#7C3AED" />
           </ThemeProvider>
         </body>
       </html>

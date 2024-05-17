@@ -18,19 +18,19 @@ const About = () => {
                 <div className="grid gap-2">
                   <div className="grid grid-cols-2 items-start">
                     <p className="font-semibold">Founded</p>
-                    <p>April 1, 2023</p>
+                    <p>April 1, 2022</p>
                   </div>
                   <div className="grid grid-cols-2 items-start">
                     <p className="font-semibold">HQ</p>
-                    <p>Armanitola, Bongshal, Dhaka.</p>
+                    <p>Chakbazar, Dhaka.</p>
                   </div>
                   <div className="grid grid-cols-2 items-start">
                     <p className="font-semibold">Phone</p>
-                    <p>01319-131697</p>
+                    <p>01969-764382</p>
                   </div>
                   <div className="grid grid-cols-2 items-start">
                     <p className="font-semibold">Email</p>
-                    <p className="text-sm md:text-normal">khayermart@gmail.com</p>
+                    <p className="text-sm md:text-normal">padmacart23@gmail.com</p>
                   </div>
                 </div>
               </div>
@@ -77,7 +77,6 @@ const About = () => {
             </div>
           </div>
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
-            <div className="space-y-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold">Our Mission: Delivering Excellence</h2>
                 <p className="max-w-2xl text-muted-foreground">
@@ -105,94 +104,6 @@ const About = () => {
                     Community
                   </li>
                 </ul>
-              </div>
-            </div>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-2xl font-bold">Our History</h2>
-                <p className="max-w-2xl text-muted-foreground">
-                  Since our founding, we have been on a journey of growth and innovation. From our humble beginnings to
-                  becoming a leader in the industry, every step has been driven by our passion for excellence.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h2 className="text-2xl font-bold">Meet the Team</h2>
-                <p className="max-w-2xl text-muted-foreground">
-                  Our team is made up of dedicated individuals who are committed to upholding our values and delivering
-                  the best for our customers. Let us introduce you to the people behind the excellence.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="grid gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3 lg:gap-16 xl:gap-24">
-            <div className="flex flex-col gap-2">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                The products are amazing, and the customer service is outstanding. I will definitely be shopping here
-                again!
-              </p>
-              <div className="flex items-center gap-2">
-                <img
-                  alt="Person"
-                  className="rounded-full object-cover object-center"
-                  height="40"
-                  src="/anis.jpg"
-                  style={{
-                    aspectRatio: "40/40",
-                    objectFit: "cover",
-                  }}
-                  width="40"
-                />
-                <div className="grid gap-0.5">
-                  <p className="font-semibold">Sarah Johnson</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Verified Customer</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                The products are amazing, and the customer service is outstanding. I will definitely be shopping here
-                again!
-              </p>
-              <div className="flex items-center gap-2">
-                <img
-                  alt="Person"
-                  className="rounded-full object-cover object-center"
-                  height="40"
-                  src="/anis.jpg"
-                  style={{
-                    aspectRatio: "40/40",
-                    objectFit: "cover",
-                  }}
-                  width="40"
-                />
-                <div className="grid gap-0.5">
-                  <p className="font-semibold">Sarah Johnson</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Verified Customer</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                The products are amazing, and the customer service is outstanding. I will definitely be shopping here
-                again!
-              </p>
-              <div className="flex items-center gap-2">
-                <img
-                  alt="Person"
-                  className="rounded-full object-cover object-center"
-                  height="40"
-                  src="/anis.jpg"
-                  style={{
-                    aspectRatio: "40/40",
-                    objectFit: "cover",
-                  }}
-                  width="40"
-                />
-                <div className="grid gap-0.5">
-                  <p className="font-semibold">Sarah Johnson</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Verified Customer</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

@@ -32,6 +32,13 @@ export const Sidebar = () => {
                         </nav>
                     </div>
                     <Separator />
+                    <div>
+                        <p className="text-sm italic text-muted-foreground px-2 lg:px-7">Seller</p>
+                        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 space-y-2">
+                            <SidebarItem label="Orders" href="/dashboard/seller-orders" icon={ShoppingCart} />
+                        </nav>
+                    </div>
+                    <Separator />
                     <div className="flex-1 mt-3">
                         <p className="text-sm italic text-muted-foreground px-2 lg:px-7">Client</p>
                         <nav className="grid items-start px-2 text-sm font-medium lg:px-4 space-y-2">

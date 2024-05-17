@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import { clerkClient } from "@clerk/nextjs";
+import { revalidatePath } from "next/cache";
 
 type ChangeRole = {
     userId: string;
@@ -34,7 +35,35 @@ export const chnageRole = async (values:ChangeRole) => {
       },
     });
 
+    revalidatePath("/dashboard/users")
+
     return {
         success: "Role changed"
     }
+}
+
+export const deleteUser = async (userId: string) => {
+    const user = await db.user.findUnique({
+        where: {
+            id: userId
+        }
+    });
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    await db.user.delete({
+        where: {
+            id: userId
+        }
+    });
+
+    await clerkClient.users.deleteUser(user.clerkId);
+
+    revalidatePath("/dashboard/users")
+
+    return {
+        success: "User deleted successfully"
+    };
 }

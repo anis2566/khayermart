@@ -42,6 +42,7 @@ import SkeletonComp from "@/components/skeleton"
 import { CreditCard, HandCoins, PlusCircle } from "lucide-react"
 import { calculateDeliveryFee, cn } from "@/lib/utils"
 import { useConfettiStore } from "@/store/use-confetti-store"
+import { DIVISIONS } from "@/constant"
 
 
 const formSchema = z.object({
@@ -148,25 +149,6 @@ const Checkout = () => {
     const subTotal = cart.reduce((acc, curr) => {
         return acc + (curr.price * curr.quantity)
     }, 0)
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('http://api.geonames.org/childrenJSON?geonameId=1210997&username=anis256');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setDivisions(data.geonames);
-            } catch (error) {
-                toast.error("Failed to fetch divisions", {
-                    id: "fetch-divisions"
-                });
-            }
-        };
-
-        fetchData();
-    }, []);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -308,8 +290,8 @@ const Checkout = () => {
                                                     </SelectTrigger>
                                                     </FormControl>
                                                         <SelectContent>
-                                                            {divisions && divisions.map((division:any, i) => (
-                                                                <SelectItem value={division?.adminName1?.split(" ")[0]} key={i}>{division?.adminName1?.split(" ")[0]}</SelectItem>
+                                                            {DIVISIONS.map((division, i) => (
+                                                                <SelectItem value={division} key={i}>{division}</SelectItem>
                                                             ))}
                                                     </SelectContent>
                                                 </Select>

@@ -15,29 +15,10 @@ import { Button } from "../ui/button"
 
 import { ShippingSchema, ShippingSchemaType } from "@/schema/shipping"
 import { createShipping } from "@/actions/shipping.action"
+import { DIVISIONS } from "@/constant"
 
 export const AddressForm = () => {
     const [divisions, setDivisions] = useState([])
-
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('http://api.geonames.org/childrenJSON?geonameId=1210997&username=anis256');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setDivisions(data.geonames);
-            } catch (error) {
-                toast.error("Failed to fetch divisions", {
-                    id: "fetch-divisions"
-                });
-            }
-        };
-
-        fetchData();
-    }, []);
 
     const {isPending, mutate} = useMutation({
         mutationFn: createShipping,
@@ -121,8 +102,8 @@ export const AddressForm = () => {
                                     </SelectTrigger>
                                     </FormControl>
                                         <SelectContent>
-                                            {divisions && divisions.map((division:any, i) => (
-                                            <SelectItem value={division?.adminName1?.split(" ")[0]} key={i}>{division?.adminName1?.split(" ")[0]}</SelectItem>
+                                            {DIVISIONS.map((division, i) => (
+                                                <SelectItem value={division} key={i}>{division}</SelectItem>
                                             ))}
                                     </SelectContent>
                                 </Select>

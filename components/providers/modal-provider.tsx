@@ -11,7 +11,7 @@ export const ModalProvider = () => {
             <QuickViewModal />
             <AddressModal />
             <QuickOrderModal />
-            {/* <ChangeRoleModal /> */}
+            <ChangeRoleModal />
         </>
     )
 }

@@ -98,105 +98,105 @@ type UpdateOrder = {
   products: OrderProduct[];
 };
 
-// export const updateOrder = async ({ id, status, products }: UpdateOrder) => {
-//   const order = await db.order.findUnique({
-//     where: {
-//       id,
-//     },
-//   });
+export const updateOrder = async ({ id, status, products }: UpdateOrder) => {
+  const order = await db.sellerOrder.findUnique({
+    where: {
+      id,
+    },
+  });
 
-//   if (!order) {
-//     throw new Error("Order not found");
-//   }
+  if (!order) {
+    throw new Error("Order not found");
+  }
 
-//   if (status === "delivered") {
-//     await db.order.update({
-//       where: {
-//         id,
-//       },
-//       data: {
-//         status,
-//       },
-//     });
+  if (status === "delivered") {
+    await db.sellerOrder.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+      },
+    });
 
-//     await Promise.all(
-//       products.map(async (product: OrderProduct) => {
-//         await db.product.update({
-//           where: {
-//             id: product.productId,
-//           },
-//           data: {
-//             totalStock: {
-//               decrement: product.quantity,
-//             },
-//           },
-//         });
-//       })
-//     );
+    await Promise.all(
+      products.map(async (product: OrderProduct) => {
+        await db.product.update({
+          where: {
+            id: product.productId,
+          },
+          data: {
+            totalStock: {
+              decrement: product.quantity,
+            },
+          },
+        });
+      })
+    );
 
-//     await createNotification({
-//       id: order.userId,
-//       message: "Your order delivered",
-//     });
+    // await createNotification({
+    //   id: order.userId,
+    //   message: "Your order delivered",
+    // });
 
-//     revalidatePath(`/dashboard/orders/${id}`);
+    revalidatePath(`/dashboard/seller-orders/${id}`);
 
-//     return {
-//       success: "Status updated",
-//     };
-//   }
+    return {
+      success: "Status updated",
+    };
+  }
 
-//   if (status === "returned") {
-//     await db.order.update({
-//       where: {
-//         id,
-//       },
-//       data: {
-//         status,
-//       },
-//     });
+  if (status === "returned") {
+    await db.sellerOrder.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+      },
+    });
 
-//     await Promise.all(
-//       products.map(async (product: OrderProduct) => {
-//         await db.product.update({
-//           where: {
-//             id: product.productId,
-//           },
-//           data: {
-//             totalStock: {
-//               increment: product.quantity,
-//             },
-//           },
-//         });
-//       })
-//     );
+    await Promise.all(
+      products.map(async (product: OrderProduct) => {
+        await db.product.update({
+          where: {
+            id: product.productId,
+          },
+          data: {
+            totalStock: {
+              increment: product.quantity,
+            },
+          },
+        });
+      })
+    );
 
-//     await createNotification({
-//       id: order.userId,
-//       message: "Your order returned",
-//     });
+    // await createNotification({
+    //   id: order.userId,
+    //   message: "Your order returned",
+    // });
 
-//     revalidatePath(`/dashboard/orders/${id}`);
+    revalidatePath(`/dashboard/orders/${id}`);
 
-//     return {
-//       success: "Status updated",
-//     };
-//   }
+    return {
+      success: "Status updated",
+    };
+  }
 
-//   if (status === "shipping") {
-//     await db.order.update({
-//       where: {
-//         id,
-//       },
-//       data: {
-//         status,
-//       },
-//     });
+  if (status === "shipping") {
+    await db.sellerOrder.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+      },
+    });
 
-//     revalidatePath(`/dashboard/orders/${id}`);
+    revalidatePath(`/dashboard/seller-orders/${id}`);
 
-//     return {
-//       success: "Status updated",
-//     };
-//   }
-// };
+    return {
+      success: "Status updated",
+    };
+  }
+};

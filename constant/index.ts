@@ -159,3 +159,14 @@ export const CLIENT_SIDEBAR = [
     icon: CalendarClock,
   },
 ] as const;
+
+export const DIVISIONS = [
+  "Barishal",
+  "Chittagong",
+  "Dhaka",
+  "Khulna",
+  "Mymensingh",
+  "Rajshahi",
+  "Rangpur",
+  "Sylhet"
+] as const

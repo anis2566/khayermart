@@ -36,14 +36,44 @@ import { Header } from "./header"
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
 import { useRole } from "@/store/use-role"
 import { ChangeRoleModal } from "@/components/modal/change-role"
+import { useState } from "react"
+import { useMutation } from "@tanstack/react-query"
+import { deleteUser } from "@/actions/user.action"
+import { toast } from "sonner"
 
 interface Props {
   users: User[]
 }
 
 export const UserList = ({ users }: Props) => {
-  const { onOpen,open, userId } = useRole()
-  console.log(open, userId)
+  const [userId, setUserId] = useState<string>("")
+  const { onOpen } = useRole() 
+  
+  const {mutate: deleteUserHandler} = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+        toast.success("Banner deleted", {
+            id: "delete-user"
+        });
+    },
+    onError: (error) => {
+        toast.error(error.message, {
+            id: "delete-user"
+        });
+    }
+  })
+
+  const handleDelete = (value: string) => {
+    setUserId(value)
+    if (!userId) {
+        toast.error("Something went wrong");
+    } else {
+      toast.loading("User Deleting...", {
+          id: "delete-user"
+      });
+      deleteUserHandler(userId)
+  }
+  }
   return (
       <Card>
         <CardHeader>
@@ -86,11 +116,7 @@ export const UserList = ({ users }: Props) => {
                           </Button>
                           </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <ChangeRoleModal userId={user.id}>
-                              <Button variant="ghost">Assign Role</Button>
-                            </ChangeRoleModal>
-                          </DropdownMenuItem>
+                              <Button variant="ghost" onClick={() => onOpen(user.id)}>Assign Role</Button>
                             <AlertDialog>
                             <AlertDialogTrigger className="flex gap-x-3 text-rose-500 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 select-none items-center rounded-sm px-2 py-1.5 text-sm w-full">
                               <Trash2 className="text-rose-500 w-4 h-4" />
@@ -105,7 +131,7 @@ export const UserList = ({ users }: Props) => {
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction>Continue</AlertDialogAction>
+                                <AlertDialogAction onClick={() => handleDelete(user.id)}>Continue</AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>

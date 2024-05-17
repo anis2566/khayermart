@@ -227,7 +227,7 @@ const CreateOrder = () => {
                                                                                     <AvatarImage src={product.featureImageUrl} className="w-9 h-9" />
                                                                                     <AvatarFallback>{product.name}</AvatarFallback>
                                                                                 </Avatar>
-                                                                                <p>{product.name}</p>
+                                                                                {product.name}
                                                                                 </div>
                                                                             </SelectItem>
                                                                         ))
