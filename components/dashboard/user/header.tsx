@@ -40,19 +40,19 @@ export const Header = () => {
         url: pathname,
         query: {
           search: searchParams.get("search"),
-          status: searchParams.get("status"),
+          role: searchParams.get("role"),
           perPage: value,
         }
         }, { skipEmptyString: true, skipNull: true });
         router.push(url);
   }
   
-    const handleStatusChaange = (value:string) => {
+    const handleRoleChaange = (value:string) => {
         const url = queryString.stringifyUrl({
         url: pathname,
         query: {
             search: searchParams.get("search"),
-            status: value,
+            role: value,
         }
         }, { skipEmptyString: true, skipNull: true });
         router.push(url);
@@ -69,7 +69,7 @@ export const Header = () => {
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-              <Select defaultValue="5" onValueChange={(value) => handleChaange(value)}>
+              <Select  onValueChange={(value) => handleChaange(value)}>
                 <SelectTrigger className="max-w-[80px]">
                     <SelectValue placeholder="Limit" />
                 </SelectTrigger>
@@ -83,16 +83,13 @@ export const Header = () => {
               </Select>
             </div>
  
-              <Select defaultValue="ALL" onValueChange={(value) => handleStatusChaange(value)}>
+              <Select onValueChange={(value) => handleRoleChaange(value)}>
                 <SelectTrigger className="max-w-[180px]">
-                    <SelectValue placeholder="Status" />
+                    <SelectValue placeholder="Role" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="ALL">All</SelectItem>
-                    <SelectItem value="PENDING">Pending</SelectItem>
-                    <SelectItem value="SHIPPING">Processing</SelectItem>
-                    <SelectItem value="DELIVERED">Delivered</SelectItem>
-                    <SelectItem value="RETURNED">Returned</SelectItem>
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="seller">Seller</SelectItem>
                 </SelectContent>
               </Select>
 

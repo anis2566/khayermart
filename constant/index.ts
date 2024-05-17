@@ -12,6 +12,7 @@ import {
   Feather,
   Popcorn,
   CalendarClock,
+  ClipboardList,
 } from "lucide-react";
 
 export const DASHBOARD_SIDEBAR = [
@@ -41,8 +42,8 @@ export const DASHBOARD_SIDEBAR = [
     icon: ShoppingCart,
   },
   {
-    label: "Customers",
-    href: "/dashboard/customers",
+    label: "Users",
+    href: "/dashboard/users",
     icon: Users,
   },
   {
@@ -88,6 +89,24 @@ export const CUSTOMER_SIDEBAR = [
     href: "/account/address",
     icon: MapPin,
   },
+] as const;
+
+export const CUSTOMER_SIDEBAR_ITEMS = [
+    {
+        label: "Dashboard",
+        href: "/seller",
+        icon: LayoutDashboard
+    },
+    {
+        label: "Place Order",
+        href: "/seller/order/create",
+        icon: ShoppingCart
+    },
+    {
+        label: "Orders",
+        href: "/seller/order/list",
+        icon: ClipboardList
+    },
 ] as const;
 
 export const ORDER_STATUS = [

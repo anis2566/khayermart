@@ -1,10 +1,11 @@
-import {EllipsisVertical,Eye} from "lucide-react"
+import {Eye} from "lucide-react"
 import Link from "next/link"
+import { Order, OrderProduct } from "@prisma/client"
+import { format } from "date-fns"
 
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -12,99 +13,90 @@ import {
 } from "@/components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { formatPrice } from "@/lib/utils"
 
+interface OrderWithProduct extends OrderProduct {
+  product: {
+    featureImageUrl: string;
+  }
+}
 
-export const OrderList = () => {
-  const date = new Date()
+interface OrderWithExtend extends Order {
+    shippingInfo: {
+        name: string;
+    };
+    products:OrderWithProduct[];
+}
+
+interface Props {
+  orders: OrderWithExtend[]
+}
+
+export const OrderList = ({orders}:Props) => {
   return (
-    <Table>
-      <TableCaption>A list of your recent orders.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Image</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>Date</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Action</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+    <div>
+      <Table>
+        <TableHeader>
           <TableRow>
-            <TableCell>
-              <Avatar className="w-7 h-7">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>250.00</TableCell>
-            <TableCell>{date.toDateString()}</TableCell>
-            <TableCell>COD</TableCell>
-            <TableCell>
-              <Badge className="bg-green-500">Delivered</Badge>
-            </TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
-                    <EllipsisVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <Link href={`/dashboard/orders`} className="flex items-center gap-x-3">
-                      <Eye className="w-4 h-4" />
-                        View
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
+            <TableHead>Product</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>D. Fee</TableHead>
+            <TableHead>Size</TableHead>
+            <TableHead>Color</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
-          <TableRow>
-            <TableCell>
-              <Avatar className="w-7 h-7">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>250.00</TableCell>
-            <TableCell>{date.toDateString()}</TableCell>
-            <TableCell>COD</TableCell>
-            <TableCell>
-              <Badge className="bg-rose-500">Returned</Badge>
-            </TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
-                    <EllipsisVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <Link href={`/dashboard/orders`} className="flex items-center gap-x-3">
-                      <Eye className="w-4 h-4" />
-                        View
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
-          </TableRow>
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+            {
+                orders.map(order => (
+                    <TableRow key={order.id}>
+                      <TableCell className="py-3 px-1">
+                        {
+                          order.products.map((item, i) => (
+                              <Avatar className="w-7 h-7" key={i}>
+                                  <AvatarImage src={item.product.featureImageUrl} />
+                                  <AvatarFallback>PS</AvatarFallback>
+                              </Avatar>
+                          ))
+                        }
+                        </TableCell>
+                        <TableCell className="py-3 px-1">{order.shippingInfo.name}</TableCell>
+                        <TableCell className="py-3 px-1">{formatPrice(order.totalAmount)}</TableCell>
+                        <TableCell className="py-3 px-1">{formatPrice(order.deliveryFee)}</TableCell>
+                        <TableCell className="py-3 px-1 uppercase flex items-center gap-x-1">
+                          {
+                            order.products.map((item, i) => (
+                              <span>{item.size || "-"}</span>
+                            ))
+                          }
+                        </TableCell>
+                      <TableCell className="py-3 px-1 capitalize">
+                      {
+                            order.products.map((item, i) => (
+                              <span>{item.color || "-"}</span>
+                            ))
+                          }
+                        </TableCell>
+                        <TableCell className="py-3 px-1">{format(order.createdAt, "dd MMMM yyyy")}</TableCell>
+                        <TableCell className="py-3 px-1">
+                            <Badge>{order.status}</Badge>
+                        </TableCell>
+                        <TableCell className="py-3 px-1">
+                            <Link href={`/dashboard/orders/${order.id}`}>
+                                <Button variant="ghost" size="icon">
+                                    <Eye className="w-5 h-5 text-primary" />
+                                </Button>
+                            </Link>
+                        </TableCell>
+                    </TableRow>
+                ))
+            }
+        </TableBody>
+      </Table>
+    </div>
   )
 }

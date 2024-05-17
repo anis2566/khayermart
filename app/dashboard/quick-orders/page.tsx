@@ -1,6 +1,3 @@
-import { Header } from "@/components/dashboard/quick-orders/header"
-import { Pagination } from "@/components/dashboard/quick-orders/pagination";
-import { QuickOrderList } from "@/components/dashboard/quick-orders/quick-order-list"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,6 +6,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+
+import { Header } from "@/components/dashboard/quick-orders/header"
+import { Pagination } from "@/components/dashboard/quick-orders/pagination";
+import { QuickOrderList } from "@/components/dashboard/quick-orders/quick-order-list"
 
 import { db } from "@/lib/db"
 

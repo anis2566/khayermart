@@ -120,6 +120,12 @@ export const deleteProduct = async (id: string) => {
   }
 }
 
+export const getProducts = async () => {
+  const products = await db.product.findMany();
+
+  return { products };
+};
+
 
 export const getProductIdsAndName = async (name?: string) => {
 
