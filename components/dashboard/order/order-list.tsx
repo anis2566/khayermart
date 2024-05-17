@@ -70,14 +70,14 @@ export const OrderList = ({orders}:Props) => {
                         <TableCell className="py-3 px-1 uppercase flex items-center gap-x-1">
                           {
                             order.products.map((item, i) => (
-                              <span>{item.size || "-"}</span>
+                              <span key={i}>{item.size || "-"}</span>
                             ))
                           }
                         </TableCell>
                       <TableCell className="py-3 px-1 capitalize">
                       {
                             order.products.map((item, i) => (
-                              <span>{item.color || "-"}</span>
+                              <span key={i}>{item.color || "-"}</span>
                             ))
                           }
                         </TableCell>
