@@ -206,6 +206,7 @@ model SellerOrder {
   total Int
   deliveryFee Int
   status String @default("pending")
+  trackingId String?
 
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

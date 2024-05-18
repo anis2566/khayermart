@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronLeft, ChevronRight, EllipsisVertical, Eye} from "lucide-react"
+import { ChevronLeft, ChevronRight, EllipsisVertical, Eye, Trash2} from "lucide-react"
 import { useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import qs from "query-string"
@@ -23,6 +23,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
@@ -30,6 +41,9 @@ import Link from "next/link"
 import { useDebounce } from "@/store/use-debounce"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useMutation } from "@tanstack/react-query"
+import { deleteOrder } from "@/actions/seller-order.action"
+import { toast } from "sonner"
 
 interface OrderProduct extends PrismaOrderProduct {
     product: {
@@ -42,6 +56,7 @@ interface OrderProduct extends PrismaOrderProduct {
 interface Order extends PrismaOrder {
     user: {
         name: string;
+        id: string;
     },
     orderProducts: OrderProduct[]
 }
@@ -77,7 +92,28 @@ export const OrderList = ({ orders }: OrderListProps) => {
     }, { skipEmptyString: true, skipNull: true });
 
     router.push(url);
-  }, [debouncedValue, paramPage, paramPage, paramStatus, router, pathname])
+    }, [debouncedValue, paramPage, paramPage, paramStatus, router, pathname])
+    
+    const {mutate: deleteOrderHandler} = useMutation({
+        mutationFn: deleteOrder,
+        onSuccess: (data) => {
+            toast.success(data?.success, {
+                id: "delete-order",
+                duration: 2000
+            })
+        }, 
+        onError: (error) => {
+            toast.error(error.message, {
+                id: "delete-order",
+                duration: 2000
+            })
+        },
+    })
+
+    const handleUpdate = (orderId: string) => {
+        toast.loading("Order deleting...", { id: "delete-order" });
+        deleteOrderHandler(orderId)
+    }
 
     return (
         <div className="w-full space-y-6">
@@ -151,6 +187,9 @@ export const OrderList = ({ orders }: OrderListProps) => {
                                     Status
                                 </TableHead>
                                 <TableHead className="px-1">
+                                    Tracking Id
+                                </TableHead>
+                                <TableHead className="px-1">
                                     Action
                                 </TableHead>
                             </TableRow>
@@ -169,7 +208,11 @@ export const OrderList = ({ orders }: OrderListProps) => {
                                             ))
                                         }
                                     </TableCell>
-                                    <TableCell className="py-2 px-1">{order.user.name}</TableCell>
+                                    <TableCell className="py-2 px-1 hover:underline">
+                                        <Link href={`/dashboard/users/${order.user.id}`}>
+                                            {order.user.name}
+                                        </Link>
+                                    </TableCell>
                                     <TableCell className="py-2 px-1">{order.customerName.slice(0,30)}</TableCell>
                                     <TableCell className="py-2 px-1 space-y-4">
                                         {
@@ -186,7 +229,7 @@ export const OrderList = ({ orders }: OrderListProps) => {
                                         }
                                     </TableCell>
                                     <TableCell className="py-2 px-1">&#2547;{order.total + order.deliveryFee}</TableCell>
-                                    <TableCell className="py-2 px-1 hidden md:table-cell">{format(order.createdAt, "hh:mm a, dd-MM-yyyy")}</TableCell>
+                                    <TableCell className="py-2 px-1 hidden md:table-cell">{format(order.createdAt, "dd MMMM yyyy")}</TableCell>
                                     <TableCell className="py-2 px-1 space-y-4 ">
                                         {
                                             order.orderProducts.map(orderProduct => (
@@ -213,6 +256,9 @@ export const OrderList = ({ orders }: OrderListProps) => {
                                             {order.status}
                                         </Badge>
                                     </TableCell>
+                                    <TableCell className="py-2 px-1">
+                                        {order.trackingId}
+                                    </TableCell>
                                     <TableCell>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -227,6 +273,26 @@ export const OrderList = ({ orders }: OrderListProps) => {
                                                         <Eye className="w-4 h-4" />
                                                         View
                                                     </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger className="flex gap-x-3 text-rose-500 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 select-none items-center rounded-sm px-2 py-1.5 text-sm w-full">
+                                                            <Trash2 className="text-rose-500 w-4 h-4" />
+                                                            Delete
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                            This action will delete the order permanantly.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={() => handleUpdate(order.id)}>Continue</AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

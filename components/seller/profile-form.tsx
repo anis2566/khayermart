@@ -3,33 +3,47 @@
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { User } from "@prisma/client"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
+
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
-import { User } from "@prisma/client"
 
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "required"
-  }),
-  phone: z.string().min(1, {
-    message: "required"
-  }),
-})
+import { UpdateUserSchema } from "@/schema/user"
+import { updateSeller } from "@/actions/user.action"
 
 export const ProfileForm = ({user}:{user:User}) => {
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof UpdateUserSchema>>({
+        resolver: zodResolver(UpdateUserSchema),
         defaultValues: {
             name: user.name || "",
-            phone: "",
+            phone: user.phone || "",
         },
     })
 
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        
+    const {mutate: updateSellerHandler, isPending} = useMutation({
+        mutationFn: updateSeller,
+        onSuccess: (data) => {
+            toast.success(data.success, {
+                id: "update-seller"
+            })
+        },
+        onError: (error) => {
+            toast.error(error.message, {
+                id: "update-seller"
+            })
+        }
+    })
+
+    const onSubmit = (values: z.infer<typeof UpdateUserSchema>) => {
+        toast.loading("User updating...", {
+            id: "update-seller"
+        });
+        updateSellerHandler(values)
     }
 
     return (
@@ -47,7 +61,7 @@ export const ProfileForm = ({user}:{user:User}) => {
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
-                                        <Input {...field} />
+                                        <Input {...field} disabled={isPending} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -60,13 +74,13 @@ export const ProfileForm = ({user}:{user:User}) => {
                                 <FormItem>
                                     <FormLabel>Phone</FormLabel>
                                     <FormControl>
-                                        <Input {...field} />
+                                        <Input {...field} disabled={isPending} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="mt-3">Update</Button>
+                        <Button type="submit" className="mt-3" disabled={isPending}>Update</Button>
                     </form>
                 </Form>
             </CardContent>

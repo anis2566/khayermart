@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 // import { createNotification } from "./notification.action";
 import { auth, clerkClient } from "@clerk/nextjs";
 import { OrderProduct } from "@prisma/client";
-import { CreateOrderSchema, CreateOrderSchemaType } from "@/schema/seller-order";
+import { AddTrackingNumberSchema, AddTrackingNumberSchemaType, CreateOrderSchema, CreateOrderSchemaType } from "@/schema/seller-order";
 
 type Product = {
   price: string;
@@ -143,6 +143,7 @@ export const updateOrder = async ({ id, status, products }: UpdateOrder) => {
 
     return {
       success: "Status updated",
+      status
     };
   }
 
@@ -180,6 +181,7 @@ export const updateOrder = async ({ id, status, products }: UpdateOrder) => {
 
     return {
       success: "Status updated",
+      status
     };
   }
 
@@ -197,6 +199,62 @@ export const updateOrder = async ({ id, status, products }: UpdateOrder) => {
 
     return {
       success: "Status updated",
+      status
     };
   }
+};
+
+export const addTrackingNumber = async (values: AddTrackingNumberSchemaType) => {
+  const parseBody = AddTrackingNumberSchema.safeParse(values)
+  if (!parseBody.success) {
+    throw new Error("Invalid input value")
+  }
+
+  const order = await db.sellerOrder.findUnique({
+    where: {
+      id: values.orderId
+    }
+  })
+
+  if (!order) {
+    throw new Error("Order not found")
+  }
+
+  await db.sellerOrder.update({
+    where: {
+      id: order.id
+    },
+    data: {
+      trackingId: values.trackingId
+    }
+  })
+
+  return {
+    success: "Tracking ID added"
+  }
+
+}
+
+export const deleteOrder = async (id: string) => {
+  const order = await db.sellerOrder.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  await db.sellerOrder.delete({
+    where: {
+      id,
+    },
+  });
+
+  revalidatePath("/dashboard/seller-orders");
+
+  return {
+    success: "Order deleted",
+  };
 };

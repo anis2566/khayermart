@@ -14,6 +14,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { updateOrder } from "@/actions/seller-order.action";
 import { Button } from "@/components/ui/button";
+import { useTracking } from "@/store/use-tracking";
 
 interface Props {
     id: string;
@@ -23,6 +24,8 @@ interface Props {
 export const StatusCard = ({id, products}:Props) => {
     const [status, setStatus] = useState<string>("")
 
+    const { onOpen } = useTracking()
+
     const { mutate, isPending} = useMutation({
         mutationFn: updateOrder,
         onSuccess: (data) => {
@@ -30,6 +33,9 @@ export const StatusCard = ({id, products}:Props) => {
                 id: "update-order",
                 duration: 2000
             })
+            if (data?.status === "shipping") {
+                onOpen(id)
+            }
         }, 
         onError: (error) => {
             toast.error(error.message, {
@@ -39,10 +45,10 @@ export const StatusCard = ({id, products}:Props) => {
         },
     })
 
-    const handleUpdate = () => {
-        toast.loading("Updating product...", { id: "update-order" });
+    const handleUpdate = () => { 
+        toast.loading("Order updating...", { id: "update-order" });
         mutate({
-            id,
+            id, 
             products,
             status
         })

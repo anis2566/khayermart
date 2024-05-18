@@ -1,6 +1,11 @@
 "use client"
 
 import { EllipsisVertical, Trash2 } from "lucide-react"
+import { User } from "@prisma/client"
+import { useState } from "react"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
+import Link from "next/link"
 
 import {
   Table,
@@ -16,8 +21,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuItem
 } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,17 +35,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { User } from "@prisma/client"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
 import { Header } from "./header"
-import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
 import { useRole } from "@/store/use-role"
-import { ChangeRoleModal } from "@/components/modal/change-role"
-import { useState } from "react"
-import { useMutation } from "@tanstack/react-query"
 import { deleteUser } from "@/actions/user.action"
-import { toast } from "sonner"
 
 interface Props {
   users: User[]
@@ -74,6 +75,7 @@ export const UserList = ({ users }: Props) => {
       deleteUserHandler(userId)
   }
   }
+
   return (
       <Card>
         <CardHeader>
@@ -116,7 +118,14 @@ export const UserList = ({ users }: Props) => {
                           </Button>
                           </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                              <Button variant="ghost" onClick={() => onOpen(user.id)}>Assign Role</Button>
+                          <DropdownMenuItem asChild>
+                            <Button variant="ghost" onClick={() => onOpen(user.id)} className="w-full">Assign Role</Button>
+                          </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/users/${user.id}`} className={buttonVariants({variant: "ghost"})}>
+                              View Profile
+                              </Link>
+                            </DropdownMenuItem>
                             <AlertDialog>
                             <AlertDialogTrigger className="flex gap-x-3 text-rose-500 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 select-none items-center rounded-sm px-2 py-1.5 text-sm w-full">
                               <Trash2 className="text-rose-500 w-4 h-4" />

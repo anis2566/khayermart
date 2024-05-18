@@ -1,7 +1,7 @@
 "use client"
 
 import qs from "query-string";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarClock, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns"
@@ -21,8 +21,10 @@ import { Badge } from "@/components/ui/badge"
 
 import { cn } from "@/lib/utils"
 import { useDebounce } from "@/store/use-debounce";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 interface OrderProduct extends PrismaOrderProduct {
     product: {
@@ -31,11 +33,7 @@ interface OrderProduct extends PrismaOrderProduct {
     }
 }
 
-
 interface Order extends PrismaOrder {
-    user: {
-        name: string;
-    },
     orderProducts: OrderProduct[]
 }
 
@@ -43,48 +41,62 @@ interface OrderListProps {
     orders: Order[]
 }
 
-export const OrderList = ({ orders }: OrderListProps) => {
+export const UserOrderList = ({ orders }: OrderListProps) => {
    const [status, setStatus] = useState<string>("all")
     const [page, setPage] = useState<number>(1)
     const [perPage, setPerPage] = useState<string>("5")
-    const [search, setSearch] = useState<string>("")
+    const [date, setDate] = useState<Date | undefined>()
 
     const pathname = usePathname()
     const router = useRouter()
     const searchParams = useSearchParams()
-    const debouncedValue = useDebounce(search);
+    // const debouncedValue = useDebounce(search);
 
     const paramPage = searchParams.get("page")
     const paramaPerPage = searchParams.get("perPage")
     const paramStatus = searchParams.get("status")
 
-    useEffect(() => {
-    const url = qs.stringifyUrl({
-      url: pathname,
-      query: {
-          search: debouncedValue
-      }
-    }, { skipEmptyString: true, skipNull: true });
+    const handlePageChange = (perPage: string) => {
+        const url = qs.stringifyUrl({
+            url: pathname,
+            query: {
+                ...Object.fromEntries(searchParams.entries()),
+                perPage: perPage
+            }
+        }, { skipEmptyString: true, skipNull: true });
 
-    router.push(url);
-  }, [debouncedValue, paramPage, paramPage, paramStatus, router, pathname])
+        router.push(url);
+    }
+
+    const handleStatusChange = (status: string) => {
+        const url = qs.stringifyUrl({
+            url: pathname,
+            query: {
+                ...Object.fromEntries(searchParams.entries()),
+                status: status
+            }
+        }, { skipEmptyString: true, skipNull: true });
+
+        router.push(url);
+    }
+
+    const handleDateChange = (date: Date) => {
+        const url = qs.stringifyUrl({
+            url: pathname,
+            query: {
+                date: date.toISOString()
+            }
+        }, { skipEmptyString: true, skipNull: true });
+
+        router.push(url);
+        setDate(date);
+    }
 
     return (
         <div className="w-full space-y-6">
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-x-2">
-                    <Select value={perPage} onValueChange={(value) => {
-                        const url = qs.stringifyUrl({
-                            url: pathname,
-                            query: {
-                                page: paramPage,
-                                perPage: value,
-                                status: paramStatus
-                            }
-                        }, { skipEmptyString: true, skipNull: true });
-                        router.push(url);
-                        setPerPage(value)
-                    }}>
+                    <Select value={perPage} onValueChange={value => handlePageChange(value)}>
                         <SelectTrigger className="w-[100px]">
                             <SelectValue placeholder="Limit" />
                         </SelectTrigger>
@@ -96,20 +108,34 @@ export const OrderList = ({ orders }: OrderListProps) => {
                             }
                         </SelectContent>
                     </Select>
-                    <Input className="hidden md:block" placeholder="Search..." onChange={(e) => setSearch(e.target.value)} />
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                            variant={"outline"}
+                            className={cn(
+                                "w-[240px] pl-3 text-left font-normal",
+                                date && "text-muted-foreground"
+                            )}
+                            >
+                            {date ? (
+                                format(date, "PPP")
+                            ) : (
+                                <span>Pick a date</span>
+                            )}
+                            <CalendarClock className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            // selected={field.value}
+                            onSelect={(date) => date && handleDateChange(date)}
+                            // initialFocus
+                        />
+                        </PopoverContent>
+                    </Popover>
                 </div>
-                <Select value={status} onValueChange={(value) => {
-                    const url = qs.stringifyUrl({
-                        url: pathname,
-                        query: {
-                            page: paramPage,
-                            perPage: paramaPerPage,
-                            status: value
-                        }
-                    }, { skipEmptyString: true, skipNull: true });
-                    router.push(url);
-                    setStatus(value)
-                }}>
+                <Select onValueChange={value => handleStatusChange(value)}>
                     <SelectTrigger className="w-[150px]">
                         <SelectValue placeholder="Status" />
                     </SelectTrigger>
@@ -122,8 +148,6 @@ export const OrderList = ({ orders }: OrderListProps) => {
                     </SelectContent>
                 </Select>
             </div>
-            <Input className="w-full md:hidden" placeholder="Search..." onChange={(e) => setSearch(e.target.value)} />
-
             <Card>
                 <CardContent>
                     <Table>
@@ -136,9 +160,6 @@ export const OrderList = ({ orders }: OrderListProps) => {
                                 <TableHead className="px-0">Total</TableHead>
                                 <TableHead className="hidden md:table-cell px-0">
                                     Date
-                                </TableHead>
-                                <TableHead className="px-0">
-                                    Tracking ID
                                 </TableHead>
                                 <TableHead className="px-0">
                                     Status
@@ -177,8 +198,7 @@ export const OrderList = ({ orders }: OrderListProps) => {
                                             }
                                         </TableCell>
                                         <TableCell className="py-2 px-0">&#2547;{order.total + order.deliveryFee}</TableCell>
-                                        <TableCell className="py-2 px-0 hidden md:table-cell">{format(order.createdAt, "dd MMMM yyyy")}</TableCell>
-                                        <TableCell className="py-2 px-0 hidden md:table-cell">{order.trackingId}</TableCell>
+                                        <TableCell className="py-2 px-0 hidden md:table-cell">{format(order?.createdAt, "hh:mm a, dd-MM-yyyy")}</TableCell>
                                         <TableCell className="py-2 px-0">
                                             <Badge
                                                 className={cn("text-xs capitalize",

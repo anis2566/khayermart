@@ -31,3 +31,14 @@ export const CreateOrderSchema = z.object({
 });
 
 export type CreateOrderSchemaType = z.infer<typeof CreateOrderSchema>;
+
+export const AddTrackingNumberSchema = z.object({
+  orderId: z.string().min(1, {
+    message: "required"
+  }),
+  trackingId: z.string().min(1, {
+    message: "required"
+  }),
+})
+
+export type AddTrackingNumberSchemaType = z.infer<typeof AddTrackingNumberSchema>
