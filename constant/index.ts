@@ -13,6 +13,8 @@ import {
   Popcorn,
   CalendarClock,
   ClipboardList,
+  Store,
+  UserCog
 } from "lucide-react";
 
 export const DASHBOARD_SIDEBAR = [
@@ -98,6 +100,11 @@ export const CUSTOMER_SIDEBAR_ITEMS = [
         icon: LayoutDashboard
     },
     {
+        label: "Store",
+        href: "/seller/store",
+        icon: Store
+    },
+    {
         label: "Place Order",
         href: "/seller/order/create",
         icon: ShoppingCart
@@ -106,6 +113,11 @@ export const CUSTOMER_SIDEBAR_ITEMS = [
         label: "Orders",
         href: "/seller/order/list",
         icon: ClipboardList
+    },
+    {
+        label: "Profile",
+        href: "/seller/profile",
+        icon: UserCog
     },
 ] as const;
 

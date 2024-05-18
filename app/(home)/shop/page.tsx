@@ -97,12 +97,6 @@ export default async function Shop({ searchParams: { search = "", sort, category
           {products.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
-          {products.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-          {products.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
         </div>
         <PaginationComp totalPages={totalPages / itemsPerPage} />
       </div>
