@@ -5,6 +5,7 @@ import { Logo } from "@/components/logo"
 import { Search } from "./search"
 import { Sidebar } from "./sidebar"
 import { Support } from "./support"
+import { HeaderOptions } from "./header-options"
 
 export function Header() {
   return (
@@ -17,6 +18,9 @@ export function Header() {
         </div>
         <Logo callbackUrl="/" />
         <Search />
+        <div className="md:hidden">
+          <HeaderOptions />
+        </div>
         <Support />
       </div>
     </div>
