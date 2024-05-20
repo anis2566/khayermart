@@ -2,7 +2,7 @@ import { Headset } from "lucide-react";
 
 export function Support() {
   return (
-      <div className="flex items-center gap-x-4">
+      <div className="hidden md:flex items-center gap-x-4">
           <Headset className="h-8 w-8" />
           <div>
               <p className="tex-xl text-slate-600 font-semibold">01969-764382</p>
