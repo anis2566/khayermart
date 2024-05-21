@@ -100,7 +100,7 @@ const CreateOrder = () => {
                 },
             })
             router.push("/seller/order/list")
-            toast.success(data.success, {
+            toast.success(data?.success, {
                 id: "create-order",
                 duration: 2000
             })
