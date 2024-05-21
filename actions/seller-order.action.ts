@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 // import { createNotification } from "./notification.action";
-import { auth, clerkClient } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 import { OrderProduct } from "@prisma/client";
 import { AddTrackingNumberSchema, AddTrackingNumberSchemaType, CreateOrderSchema, CreateOrderSchemaType } from "@/schema/seller-order";
 
@@ -82,14 +82,60 @@ export const createOrder = async (values: CreateOrderSchemaType) => {
     },
   });
 
-  // await createNotification({ id: admin.id, message: "You have a new order" });
-
   revalidatePath("/order/list");
 
-  return {
-    success: "Order placed",
-    order,
-  };
+  for (const product of values.products) {
+      if (!product.size) {
+        await db.product.update({
+          where: { id: product.productId },
+          data: { totalStock: { decrement: product.quantity } },
+        });
+        return {
+          success: "Order placed",
+        };
+      } else {
+        const stock = await db.stock.findFirst({
+          where: {
+            productId: product.productId
+          }
+        })
+
+        if (!stock) {
+          throw new Error("Stock not found")
+        }
+
+        await db.stock.update({
+          where: {
+            id: stock.id,
+            size: product.size
+          },
+          data: {
+            total: {decrement: product.quantity}
+          }
+        })
+
+        const stocks = await db.stock.findMany({
+          where: {
+            productId: product.productId
+          }
+        })
+
+        const totalStock = stocks.reduce((acc, curr) => acc+curr.total,0)
+
+        await db.product.update({
+          where: {
+            id: product.productId
+          },
+          data: {
+            totalStock
+          }
+        })
+
+        return {
+          success: "Order placed",
+        };
+      }
+    }
 };
 
 type UpdateOrder = {

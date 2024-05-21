@@ -3,6 +3,8 @@
 import { db } from "@/lib/db"
 import { OrderSchema, OrderSchemaType } from "@/schema/order";
 import { getUserId } from "@/service/user.service";
+import { OrderProduct } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export const createOrder = async (values: OrderSchemaType) => {
   
@@ -138,5 +140,93 @@ export const createOrder = async (values: OrderSchemaType) => {
         };
       }
     }
+  }
+};
+
+
+
+type UpdateOrder = {
+  id: string;
+  status: string;
+  products: OrderProduct[];
+};
+
+export const updateOrder = async ({ id, status, products }: UpdateOrder) => {
+  const order = await db.order.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  if (status === "delivered") {
+    await db.order.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+      },
+    });
+    revalidatePath(`/dashboard/orders/${id}`);
+
+    return {
+      success: "Status updated",
+      status
+    };
+  }
+
+  if (status === "returned") {
+    await db.order.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+      },
+    });
+
+    await Promise.all(
+      products.map(async (product: OrderProduct) => {
+        await db.product.update({
+          where: {
+            id: product.productId,
+          },
+          data: {
+            totalStock: {
+              increment: product.quantity,
+            },
+          },
+        });
+      })
+    );
+
+    revalidatePath(`/dashboard/orders/${id}`);
+
+    return {
+      success: "Status updated",
+      status
+    };
+  }
+
+  if (status === "shipping") {
+    await db.order.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+      },
+    });
+
+    revalidatePath(`/dashboard/orders/${id}`);
+
+    return {
+      success: "Status updated",
+      status
+    };
   }
 };

@@ -14,7 +14,10 @@ import {
   CalendarClock,
   ClipboardList,
   Store,
-  UserCog
+  UserCog,
+  Home,
+  Info,
+  Headset
 } from "lucide-react";
 
 export const DASHBOARD_SIDEBAR = [
@@ -119,6 +122,29 @@ export const CUSTOMER_SIDEBAR_ITEMS = [
         href: "/seller/profile",
         icon: UserCog
     },
+] as const;
+
+export const CLIENT_UI_SIDEBAR = [
+  {
+    label: "Home",
+    href: "/",
+    icon: Home,
+  },
+  {
+    label: "Shop",
+    href: "/shop",
+    icon: ShoppingBasket,
+  },
+  {
+    label: "About",
+    href: "/about",
+    icon: Info,
+  },
+  {
+    label: "Contact",
+    href: "/contact",
+    icon: Headset,
+  },
 ] as const;
 
 export const ORDER_STATUS = [
