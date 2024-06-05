@@ -88,7 +88,7 @@ const SuccessQuickOrder = ({ params }: { params: { orderId: string } }) => {
                                                 <TableRow>
                                                     <TableCell>
                                                         <Avatar>
-                                                            <AvatarImage src={order?.product.featureImageUrl} />
+                                                            <AvatarImage src={order?.product?.featureImageUrl} />
                                                             <AvatarFallback>{order?.name.charAt(0)}</AvatarFallback>
                                                         </Avatar>
                                                     </TableCell>

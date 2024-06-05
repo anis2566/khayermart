@@ -191,11 +191,6 @@ export const CLIENT_SIDEBAR = [
     href: "/dashboard/best-deal",
     icon: CirclePercent,
   },
-  {
-    label: "Deal Of The Day",
-    href: "/dashboard/deal-of-day",
-    icon: CalendarClock,
-  },
 ] as const;
 
 export const DIVISIONS = [

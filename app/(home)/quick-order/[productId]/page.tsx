@@ -21,6 +21,7 @@ const QuickOrderProduct = async ({ params }: Props) => {
             stocks: true
         }
     })
+    
     if (!product) redirect("/")
     
     return (
