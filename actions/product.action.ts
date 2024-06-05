@@ -5,6 +5,7 @@ import { DealOfTheDaySchema, DealOfTheDaySchemaType } from "@/schema/deal-of-day
 import { FeatureFormSchema, FeatureFormSchemaType } from "@/schema/feature-products";
 import { Product } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 type CreateProduct = {
   name: string;
@@ -121,9 +122,117 @@ export const deleteProduct = async (id: string) => {
 }
 
 export const getProducts = async () => {
-  const products = await db.product.findMany();
+  const products = await db.product.findMany({
+    include: {
+      brand: true,
+      category: true,
+      stocks: true
+    }
+  });
 
   return { products };
+};
+
+
+type GetProducts = {
+  search: string;
+  category: string;
+  minPrice: string;
+  maxPrice: string;
+  brand: string;
+  sort: string;
+  page: string;
+};
+
+export const GET_PRODUCTS = async ({
+  search = "",
+  category,
+  minPrice,
+  maxPrice,
+  brand,
+  sort,
+  page,
+}: GetProducts) => {
+  const itemsPerPage = 20;
+  const currentPage = parseInt(page) || 1;
+  const searchWords = search.split(" ");
+
+  const products = await db.product.findMany({
+    where: {
+      AND: [
+        {
+          OR: searchWords.map((word) => ({
+            OR: [
+              { name: { contains: word, mode: "insensitive" } },
+              { category: { name: { contains: word, mode: "insensitive" } } },
+            ],
+          })),
+        },
+        { category: { name: category } },
+        { brand: { name: brand } },
+        ...(minPrice ? [{ price: { gte: parseInt(minPrice) } }] : []),
+        ...(maxPrice ? [{ price: { lte: parseInt(maxPrice) } }] : []),
+      ],
+    },
+    include: {
+      category: true,
+      stocks: true,
+      brand: true,
+    },
+    orderBy: {
+      ...(sort === "asc" && { createdAt: "asc" }),
+      ...(sort === "desc" && { createdAt: "desc" }),
+      ...(sort === "high-to-low" && { price: "desc" }),
+      ...(sort === "low-to-high" && { price: "asc" }),
+    },
+    skip: (currentPage - 1) * itemsPerPage,
+    take: itemsPerPage,
+  });
+
+  const totalProduct = await db.product.count({
+    where: {
+      AND: [
+        {
+          OR: searchWords.map((word) => ({
+            OR: [
+              { name: { contains: word, mode: "insensitive" } },
+              { category: { name: { contains: word, mode: "insensitive" } } },
+            ],
+          })),
+        },
+        { category: { name: category } },
+        { brand: { name: brand } },
+        ...(minPrice ? [{ price: { gte: parseInt(minPrice) } }] : []),
+        ...(maxPrice ? [{ price: { lte: parseInt(maxPrice) } }] : []),
+      ],
+    }
+  })
+
+  return {
+    products,
+    totalProduct
+  };
+};
+
+
+
+export const GET_PRODUCT = async (id: string) => {
+  const product = await db.product.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      brand: true,
+      stocks: true,
+      category: true,
+    },
+  });
+
+  if (!product) redirect("/");
+
+  return {
+    product,
+  };
 };
 
 
@@ -294,7 +403,7 @@ export const getPopularProducts = async () => {
     orderBy: {
       createdAt: 'desc'
     },
-    take: 3
+    take: 10
   });
 
   return { products };
@@ -369,7 +478,7 @@ export const getBestDealProducts = async () => {
     orderBy: {
       createdAt: 'desc'
     },
-    take: 10
+    take: 6
   });
 
   return { products };
@@ -475,6 +584,7 @@ export const getTopSellingProducts = async () => {
         },
       },
     },
+    take: 3
   });
 
   const productSalesWithTotal = productSales.map(product => ({

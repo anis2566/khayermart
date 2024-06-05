@@ -2,7 +2,7 @@ import { Category, Product, Stock, Brand, Order, ShippingInfo, User, OrderProduc
 
 export interface ProductWithFeature extends Product {
   stocks?: Stock[];
-  category: Category,
+  category: Category | null;
   brand: Brand,
 }
 

@@ -1,59 +1,96 @@
-import { redirect } from "next/navigation"
+"use client"
 
-import { Separator } from "@/components/ui/separator"
+import { useQuery } from "@tanstack/react-query"
+
+import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
-import {db} from "@/lib/db"
-import {ProductImages} from "@/components/product/product-images"
-import {ProductInfo} from "@/components/product/product-details"
-import {RelatedProducts} from "@/components/product/related-products"
-import {Reviews} from "@/components/product/reviews"
-import {Preview } from "@/components/preview"
+import { Preview } from "@/components/preview"
+import { ProductImages, ProductImagesSkeleton } from "@/components/home/product/product-images"
+import { GET_PRODUCT } from "@/actions/product.action"
+import { ProductInfo, ProductInfoSkeleton } from "@/components/home/product/product-details"
+import { RelatedProduct } from "@/components/home/product/related-product"
 
 
-const ProductDetails = async ({params}:{params:{productId:string}}) => {
-    const product = await db.product.findUnique({
-        where: {
-            id: params.productId
+const ProductDetails = ({ params }: { params: { productId: string } }) => {
+
+    const { data: product, isFetching } = useQuery({
+        queryKey: ["get-product", params.productId],
+        queryFn: async () => {
+            const res = await GET_PRODUCT(params.productId)
+            return res.product
         },
-        include: {
-            brand: true,
-            stocks: true,
-            category: true,
-        }
+        enabled: !!params.productId
     })
 
-    if(!product) redirect("/")
 
     return (
-        <div className="w-full px-3 mt-7 space-y-6">
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ProductImages featureImage={product.featureImageUrl} images={product.images} />
-                 <ProductInfo key={product.id} product={{ 
-                        ...product, 
-                        category: product.category ?? { name: "Default Category" },
-                        brand: product.brand ?? undefined,
-                        stocks: product.stocks ?? undefined,
-                    }}
-                />
+        <div className="w-full max-w-screen-xl mx-auto px-3 py-5 space-y-6">
+
+            <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href="/shop">Shop</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>{product?.name}</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 bg-white py-3">
+                {
+                    isFetching ? (
+                        <>
+                            <ProductImagesSkeleton />
+                            <ProductInfoSkeleton />
+                        </>
+                    ) : product ? (
+                        <>
+                            <ProductImages featureImage={product.featureImageUrl} images={product.images} />
+                            <ProductInfo product={product} />
+                        </>
+                    )
+                        : null
+                }
             </div>
 
-            <Separator />
+            <div className="bg-white py-3">
+                <Tabs defaultValue="description" className="w-full flex flex-col items-center mt-2">
+                    <TabsList className="w-full max-w-[400px] mx-auto">
+                        <TabsTrigger value="description">Description</TabsTrigger>
+                        {/* <TabsTrigger value="reveiws">Reveiws</TabsTrigger> */}
+                    </TabsList>
+                    <TabsContent value="description" className="w-full max-w-[1200px] mx-auto">
+                        {
+                            isFetching ? (
+                                <div className="space-y-3">
+                                    <Skeleton className="h-10 w-1/2" />
+                                    <Skeleton className="h-10 w-1/2" />
+                                    <Skeleton className="h-10 w-1/2" />
+                                </div>
+                            ) : (
+                                <Preview value={product?.description || ""} />
+                            )
+                        }
+                    </TabsContent>
+                </Tabs>
+            </div>
 
-            <Tabs defaultValue="description" className="w-full flex flex-col items-center mt-2">
-                <TabsList className="w-full max-w-[400px] mx-auto">
-                    <TabsTrigger value="description">Description</TabsTrigger>
-                    <TabsTrigger value="reveiws">Reveiws</TabsTrigger>
-                </TabsList>
-                <TabsContent value="description" className="w-full max-w-[1200px] mx-auto">
-                    <Preview value={product.description} />
-                </TabsContent>
-                <TabsContent value="reveiws" className="w-full max-w-[1200px] mx-auto">
-                    <Reviews />
-                </TabsContent>
-            </Tabs>
-
-            <RelatedProducts />
+            <RelatedProduct />
         </div>
     )
 }

@@ -22,6 +22,8 @@ export default authMiddleware({
     "/sign-in",
     "sign-up",
     "/favicon.ico",
+    "/logo.jpg",
+    "/cart.webp",
     "/api/uploadthing",
     "/api/webhooks(.*)",
     "/cart",
@@ -34,5 +36,5 @@ export default authMiddleware({
 });
 
 export const config = {
-  matcher: ["/((?!.+.[w]+$|_next).*)", "/", "/(api|trpc)(.*)", "/favicon.ico"],
+  matcher: ["/((?!.+.[w]+$|_next).*)", "/", "/(api|trpc)(.*)", "/favicon.ico",],
 };

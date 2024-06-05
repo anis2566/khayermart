@@ -1,18 +1,17 @@
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header/header";
-import { Navbar } from "@/components/header/navbar";
-import { ModalProvider } from "@/components/providers/modal-provider";
+import { Cart } from "@/components/home/cart"
+import { Footer } from "@/components/home/footer"
+import { Navbar } from "@/components/home/navbar"
 
 const HomeLayout = ({children}:{children:React.ReactNode}) => {
     return (
-        <div>
-            <Header />
+        <div className="w-full bg-gray-100 relative">
             <Navbar />
+            {/* <SearchInput /> */}
             {children}
+            <Cart />
             <Footer />
-            <ModalProvider />
         </div>
     )
 }
 
-export default HomeLayout;
+export default HomeLayout

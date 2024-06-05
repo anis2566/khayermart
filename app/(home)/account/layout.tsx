@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const AccountLayout = ({children}:{children:React.ReactNode}) => {
     return (
-        <div className="w-full mx-auto mt-7 space-y-6">
+        <div className="w-full max-w-screen-xl mx-auto bg-white py-4 mt-7 space-y-6">
             <Tabs defaultValue="Dashboard" className="md:hidden w-full">
                 <TabsList className="w-full">
                     {

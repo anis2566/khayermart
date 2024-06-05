@@ -1,15 +1,15 @@
-import { Filter } from "@/components/shop/filter"
-import { FilterSort } from "@/components/shop/filter-sort"
-import { ProductCard } from "@/components/card/product-card"
+"use client"
+
+import { useQuery } from "@tanstack/react-query"
+
+import { GET_PRODUCTS } from "@/actions/product.action"
+import { Filter } from "@/components/home/shop/filter"
+import { FilterSort } from "@/components/home/shop/filter-sort"
+import { ProductCard, ProductCartSkeleton } from "@/components/home/card/product-card"
 import { PaginationComp } from "@/components/shop/pagination"
+import { FilterDrawer } from "@/components/home/shop/filter-drawer"
 
-import { db } from "@/lib/db"
-import { FilterDrawer } from "@/components/shop/filter-drawer"
-import { SearchInput } from "@/components/shop/search"
-
-
-
-interface SearchPageProps {
+interface Props {
   searchParams: {
     search: string;
     category: string;
@@ -19,87 +19,48 @@ interface SearchPageProps {
     sort: string;
     page: string;
   }
-};
+}
+
+const Shop = ({ searchParams }: Props) => {
+
+  const { search, category, minPrice, maxPrice, brand, sort, page } = searchParams
 
 
-export default async function Shop({ searchParams: { search = "", sort, category, minPrice, maxPrice, brand, page } }: SearchPageProps) {
-    const itemsPerPage = 20;  
-    const currentPage = parseInt(page) || 1; 
-  
-    // Split the search string into words
-    const searchWords = search.split(' ');
+  const { data, isLoading } = useQuery({
+    queryKey: ["get-products", search, category, minPrice, maxPrice, brand, sort, page],
+    queryFn: async () => {
+      const res = await GET_PRODUCTS({ search, category, minPrice, maxPrice, brand, sort, page })
+      return res
+    }
+  })
 
-
-    const products = await db.product.findMany({
-      where: {
-        AND: [
-          {
-            OR: searchWords.map(word => ({
-              OR: [
-                {name: {contains: word, mode: "insensitive"}},
-                {category: {name: {contains: word, mode: "insensitive"}}}
-              ]
-            }))
-          },
-          { category: { name: category } }, // Filter by category
-          { brand: { name: brand } },
-          ...(minPrice ? [{ price: { gte: parseInt(minPrice) } }] : []),
-          ...(maxPrice ? [{ price: { lte: parseInt(maxPrice) } }] : []), // Corrected variable name here
-        ]
-      },
-      include: {
-        category: true,
-        stocks: true,
-        brand: true,
-      },
-      orderBy: {
-        ...(sort === 'asc' && { name: 'asc' }),
-        ...(sort === 'desc' && { name: 'desc' }),
-        ...(sort === 'high-to-low' && { price: 'desc' }),
-        ...(sort === 'low-to-high' && { price: 'asc' }),
-      },
-      skip: (currentPage - 1) * itemsPerPage,
-      take: itemsPerPage,
-    });
-  
-  const totalProducts = await db.product.count({
-      where: {
-        AND: [
-          {
-            OR: [
-              { name: { contains: search, mode: 'insensitive' } },
-              { category: { name: { contains: search, mode: 'insensitive' } } }
-            ]
-          },
-          { category: {name: category} },
-          { brand: { name: brand } },
-          ...(minPrice ? [{ price: { gte: parseInt(minPrice) } }] : []),
-          ...(maxPrice ? [{ price: { lte: parseInt(maxPrice) } }] : []),
-        ]
-      }
-  });
-  
-  const totalPages = Math.ceil(totalProducts / itemsPerPage);
-
-  
   return (
-    <section className="mx-auto px-4 md:px-6 grid md:grid-cols-[240px_1fr] gap-10 items-start py-8">
-      <SearchInput />
-      <Filter />
-      <div className="space-y-8">
-        <div className="flex items-center justify-between md:justify-end gap-4">
-          <div className="md:hidden">
+    <div className="w-full max-w-screen-xl mx-auto my-6 bg-white p-4">
+      <div className="flex gap-x-2">
+        <Filter />
+        <div className="space-y-8 flex-1">
+          <div className="flex items-center justify-between gap-4">
             <FilterDrawer />
+            <h1 className="hidden md:flex text-xl font-semibold">Products</h1>
+            <FilterSort />
           </div>
-          <FilterSort />
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {
+              isLoading ?
+                Array.from({ length: 8 }, (_, index) => (
+                  <ProductCartSkeleton key={index} />
+                ))
+                :
+                data?.products?.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+            }
+          </div>
+          <PaginationComp totalPages={Math.ceil((data?.totalProduct ?? 0) / 10)} />
         </div>
-        <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-        <PaginationComp totalPages={totalPages / itemsPerPage} />
       </div>
-    </section>
+    </div>
   )
 }
+
+export default Shop

@@ -8,10 +8,8 @@ import {
 } from "@/components/ui/breadcrumb"
 
 import { db } from "@/lib/db";
-import { PopularProductForm } from "@/components/dashboard/popular-products/popular-product-form";
-import { PopulareProductCard } from "@/components/card/popular-product-card";
 import { BestDealForm } from "@/components/dashboard/best-deal/best-deal-form";
-import { BestDealCard } from "@/components/card/best-deal-dashboard-card";
+import { BestDealCard } from "@/components/dashboard/card/best-deal-card";
 
 const BestDealProduct = async () => {
     const products = await db.product.findMany({

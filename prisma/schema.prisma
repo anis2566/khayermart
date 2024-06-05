@@ -60,8 +60,8 @@ model Product {
   stocks  Stock[]
   colors String[] @default([])
 
-  categoryId String
-  category  Category @relation(fields: [categoryId], references: [id])
+  categoryId String?
+  category  Category? @relation(fields: [categoryId], references: [id])
 
   brandId String
   brand  Brand @relation(fields: [brandId], references: [id])
@@ -191,8 +191,8 @@ model QuickOrder {
 
   status String @default("PENDING")
 
-  productId String
-  product Product @relation(fields: [productId], references: [id])
+  productId String?
+  product Product? @relation(fields: [productId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

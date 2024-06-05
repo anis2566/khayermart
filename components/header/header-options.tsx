@@ -1,5 +1,5 @@
 import { Wishlist } from "../wishlist/wishlist";
-import { Cart } from "../cart/cart";
+import { Cart } from "../home/navbar/cart";
 import { Account } from "../account/account";
 
 

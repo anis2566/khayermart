@@ -55,5 +55,5 @@ export const getBanners = async () => {
         }
     })
 
-    return banners
+    return {banners}
 }

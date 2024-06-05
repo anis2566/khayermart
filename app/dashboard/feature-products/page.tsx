@@ -7,9 +7,9 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-import { FeatureProductCard } from "@/components/card/feature-product-card";
 import { FeatureProductForm } from "@/components/dashboard/feature-products/feature-product-form";
 import { db } from "@/lib/db";
+import { FeatureProductCard } from "@/components/dashboard/card/feature-product-card";
 
 const FeatureProducts = async () => {
     const products = await db.product.findMany({
