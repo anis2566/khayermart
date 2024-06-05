@@ -41,11 +41,10 @@ export const ProductInfo = ({ product }: Props) => {
         if (quantity > 1) {
             setQuantity(prev => prev - 1)
         }
-    }
+    } 
 
     const handleAddToCart = () => {
-        addToCart({ product, price: product.discountPrice || product.price, quantity, size, color })
-        onClose()
+        addToCart({...product, price:product.discountPrice || product.price}, 1)
         toast.success("Added to cart")
     }
 
