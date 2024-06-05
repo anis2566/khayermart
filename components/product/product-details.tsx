@@ -83,7 +83,7 @@ export const ProductInfo = ({product}:Props) => {
                     </div>
                     <p className="text-sm text-muted-foreground">(32 Reviews)</p>
                 </div>
-                <Badge variant="outline">{product.category.name}</Badge>
+                <Badge variant="outline">{product?.category?.name}</Badge>
 
             </div>
             <div className="flex items-center gap-x-4">
