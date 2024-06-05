@@ -22,7 +22,7 @@ import { formatPrice } from "@/lib/utils";
 interface OrdersWithProduct extends QuickOrder {
     product: {
         featureImageUrl: string;
-    }
+    } | null
 }
 
 interface Props {
@@ -63,7 +63,7 @@ export const QuickOrderList = ({orders}:Props) => {
                                             <TableRow key={order.id}>
                                                 <TableCell className="py-3 px-1">
                                                     <Avatar className="w-7 h-7">
-                                                        <AvatarImage src={order.product.featureImageUrl} />
+                                                        <AvatarImage src={order?.product?.featureImageUrl} />
                                                         <AvatarFallback>{order.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                 </TableCell>
