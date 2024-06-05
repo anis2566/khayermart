@@ -1,4 +1,3 @@
-import { PopulareProductCard } from "@/components/card/popular-product-card";
 import { Header } from "@/components/seller/header"
 import { ProductCard } from "@/components/seller/product-card";
 import { db } from "@/lib/db";
