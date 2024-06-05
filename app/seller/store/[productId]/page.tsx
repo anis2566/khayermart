@@ -60,7 +60,7 @@ const ProductDetails = async ({params}:{params:{productId:string}}) => {
                     </div>
                     <p className="text-sm text-muted-foreground">(32 Reviews)</p>
                 </div>
-                <Badge variant="outline">{product.category.name}</Badge>
+                <Badge variant="outline">{product?.category?.name}</Badge>
 
             </div>
             <p className="text-3xl font-bold text-slate-600">&#2547;{product.sellerPrice || product.discountPrice || product.price}</p>
