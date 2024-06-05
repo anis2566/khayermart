@@ -66,12 +66,12 @@ const OrderDetails = async ({ params }: { params: { orderId: string } }) => {
                                             alt="Thumbnail"
                                             className="aspect-object object-cover rounded-lg"
                                             height="100"
-                                            src={order.product.featureImageUrl}
+                                            src={order?.product?.featureImageUrl || ""}
                                             width="100"
                                         />
                                         </div>
                                         <div className="space-y-1">
-                                            <h3 className="font-semibold text-base">{order.product.name}</h3>
+                                            <h3 className="font-semibold text-base">{order?.product?.name}</h3>
                                             <div className={cn("hidden items-center gap-2 text-sm", order.color && "flex")}>
                                                 <div className="font-medium capitalize">Color: {order.color}</div>
                                             </div>
@@ -127,7 +127,7 @@ const OrderDetails = async ({ params }: { params: { orderId: string } }) => {
                             </div>
                         </CardFooter>
                     </Card>
-                    <StatusCard id={params.orderId} productId={order.productId} quantity={order.quantity} size={order.size || ""} />
+                    <StatusCard id={params.orderId} productId={order.productId || ""} quantity={order.quantity} size={order.size || ""} />
                 </div>
             </div>
         </div>
